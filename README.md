@@ -52,7 +52,7 @@ We can use these modules:
 * [Notifications](https://github.com/MyMalcom/malcom-lib-android/wiki/Notifications)
 * [Stats](https://github.com/MyMalcom/malcom-lib-android/wiki/Stats)	
 * [Ads](https://github.com/MyMalcom/malcom-lib-android/wiki/Ads)	
-* [Campaings](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaing)
+* [Campaigns](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaign)
 
 
 
