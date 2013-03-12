@@ -39,7 +39,7 @@ Using the Modules
 
 ###Initializing
 
-Firstly, you'll need to init Malcom with the  method.
+Firstly, you'll need to init Malcom in your Main Activity with the method:
 
         MCMCoreAdapter.getInstance().initMalcom(this, UUID_MALCOM, SECRET_KEY);
         
@@ -51,7 +51,7 @@ We can use these modules:
 * [Configuration](https://github.com/MyMalcom/malcom-lib-android/wiki/Configuration)
 * [Notifications](https://github.com/MyMalcom/malcom-lib-android/wiki/Notifications)
 * [Stats](https://github.com/MyMalcom/malcom-lib-android/wiki/Stats)	
-* [Ads](https://github.com/MyMalcom/malcom-lib-ios/wiki/Ads)	
+* [Ads](https://github.com/MyMalcom/malcom-lib-android/wiki/Ads)	
 * [Campaings](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaing)
 
 
