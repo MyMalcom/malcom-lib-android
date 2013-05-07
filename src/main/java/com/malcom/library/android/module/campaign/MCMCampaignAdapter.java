@@ -32,7 +32,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundException;
-import com.malcom.library.android.module.campaign.MCMCampaignModel.BannerPosition;
+import com.malcom.library.android.module.campaign.MCMCampaignModel.CampaignPosition;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.utils.HttpDateUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
@@ -238,23 +238,23 @@ public class MCMCampaignAdapter {
 		    // Config layout params depending on position
 			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) bannerLayout.getLayoutParams();
 		    bannerLayout.setGravity(Gravity.CENTER);
-		    if (campaign.getBannerPosition() == BannerPosition.BOTTOM) { 
+		    if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.BOTTOM) {
 		    
 		        params.height = dp(SIZE_BANNER);
 		        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		    }
-		    else if (campaign.getBannerPosition() == BannerPosition.TOP) { 
+		    else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.TOP) {
 		    	
 		    	params.height = dp(SIZE_BANNER);
 		        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
 		    }
-		    else if (campaign.getBannerPosition() == BannerPosition.MIDDLE_LANDSCAPE ||
-		    		campaign.getBannerPosition() == BannerPosition.MIDDLE_PORTRAIT) {
+		    else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.MIDDLE_LANDSCAPE ||
+		    		campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.MIDDLE_PORTRAIT) {
 
 		    	int margin = dp(MIDDLE_MARGIN);
 		    	bannerImageView.setPadding(margin, margin, margin, margin);
 		    }
-		    else if (campaign.getBannerPosition() == BannerPosition.FULL_SCREEN) {
+		    else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.FULL_SCREEN) {
 		    	
 		    	// mantain params of full screen
 		    }
@@ -291,16 +291,16 @@ public class MCMCampaignAdapter {
 				
 				// Open campaign app in PlayStore
 				try {
-					context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getIdApp())));
+					context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
 				} 
 				catch (android.content.ActivityNotFoundException anfe) {
-					context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getIdApp())));
+					context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
 				}
 			}
 		});
 		
 		// Config close button (if banner position is middle or full screen)
-		if (campaign.getBannerPosition() != BannerPosition.BOTTOM  && campaign.getBannerPosition() != BannerPosition.TOP) { 
+		if (campaign.getMediaFeature().getCampaignPosition() != CampaignPosition.BOTTOM  && campaign.getMediaFeature().getCampaignPosition() != CampaignPosition.TOP) {
 		
 			Button closeButton = new Button(context);
 			closeButton.setText("X");
@@ -362,7 +362,7 @@ public class MCMCampaignAdapter {
 		
 						for (int i=0; i<campaignArray.length(); i++) {
 							JSONObject campaignJSON = campaignArray.getJSONObject(i);
-							campaignObjectsArray.add(new MCMCampaignModel().initWithJSON(campaignJSON));
+							campaignObjectsArray.add(new MCMCampaignModel(campaignJSON));
 						}
 						
 					} else {
@@ -416,7 +416,7 @@ public class MCMCampaignAdapter {
 		protected Integer doInBackground(Void ...valores) {        	 
      	 
 			try {
-				URL imageUrl = new URL(campaignObjectSelected.getUrlImage());
+				URL imageUrl = new URL(campaignObjectSelected.getMediaFeature().getMedia());
 				InputStream imageImputStream = (InputStream) imageUrl.getContent();
 				bitmap = BitmapFactory.decodeStream(imageImputStream);
 				
@@ -476,7 +476,7 @@ public class MCMCampaignAdapter {
 				// Create URL for campaign hit
 				String malcomUrl 		= MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
 				String campaignsPath 	= "v1/campaigns/";
-				String idCampaign		= campaignObjectSelected.getIdCampaign();
+				String idCampaign		= campaignObjectSelected.getCampaignId();
 				String hitPath 			= "/hit/";
 				String hitType 			= valores[0]; // CLICK or IMPRESSION
 				String applicationPath 	= "/application/";
