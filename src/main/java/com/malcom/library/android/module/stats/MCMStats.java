@@ -269,7 +269,7 @@ public class MCMStats {
 			beaconContentJson.put("user_metadata", getUserMetadata());
 			
 			if(appCrashed){
-				beaconContentJson.put("crash", new Boolean(true));
+				beaconContentJson.put("crash", true);
 			}
 			
 			beaconJson.put("beacon", beaconContentJson);
