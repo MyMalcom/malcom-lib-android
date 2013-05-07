@@ -31,7 +31,21 @@ Option a) is better if you don't want to debug the library, option b) allows you
 
 In your Manifest.xml you'll need to add the following permissions:
 
-        <uses-permission android:name="android.permission.INTERNET" />        <uses-permission android:name="android.permission.GET_ACCOUNTS" />        <uses-permission android:name="android.permission.READ_PHONE_STATE" />        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />        <uses-permission android:name="android.permission.VIBRATE" />
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+        <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.VIBRATE" />
+        
+        <!-- ..... -->
+        <application>
+        <!-- ..... -->
+                <service android:name="com.malcom.library.android.module.stats.services.PendingBeaconsDeliveryService" />
+        <!-- ..... -->
+        </application>
 
 
 Using the Modules
