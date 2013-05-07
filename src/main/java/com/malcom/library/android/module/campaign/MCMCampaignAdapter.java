@@ -51,6 +51,8 @@ import com.malcom.library.android.utils.encoding.base64.Base64;
  */
 public class MCMCampaignAdapter {
 
+    private static final String campaignURL = "v2/campaigns/application/%@AppId/udid/%@Udid";
+    //private static final String campaignURL = "http://malcom-api-dev.elasticbeanstalk.com/v2/campaigns/application/%@AppId/udid/%@Udid";
 	
 	private static final String LOG_TAG = "MCMCampaign";
 	private static final String ATTR_CAMPAIGNS_ARRAY = "campaigns";
@@ -66,8 +68,7 @@ public class MCMCampaignAdapter {
 	private static MCMCampaignAdapter instance = null;
 	private RelativeLayout bannerLayout;
 	private ImageView bannerImageView;
-	private String urlCampaign = "";
-	private String campaingResource = "";
+	private String campaignResource = "";
 	
 	private String appSecretKey;
 	private String malcomAppId;
@@ -133,21 +134,21 @@ public class MCMCampaignAdapter {
 		try {
 			// Create URL to get campaigns of my app
 			String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
-			String campaignPath = "v1/campaigns/application/";
+
 			malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
-			String udidPath = "/udid/";
 			String devideId = URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
-			appSecretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
-			
-			campaingResource = campaignPath + malcomAppId + udidPath + devideId;
-			this.urlCampaign = malcomBaseUrl + campaingResource;
+
+            campaignResource = campaignURL.replace("%@AppId",malcomAppId).replace("%@Udid",devideId);
+
+//			String urlCampaign = malcomBaseUrl + campaignResource;
+            String urlCampaign = campaignResource;
+
+            // Launch request to get campaigns data
+            new DownloadCampaignFile().execute(urlCampaign);
 			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
-		// Launch request to get campaigns data
-		new DownloadCampaignFile().execute();
 	}
 	
 	/**
@@ -340,20 +341,22 @@ public class MCMCampaignAdapter {
 	 * Async request campaigns data, and parse it to models.
 	 *
 	 */
-	private class DownloadCampaignFile extends AsyncTask<Void, Float, Integer>{
+	private class DownloadCampaignFile extends AsyncTask<String, Float, Integer>{
     	
   	 	protected void onPreExecute() {}
 
-        protected Integer doInBackground(Void ...valores) {        	 
+        protected Integer doInBackground(String ...valores) {
         	
 			campaignObjectsArray = new ArrayList<MCMCampaignModel>();
        	 
         	try {
         		
         		// Execute request to get JSON
-				JSONObject objectJSON = getJSONfromURL(urlCampaign);
+				JSONObject objectJSON = getJSONfromURL(valores[0]);
 				
 				if (objectJSON != null) {
+
+                    Log.d(LOG_TAG,"Received Campaigns JSON: "+objectJSON);
 					
 					// Parse JSON to obtain campaign data
 					JSONArray campaignArray = (JSONArray) objectJSON.get(ATTR_CAMPAIGNS_ARRAY);
@@ -393,6 +396,8 @@ public class MCMCampaignAdapter {
         }
 
         protected void onPostExecute(Integer bytes) {
+
+            Log.d(LOG_TAG,"CampaignObjectsArray size: "+campaignObjectsArray.size());
         	
         	// After receiving campaign data, prepare banner
         	if (campaignObjectsArray.size()>0) {
@@ -532,8 +537,9 @@ public class MCMCampaignAdapter {
     		headersData.put("content-md5", md5);
     		headersData.put("x-mcm-date", malcomDate);
     	
-    		String dataToSign = ToolBox.deliveries_getDataToSign(ToolBox.getCanonicalizedMalcomHeaders(headersData), contentType, null, verb, campaingResource, md5);	
-    		String password = DigestUtils.calculateRFC2104HMAC(dataToSign, appSecretKey);
+    		String dataToSign = ToolBox.deliveries_getDataToSign(ToolBox.getCanonicalizedMalcomHeaders(headersData), contentType, null, verb, campaignResource, md5);
+            String secretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
+    		String password = DigestUtils.calculateRFC2104HMAC(dataToSign, secretKey);
     		
     		// Complete headers with authorization
     		headersData.put("Authorization", "basic " + new String(Base64.encode(malcomAppId + ":" + password).getBytes()));
