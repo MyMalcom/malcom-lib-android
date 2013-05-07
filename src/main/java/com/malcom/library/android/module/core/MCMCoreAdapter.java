@@ -121,6 +121,8 @@ public class MCMCoreAdapter {
 	 * @param secretKey
 	 */
 	public void initMalcom(Context context, String uuid, String secretKey) {
+
+        Log.d(MCMDefines.LOG_TAG, "initMalcom uuid: "+uuid+" secretKey: "+secretKey);
 		
 		this.context = context;
 		SharedPreferences prefs = context.getSharedPreferences(MALCOM_CONFIG, 0);
