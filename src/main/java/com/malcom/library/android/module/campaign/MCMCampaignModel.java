@@ -43,7 +43,7 @@ public class MCMCampaignModel {
         String typeJSON = null;
 		
 		try {
-            campaignId = (String) json.get(ATTR_CAMPAIGN_ID);
+            campaignId = (String) json.get(ATTR_CAMPAIGN_ID).toString();
             name = (String) json.get(ATTR_NAME);
 			start = (String) json.getString(ATTR_START);
 			end = (String) json.getString(ATTR_END);
@@ -63,13 +63,13 @@ public class MCMCampaignModel {
 		
 		if (typeJSON != null) {
 			
-			if (type.equals(CampaignType.IN_APP_PROMOTION.name())) {
+			if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_PROMOTION.name())) {
 				type = CampaignType.IN_APP_PROMOTION;
 			} 
-			else if (type.equals(CampaignType.IN_APP_RATE_MY_APP.name())) {
+			else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_RATE_MY_APP.name())) {
                 type = CampaignType.IN_APP_RATE_MY_APP;
             }
-            else if (type.equals(CampaignType.IN_APP_CROSS_SELLING.name())) {
+            else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_CROSS_SELLING.name())) {
                 type = CampaignType.IN_APP_CROSS_SELLING;
             }
 			else {
@@ -176,8 +176,10 @@ public class MCMCampaignModel {
 
             String position = null;
             try {
-                media = (String) json.get(ATTR_MEDIA);
-                position = (String) json.getString(ATTR_CAMPAIGN_POSITION);
+                if (json.has(ATTR_MEDIA))
+                    media = (String) json.get(ATTR_MEDIA);
+                if (json.has(ATTR_CAMPAIGN_POSITION))
+                    position = (String) json.getString(ATTR_CAMPAIGN_POSITION);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
