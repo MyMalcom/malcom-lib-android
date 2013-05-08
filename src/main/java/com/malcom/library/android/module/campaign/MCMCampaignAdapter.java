@@ -8,8 +8,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 
+import android.content.Context;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.*;
 import com.malcom.library.android.utils.MCMUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,9 +27,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundException;
 import com.malcom.library.android.module.campaign.MCMCampaignModel.CampaignPosition;
@@ -39,8 +37,6 @@ import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
 import com.malcom.library.android.utils.encoding.DigestUtils;
 import com.malcom.library.android.utils.encoding.base64.Base64;
-
-import javax.naming.Context;
 
 /**
  * MCMCampaignAdapter.
@@ -71,7 +67,7 @@ public class MCMCampaignAdapter {
 	private static int BACKGROUND_ALPHA = 180; // 0-255
 
 	private static MCMCampaignAdapter instance = null;
-	private RelativeLayout bannerLayout;
+	private ViewGroup bannerLayout;
 	private ImageView bannerImageView;
 	private String campaignResource = "";
 
@@ -151,13 +147,13 @@ public class MCMCampaignAdapter {
 	 * Method that removes the banner and notifies it to delegate if delegate is set.
 	 * @since 1.0.1
 	 */	
-	public void removeCurrentBanner(Activity context){
+	public void removeCurrentBanner(Activity activity){
 		
 		// Get layout elements
-		resBannerLayoutID = context.getResources().getIdentifier(RES_ID_LAYOUT, "id", context.getPackageName());
-		bannerLayout = (RelativeLayout)context.findViewById(resBannerLayoutID);
-	    resImageLayoutID = context.getResources().getIdentifier(RES_ID_IMAGE, "id", context.getPackageName());
-		bannerImageView = (ImageView)context.findViewById(resImageLayoutID);
+		resBannerLayoutID = activity.getResources().getIdentifier(RES_ID_LAYOUT, "id", activity.getPackageName());
+		bannerLayout = (RelativeLayout)activity.findViewById(resBannerLayoutID);
+	    resImageLayoutID = activity.getResources().getIdentifier(RES_ID_IMAGE, "id", activity.getPackageName());
+		bannerImageView = (ImageView)activity.findViewById(resImageLayoutID);
 		this.bannerLayout.setVisibility(View.GONE);
 		
 		if(delegate!=null){
@@ -186,13 +182,13 @@ public class MCMCampaignAdapter {
 	 * @return MCMCampaignModel campaign selected.
 	 * @since 1.0.1
 	 */
-	private MCMCampaignModel getCampaignPerWeight(){
+	private static MCMCampaignModel getCampaignPerWeight(ArrayList<MCMCampaignModel> campaignsArray){
 		ArrayList<Integer> weightedArray = new ArrayList<Integer>();
 		
-		Log.d(LOG_TAG, "campaignObjectsArray : " + campaignObjectsArray.size());
+		Log.d(LOG_TAG, "campaignObjectsArray : " + campaignsArray.size());
 		//generates the array to random weighted selection
-		for (int i = 0; i < campaignObjectsArray.size(); i++) {
-			MCMCampaignModel campaignModel = campaignObjectsArray.get(i);
+		for (int i = 0; i < campaignsArray.size(); i++) {
+			MCMCampaignModel campaignModel = campaignsArray.get(i);
 			Log.d(LOG_TAG, "campaignModel.weight : " + campaignModel.getWeight());
 	        //adds to the weighted array as ids as weight has
 	        for(int j=0; j<campaignModel.getWeight();j++){
@@ -208,7 +204,7 @@ public class MCMCampaignAdapter {
 		}
 
 	    //gets the random position and gets the id written on it. It will be one of the campaigns
-	    MCMCampaignModel selectedCampaignModel = campaignObjectsArray.get(weightedArray.get(selection));
+	    MCMCampaignModel selectedCampaignModel = campaignsArray.get(weightedArray.get(selection));
 	    
 	    return selectedCampaignModel;
 		
@@ -220,6 +216,8 @@ public class MCMCampaignAdapter {
 	 * @param campaignsArray - the campaigns' data to show.
 	 */
 	private void createBanner(ArrayList<MCMCampaignModel> campaignsArray) {
+
+        Log.d(LOG_TAG,"createBanner - type: "+type+" campaigns: "+campaignsArray.size());
 
 		if (campaignsArray == null) {
 			return;
@@ -234,6 +232,8 @@ public class MCMCampaignAdapter {
 
             if (type == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
                 congigureCrossSellingCampaignLayout(campaignsArray.get(0),bannerLayout);
+            } else if (type == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
+                bannerLayout = createPromotionsLayout(activity, (RelativeLayout)bannerLayout);
             }
 
             Iterator campaignsIterator = campaignsArray.iterator();
@@ -250,6 +250,23 @@ public class MCMCampaignAdapter {
 		}
 		
 	}
+
+    private static LinearLayout createPromotionsLayout(Activity activity,RelativeLayout layout) {
+
+        //Create the ScrollView to can add more banners
+        ScrollView scroll = new ScrollView(activity);
+        scroll.setBackgroundColor(android.R.color.transparent);
+        scroll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT));
+
+        LinearLayout resultantLayout = new LinearLayout(activity);
+
+        //Add the views in hierarchy
+        scroll.addView(resultantLayout);
+        layout.addView(scroll);
+
+        return resultantLayout;
+    }
 
 
     private static void congigureCrossSellingCampaignLayout(MCMCampaignModel campaign, ViewGroup layout){
@@ -285,10 +302,12 @@ public class MCMCampaignAdapter {
 	/**
 	 * Shows banner image after download finish.
 	 * Configures close button if needed, and adds click events for banner and close button.
-	 * @param bitmap - the image downloaded.
+	 * @param bitmap - the downloaded image.
 	 * @param campaign - the campaign object that is showed.
 	 */
 	private void setImageBanner(Bitmap bitmap, final MCMCampaignModel campaign) {
+
+        Log.d(LOG_TAG,"setImageBanner campaign: "+campaign.getName());
 
         ImageView bannerImageView = new ImageView(activity.getApplicationContext());
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -346,13 +365,14 @@ public class MCMCampaignAdapter {
      * @param campaignsArray the arrayList with all the MCMCampaignModel retrieved from server
      * @return ArrayList<MCMCampaignModel> with promotion campaign items
      */
-    private static ArrayList<MCMCampaignModel> getPromotionCampaignsArray(ArrayList<MCMCampaignModel> campaignsArray) {
+    private static ArrayList<MCMCampaignModel> getFilteredCampaigns(ArrayList<MCMCampaignModel> campaignsArray,MCMCampaignModel.CampaignType type) {
+
         Iterator iterator = campaignsArray.iterator();
         ArrayList<MCMCampaignModel> resultArray = new ArrayList<MCMCampaignModel>();
 
         while(iterator.hasNext()) {
             MCMCampaignModel currentCampaign =(MCMCampaignModel)iterator.next();
-            if (currentCampaign.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
+            if (currentCampaign.getType() == type) {
                 resultArray.add(currentCampaign);
             }
         }
@@ -413,14 +433,15 @@ public class MCMCampaignAdapter {
         protected void onPostExecute(ArrayList<MCMCampaignModel> campaignsArray) {
 
         	// After receiving campaign data, prepare banner
-        	if (campaignObjectsArray.size()>0) {
+        	if (campaignsArray.size()>0) {
                 if (type == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING || type == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
 
                     ArrayList<MCMCampaignModel> selectionCampaignsArray = new ArrayList<MCMCampaignModel>();
                     if (type == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
-                        selectionCampaignsArray.add(getCampaignPerWeight());
+                        MCMCampaignModel selectedCampaign = getCampaignPerWeight(getFilteredCampaigns(campaignsArray,MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING));
+                        selectionCampaignsArray.add(selectedCampaign);
                     } else if (type == MCMCampaignModel.CampaignType.IN_APP_PROMOTION){
-                        selectionCampaignsArray = getPromotionCampaignsArray(campaignsArray);
+                        selectionCampaignsArray = getFilteredCampaigns(campaignsArray,MCMCampaignModel.CampaignType.IN_APP_PROMOTION);
                     }
                     createBanner(selectionCampaignsArray);
                 }

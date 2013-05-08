@@ -712,16 +712,6 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddPromotions(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddPromotions(activity, MCMCampaignAdapter.DEFAULT_CAMPAIGN_DURATION,delegate);
-    }
-
-    /**
-     * Method that adds the promotions campaign to the specified activity.
-     * @param activity where the banner will be placed
-     * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
-     * @param delegate delegate for handling the performing of the banners
-     */
-    public void moduleCampaignAddPromotions(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignModel.CampaignType.IN_APP_PROMOTION, duration, delegate);
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignModel.CampaignType.IN_APP_PROMOTION, 0, delegate);
     }
 }
