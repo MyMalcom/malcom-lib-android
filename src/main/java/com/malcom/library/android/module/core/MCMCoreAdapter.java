@@ -684,7 +684,7 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.DEFAULT_CAMPAIGN_DURATION,delegate);
+        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate);
     }
 
     /**

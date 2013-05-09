@@ -43,7 +43,6 @@ public class MCMCampaignAsyncTasks {
      *
      */
     protected static class DownloadCampaignFile extends AsyncTask<String, Void, ArrayList<MCMCampaignModel>> {
-        private static final String ATTR_CAMPAIGNS_ARRAY = "campaigns";
 
         private MCMCampaignModel.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
@@ -69,7 +68,7 @@ public class MCMCampaignAsyncTasks {
                     Log.d(MCMDefines.LOG_TAG, "Received Campaigns JSON: " + objectJSON);
 
                     // Parse JSON to obtain campaign data
-                    JSONArray campaignArray = (JSONArray) objectJSON.get(ATTR_CAMPAIGNS_ARRAY);
+                    JSONArray campaignArray = (JSONArray) objectJSON.get(MCMCampaignDefines.ATTR_CAMPAIGNS_ARRAY);
 
                     if (campaignArray != null && campaignArray.length() > 0) {
 
@@ -161,7 +160,7 @@ public class MCMCampaignAsyncTasks {
 
 
                 result = ToolBox.net_httpclient_doAction(ToolBox.HTTP_METHOD.GET, url, "", headersData);
-                Log.d(MCMDefines.LOG_TAG, "<<< getJSONfromURL result: " + result);
+                Log.d(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL result: " + result);
 
                 // Try parse the string to a JSON object
                 jObject = new JSONObject(result);
@@ -169,7 +168,7 @@ public class MCMCampaignAsyncTasks {
             }catch(ApplicationConfigurationNotFoundException e){
                 throw e;
             }catch(Exception e){
-                Log.e(MCMDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
+                Log.e(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
             }
 
             return jObject;
@@ -193,7 +192,7 @@ public class MCMCampaignAsyncTasks {
 
         protected Bitmap doInBackground(MCMCampaignModel ...campaignModels) {
             campaignModel = campaignModels[0];
-            Log.d(MCMDefines.LOG_TAG,"Downloading CampaignImage for: "+campaignModel.getName());
+            Log.d(MCMCampaignDefines.LOG_TAG,"Downloading CampaignImage for: "+campaignModel.getName());
             Bitmap bitmap = null;
 
             try {
@@ -241,24 +240,24 @@ public class MCMCampaignAsyncTasks {
             String url;
             try {
 
-                // Create URL for campaign hit
-                String malcomUrl 		= MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
-                String campaignsPath 	= "v1/campaigns/";
-                String idCampaign		= valores[1];
-                String hitPath 			= "/hit/";
-                String hitType 			= valores[0]; // CLICK or IMPRESSION
-                String applicationPath 	= "/application/";
-                String appId 			= MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
-                String udidPath 		= "/udid/";
-                String devideId 		= URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
-
-                String svcUrl = campaignsPath + idCampaign + hitPath + hitType + applicationPath + appId + udidPath + devideId;
-                url = malcomUrl + svcUrl;
-
+                // Get the connection params
+                String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
+                String appId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
+                String encodedMalcomAppId = URLEncoder.encode(appId, "UTF-8");
+                String devideId = URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
                 String secretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 
+                // Get the service url
+                String campaignHitService = MCMCampaignDefines.CAMPAIGN_HIT_URL
+                        .replace(MCMCampaignDefines.HIT_TYPE_TAG,valores[0])  // CLICK or IMPRESSION
+                        .replace(MCMCampaignDefines.CAMPAIGN_ID_TAG,valores[1])
+                        .replace(MCMCampaignDefines.APP_ID_TAG, encodedMalcomAppId)
+                        .replace(MCMCampaignDefines.UDID_TAG, devideId);
+
+                url = malcomBaseUrl + campaignHitService;
+
                 // Send hit to Malcom
-                MalcomHttpOperations.sendRequestToMalcom(url, svcUrl, "", appId, secretKey, ToolBox.HTTP_METHOD.GET);
+                MalcomHttpOperations.sendRequestToMalcom(url, campaignHitService, "", appId, secretKey, ToolBox.HTTP_METHOD.GET);
 
 
             } catch (UnsupportedEncodingException e1) {

@@ -13,7 +13,6 @@ import android.view.View;
  * To change this template use File | Settings | File Templates.
  */
 public class MCMCampaignBannerListener implements View.OnClickListener {
-    private static final String ATTR_CLICK_HIT = "CLICK";
 
     private Activity activity;
     private MCMCampaignModel campaign;
@@ -38,7 +37,7 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     private void crossSellingClick() {
 
         // Send Click Hit event to Malcom
-        new MCMCampaignAsyncTasks.SendHitClick(activity.getApplicationContext()).execute(ATTR_CLICK_HIT, campaign.getCampaignId());
+        new MCMCampaignAsyncTasks.SendHitClick(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
 
         // Open campaign app in PlayStore
         try {

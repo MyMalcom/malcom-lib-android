@@ -27,22 +27,8 @@ import java.util.Iterator;
  * @author Pepe - code refactor, added middle banners, new logs.
  */
 public class MCMCampaignAdapter {
-    public static int DEFAULT_CAMPAIGN_DURATION = 15;
 
-//    private static final String campaignURL = "v2/campaigns/application/%@AppId/udid/%@Udid";
-//    private static final String campaignURL = "http://malcom-api-dev.elasticbeanstalk.com/v2/campaigns/application/%@AppId/udid/%@Udid";
-
-    //Dev
-    //private static final String campaignURL = "http://malcom-api-dev.elasticbeanstalk.com/v2/campaigns/application/3eb5fdfd-8045-4111-8889-932877366285/udid/1";
-    private static final String campaignURL = "https://dl.dropboxusercontent.com/u/23103432/campaignsV2.json";
-
-    private static final String LOG_TAG = "MCMCampaign";
-    private static final String ATTR_IMPRESSION_HIT = "IMPRESSION";
-    private static final String RES_ID_LAYOUT = "campaign_banner_layout";
-    private static final String RES_ID_IMAGE = "image_campaign_view";
-    private static int SIZE_BANNER = 60;
-    private static int MIDDLE_MARGIN = 30;
-    private static int BACKGROUND_ALPHA = 180; // 0-255
+    public static int CAMPAIGN_DEFAULT_DURATION = -1;
 
     private static MCMCampaignAdapter instance = null;
     private ViewGroup bannerLayout;
@@ -109,7 +95,8 @@ public class MCMCampaignAdapter {
             malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
             String devideId = URLEncoder.encode(ToolBox.device_getId(this.activity), "UTF-8");
 
-            campaignResource = campaignURL.replace("%@AppId", malcomAppId).replace("%@Udid", devideId);
+            campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
+                    .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
 //			String urlCampaign = malcomBaseUrl + campaignResource;
             String urlCampaign = campaignResource;
@@ -130,7 +117,7 @@ public class MCMCampaignAdapter {
     public void removeCurrentBanner(Activity activity) {
 
         // Get layout elements
-        resBannerLayoutID = activity.getResources().getIdentifier(RES_ID_LAYOUT, "id", activity.getPackageName());
+        resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
         bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
         this.bannerLayout.setVisibility(View.GONE);
 
@@ -162,7 +149,7 @@ public class MCMCampaignAdapter {
      */
     protected void createBanner(ArrayList<MCMCampaignModel> campaignsArray) {
 
-        Log.d(LOG_TAG, "createBanner - type: " + type + " campaigns: " + campaignsArray.size());
+        Log.d(MCMCampaignDefines.LOG_TAG, "createBanner - type: " + type + " campaigns: " + campaignsArray.size());
 
         if (campaignsArray == null) {
             return;
@@ -170,9 +157,9 @@ public class MCMCampaignAdapter {
 
         // Get layout elements
         try {
-            resBannerLayoutID = activity.getResources().getIdentifier(RES_ID_LAYOUT, "id", activity.getPackageName());
+            resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
             bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
-            resImageLayoutID = activity.getResources().getIdentifier(RES_ID_IMAGE, "id", activity.getPackageName());
+            resImageLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_IMAGE, "id", activity.getPackageName());
 
             if (type == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
                 congigureCrossSellingCampaignLayout(campaignsArray.get(0), bannerLayout);
@@ -188,8 +175,8 @@ public class MCMCampaignAdapter {
             }
 
         } catch (Exception e) {
-            // TODO: handle exception
-            Log.d(LOG_TAG, "Create banner error: Attends to load the layout " + RES_ID_LAYOUT);
+
+            Log.d(MCMCampaignDefines.LOG_TAG, "Create banner error: Attends to load the layout " + MCMCampaignDefines.RES_ID_LAYOUT);
 
         }
 
@@ -220,16 +207,16 @@ public class MCMCampaignAdapter {
 //        bannerLayout.setGravity(Gravity.CENTER);
         if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.BOTTOM) {
 
-            params.height = MCMUtils.getDPI(layout.getContext(), SIZE_BANNER);
+            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.SIZE_BANNER);
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         } else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.TOP) {
 
-            params.height = MCMUtils.getDPI(layout.getContext(), SIZE_BANNER);
+            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.SIZE_BANNER);
             params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         } else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.MIDDLE_LANDSCAPE ||
                 campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.MIDDLE_PORTRAIT) {
 
-            int margin = MCMUtils.getDPI(layout.getContext(), MIDDLE_MARGIN);
+            int margin = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.MIDDLE_MARGIN);
             layout.setPadding(margin, margin, margin, margin);
         } else if (campaign.getMediaFeature().getCampaignPosition() == CampaignPosition.FULL_SCREEN) {
 
@@ -249,7 +236,7 @@ public class MCMCampaignAdapter {
      */
     protected void setImageBanner(Bitmap bitmap, final MCMCampaignModel campaign) {
 
-        Log.d(LOG_TAG, "setImageBanner campaign: " + campaign.getName());
+        Log.d(MCMCampaignDefines.LOG_TAG, "setImageBanner campaign: " + campaign.getName());
 
         ImageView bannerImageView = new ImageView(activity.getApplicationContext());
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
@@ -270,7 +257,7 @@ public class MCMCampaignAdapter {
         }
 
         // Send Impression Hit event to Malcom
-        new MCMCampaignAsyncTasks.SendHitClick(activity.getApplicationContext()).execute(ATTR_IMPRESSION_HIT, campaign.getCampaignId());
+        new MCMCampaignAsyncTasks.SendHitClick(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT, campaign.getCampaignId());
 
         //if duration is not zero the banner will be removed automatically
         if (duration != 0) {
@@ -293,7 +280,7 @@ public class MCMCampaignAdapter {
         params.addRule(RelativeLayout.ALIGN_TOP, layout.getId());
         closeButton.setLayoutParams(params);
         layout.addView(closeButton);
-        layout.setBackgroundColor(Color.argb(BACKGROUND_ALPHA, 0, 0, 0));
+        layout.setBackgroundColor(Color.argb(MCMCampaignDefines.BACKGROUND_ALPHA, 0, 0, 0));
         closeButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
@@ -318,7 +305,7 @@ public class MCMCampaignAdapter {
     public void setDuration(int duration) {
         if (duration < 0) {
             //sets the default time duration
-            this.duration = DEFAULT_CAMPAIGN_DURATION;
+            this.duration = MCMCampaignDefines.DEFAULT_CAMPAIGN_DURATION;
         } else {
             //set the duration parameter
             this.duration = duration;
