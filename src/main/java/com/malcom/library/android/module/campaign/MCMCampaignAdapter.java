@@ -152,8 +152,6 @@ public class MCMCampaignAdapter {
 		// Get layout elements
 		resBannerLayoutID = activity.getResources().getIdentifier(RES_ID_LAYOUT, "id", activity.getPackageName());
 		bannerLayout = (RelativeLayout)activity.findViewById(resBannerLayoutID);
-	    resImageLayoutID = activity.getResources().getIdentifier(RES_ID_IMAGE, "id", activity.getPackageName());
-		bannerImageView = (ImageView)activity.findViewById(resImageLayoutID);
 		this.bannerLayout.setVisibility(View.GONE);
 		
 		if(delegate!=null){
@@ -256,10 +254,10 @@ public class MCMCampaignAdapter {
         //Create the ScrollView to can add more banners
         ScrollView scroll = new ScrollView(activity);
         scroll.setBackgroundColor(android.R.color.transparent);
-        scroll.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT));
+        scroll.setLayoutParams(layout.getLayoutParams());
 
         LinearLayout resultantLayout = new LinearLayout(activity);
+        resultantLayout.setOrientation(LinearLayout.VERTICAL);
 
         //Add the views in hierarchy
         scroll.addView(resultantLayout);
