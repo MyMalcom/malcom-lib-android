@@ -1,18 +1,20 @@
 package com.malcom.library.android.module.campaign;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * MCMCampaignModel.
  * Class to store information about a campaign.
- *
  */
 public class MCMCampaignModel {
-    public static enum CampaignType { IN_APP_PROMOTION, IN_APP_RATE_MY_APP, IN_APP_CROSS_SELLING };
-    public static enum CampaignPosition { BOTTOM, TOP, FULL_SCREEN, MIDDLE_PORTRAIT, MIDDLE_LANDSCAPE };
+    public static enum CampaignType {IN_APP_PROMOTION, IN_APP_RATE_MY_APP, IN_APP_CROSS_SELLING}
+
+    ;
+
+    public static enum CampaignPosition {BOTTOM, TOP, FULL_SCREEN, MIDDLE_PORTRAIT, MIDDLE_LANDSCAPE}
+
+    ;
 
     //JSON tags
     private static final String ATTR_CAMPAIGN_ID = "id";
@@ -37,16 +39,16 @@ public class MCMCampaignModel {
     private MCMCampaignPromotionFeatureModel promotionFeature;
     private MCMCampaignClientLimitFeatureModel clientLimitFeature;
     private int weight;
-	
-	public MCMCampaignModel(JSONObject json) {
+
+    public MCMCampaignModel(JSONObject json) {
 
         String typeJSON = null;
-		
-		try {
+
+        try {
             campaignId = (String) json.get(ATTR_CAMPAIGN_ID).toString();
             name = (String) json.get(ATTR_NAME);
-			start = (String) json.getString(ATTR_START);
-			end = (String) json.getString(ATTR_END);
+            start = (String) json.getString(ATTR_START);
+            end = (String) json.getString(ATTR_END);
             createdOn = (String) json.getString(ATTR_CREATED_ON);
             typeJSON = (String) json.getString(ATTR_TYPE);
             if (json.has(ATTR_MEDIA_FEATURE))
@@ -55,28 +57,24 @@ public class MCMCampaignModel {
                 promotionFeature = new MCMCampaignPromotionFeatureModel(json.getJSONObject(ATTR_PROMOTION_FEATURE));
             if (json.has(ATTR_CLIENT_LIMIT_FEATURE))
                 clientLimitFeature = new MCMCampaignClientLimitFeatureModel(json.getJSONObject(ATTR_CLIENT_LIMIT_FEATURE));
-			weight = json.has(ATTR_WEIGHT_CAMPAIGN)?json.getInt(ATTR_WEIGHT_CAMPAIGN):1;
-		} 
-		catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		if (typeJSON != null) {
-			
-			if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_PROMOTION.name())) {
-				type = CampaignType.IN_APP_PROMOTION;
-			} 
-			else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_RATE_MY_APP.name())) {
-                type = CampaignType.IN_APP_RATE_MY_APP;
-            }
-            else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_CROSS_SELLING.name())) {
-                type = CampaignType.IN_APP_CROSS_SELLING;
-            }
-			else {
+            weight = json.has(ATTR_WEIGHT_CAMPAIGN) ? json.getInt(ATTR_WEIGHT_CAMPAIGN) : 1;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (typeJSON != null) {
+
+            if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_PROMOTION.name())) {
                 type = CampaignType.IN_APP_PROMOTION;
-			}
-		}
-	}
+            } else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_RATE_MY_APP.name())) {
+                type = CampaignType.IN_APP_RATE_MY_APP;
+            } else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_CROSS_SELLING.name())) {
+                type = CampaignType.IN_APP_CROSS_SELLING;
+            } else {
+                type = CampaignType.IN_APP_PROMOTION;
+            }
+        }
+    }
 
     public String getCampaignId() {
         return campaignId;
@@ -162,7 +160,7 @@ public class MCMCampaignModel {
      * MCMCampaignMediaFeatureModel
      * Class to store information about a campaign's media feature.
      */
-    public class MCMCampaignMediaFeatureModel{
+    public class MCMCampaignMediaFeatureModel {
 
         //JSON tags
         private static final String ATTR_MEDIA = "media";
@@ -172,7 +170,7 @@ public class MCMCampaignModel {
         private String media;
         private CampaignPosition campaignPosition;
 
-        public MCMCampaignMediaFeatureModel(JSONObject json){
+        public MCMCampaignMediaFeatureModel(JSONObject json) {
 
             String position = null;
             try {
@@ -188,20 +186,15 @@ public class MCMCampaignModel {
 
                 if (position.equals(CampaignPosition.BOTTOM.name())) {
                     campaignPosition = CampaignPosition.BOTTOM;
-                }
-                else if (position.equals(CampaignPosition.TOP.name())) {
+                } else if (position.equals(CampaignPosition.TOP.name())) {
                     campaignPosition = CampaignPosition.TOP;
-                }
-                else if (position.equals(CampaignPosition.FULL_SCREEN.name())) {
+                } else if (position.equals(CampaignPosition.FULL_SCREEN.name())) {
                     campaignPosition = CampaignPosition.FULL_SCREEN;
-                }
-                else if (position.equals(CampaignPosition.MIDDLE_PORTRAIT.name())) {
+                } else if (position.equals(CampaignPosition.MIDDLE_PORTRAIT.name())) {
                     campaignPosition = CampaignPosition.MIDDLE_PORTRAIT;
-                }
-                else if (position.equals(CampaignPosition.MIDDLE_LANDSCAPE.name())) {
+                } else if (position.equals(CampaignPosition.MIDDLE_LANDSCAPE.name())) {
                     campaignPosition = CampaignPosition.MIDDLE_LANDSCAPE;
-                }
-                else {
+                } else {
                     //if there is no position, set Bottom by default
                     campaignPosition = CampaignPosition.BOTTOM;
                 }
@@ -232,7 +225,7 @@ public class MCMCampaignModel {
      * MCMCampaignPromotionFeatureModel
      * Class to store information about a campaign's promotion feature.
      */
-    public class MCMCampaignPromotionFeatureModel{
+    public class MCMCampaignPromotionFeatureModel {
 
         //JSON tags
         private static final String ATTR_PROMOTION_TYPE = "promotionType";
@@ -242,7 +235,7 @@ public class MCMCampaignModel {
         private String promotionType;
         private String promotionIdentifier;
 
-        public MCMCampaignPromotionFeatureModel(JSONObject json){
+        public MCMCampaignPromotionFeatureModel(JSONObject json) {
             try {
                 promotionType = (String) json.get(ATTR_PROMOTION_TYPE);
                 promotionIdentifier = (String) json.getString(ATTR_PROMOTION_IDENTIFIER);
@@ -272,7 +265,7 @@ public class MCMCampaignModel {
      * MCMCampaignClientLimitFeatureModel
      * Class to store information about a campaign's client limit feature.
      */
-    public class MCMCampaignClientLimitFeatureModel{
+    public class MCMCampaignClientLimitFeatureModel {
 
         //JSON tags
         private static final String ATTR_CLIENT_LIMIT_TYPE = "clientLimitType";
@@ -282,7 +275,7 @@ public class MCMCampaignModel {
         private String clientLimitType;
         private String limitValue;
 
-        public MCMCampaignClientLimitFeatureModel(JSONObject json){
+        public MCMCampaignClientLimitFeatureModel(JSONObject json) {
             try {
                 clientLimitType = (String) json.get(ATTR_CLIENT_LIMIT_TYPE);
                 limitValue = (String) json.getString(ATTR_LIMIT_VALUE);

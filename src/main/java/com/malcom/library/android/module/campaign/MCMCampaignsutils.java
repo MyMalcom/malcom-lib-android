@@ -18,16 +18,17 @@ public class MCMCampaignsUtils {
 
     /**
      * Method that filter the promotion campaign items from arrayList
+     *
      * @param campaignsArray the arrayList with all the MCMCampaignModel retrieved from server
      * @return ArrayList<MCMCampaignModel> with promotion campaign items
      */
-    public static ArrayList<MCMCampaignModel> getFilteredCampaigns(ArrayList<MCMCampaignModel> campaignsArray,MCMCampaignModel.CampaignType type) {
+    public static ArrayList<MCMCampaignModel> getFilteredCampaigns(ArrayList<MCMCampaignModel> campaignsArray, MCMCampaignModel.CampaignType type) {
 
         Iterator iterator = campaignsArray.iterator();
         ArrayList<MCMCampaignModel> resultArray = new ArrayList<MCMCampaignModel>();
 
-        while(iterator.hasNext()) {
-            MCMCampaignModel currentCampaign =(MCMCampaignModel)iterator.next();
+        while (iterator.hasNext()) {
+            MCMCampaignModel currentCampaign = (MCMCampaignModel) iterator.next();
             if (currentCampaign.getType() == type) {
                 resultArray.add(currentCampaign);
             }
@@ -38,10 +39,11 @@ public class MCMCampaignsUtils {
 
     /**
      * Method that gets randomly weighted a campaign to serve.
+     *
      * @return MCMCampaignModel campaign selected.
      * @since 1.0.1
      */
-    public static MCMCampaignModel getCampaignPerWeight(ArrayList<MCMCampaignModel> campaignsArray){
+    public static MCMCampaignModel getCampaignPerWeight(ArrayList<MCMCampaignModel> campaignsArray) {
         ArrayList<Integer> weightedArray = new ArrayList<Integer>();
 
         Log.d(MCMDefines.LOG_TAG, "campaignObjectsArray : " + campaignsArray.size());
@@ -50,7 +52,7 @@ public class MCMCampaignsUtils {
             MCMCampaignModel campaignModel = campaignsArray.get(i);
             Log.d(MCMDefines.LOG_TAG, "campaignModel.weight : " + campaignModel.getWeight());
             //adds to the weighted array as ids as weight has
-            for(int j=0; j<campaignModel.getWeight();j++){
+            for (int j = 0; j < campaignModel.getWeight(); j++) {
                 weightedArray.add(i);
             }
         }
@@ -58,8 +60,8 @@ public class MCMCampaignsUtils {
         //generates random number
         Log.d(MCMDefines.LOG_TAG, "Searching number : " + weightedArray.size());
         int selection = 0;
-        if (weightedArray.size()>1) {
-            selection = new Random().nextInt(weightedArray.size()-1);
+        if (weightedArray.size() > 1) {
+            selection = new Random().nextInt(weightedArray.size() - 1);
         }
 
         //gets the random position and gets the id written on it. It will be one of the campaigns

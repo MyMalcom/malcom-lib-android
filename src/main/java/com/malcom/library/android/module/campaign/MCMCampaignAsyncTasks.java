@@ -40,7 +40,6 @@ public class MCMCampaignAsyncTasks {
     /**
      * DownloadCampaignFile.
      * Async request campaigns data, and parse it to models.
-     *
      */
     protected static class DownloadCampaignFile extends AsyncTask<String, Void, ArrayList<MCMCampaignModel>> {
 
@@ -53,9 +52,10 @@ public class MCMCampaignAsyncTasks {
 
         }
 
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+        }
 
-        protected ArrayList<MCMCampaignModel> doInBackground(String ...valores) {
+        protected ArrayList<MCMCampaignModel> doInBackground(String... valores) {
 
             ArrayList<MCMCampaignModel> campaignsArray = new ArrayList<MCMCampaignModel>();
 
@@ -72,16 +72,16 @@ public class MCMCampaignAsyncTasks {
 
                     if (campaignArray != null && campaignArray.length() > 0) {
 
-                        for (int i=0; i<campaignArray.length(); i++) {
+                        for (int i = 0; i < campaignArray.length(); i++) {
                             JSONObject campaignJSON = campaignArray.getJSONObject(i);
                             campaignsArray.add(new MCMCampaignModel(campaignJSON));
                         }
 
                     } else {
-                        if(campaignAdapter.delegate!=null)
+                        if (campaignAdapter.delegate != null)
                             campaignAdapter.delegate.campaignDidFinish();
                     }
-                }else{
+                } else {
                     notifyDelegateFailed();
                 }
 
@@ -99,16 +99,16 @@ public class MCMCampaignAsyncTasks {
         protected void onPostExecute(ArrayList<MCMCampaignModel> campaignsArray) {
 
             // After receiving campaign data, prepare banner
-            if (campaignsArray.size()>0) {
+            if (campaignsArray.size() > 0) {
                 if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING ||
                         campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
 
                     ArrayList<MCMCampaignModel> selectionCampaignsArray = new ArrayList<MCMCampaignModel>();
                     if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
-                        ArrayList<MCMCampaignModel> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray,MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING);
+                        ArrayList<MCMCampaignModel> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING);
                         MCMCampaignModel selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
                         selectionCampaignsArray.add(selectedCampaign);
-                    } else if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION){
+                    } else if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
                         selectionCampaignsArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignModel.CampaignType.IN_APP_PROMOTION);
                     }
                     campaignAdapter.createBanner(selectionCampaignsArray);
@@ -116,23 +116,25 @@ public class MCMCampaignAsyncTasks {
             }
         }
 
-        private void notifyDelegateFailed(){
-            if(campaignAdapter.delegate!=null){
+        private void notifyDelegateFailed() {
+            if (campaignAdapter.delegate != null) {
                 campaignAdapter.delegate.campaignDidFailed();
             }
         }
 
         /**
          * Sends a GET request, obtains a response, and converts it to a JSON object.
+         *
          * @param url - the destination of request
          * @return - the response JSON object
          * @throws ApplicationConfigurationNotFoundException
+         *
          */
-        private JSONObject getJSONfromURL(String url) throws ApplicationConfigurationNotFoundException{
+        private JSONObject getJSONfromURL(String url) throws ApplicationConfigurationNotFoundException {
 
             String result = "";
             JSONObject jObject = null;
-            try{
+            try {
                 // Send request to Malcom and log it
                 Log.d(MCMDefines.LOG_TAG, ">>> getJSONfromURL: " + url);
 
@@ -149,12 +151,12 @@ public class MCMCampaignAsyncTasks {
                 headersData.put("x-mcm-date", malcomDate);
 
                 String dataToSign = ToolBox.deliveries_getDataToSign(ToolBox.getCanonicalizedMalcomHeaders(headersData),
-                                                    contentType, null, verb, campaignAdapter.getCampaignResource(), md5);
+                        contentType, null, verb, campaignAdapter.getCampaignResource(), md5);
                 String secretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
                 String password = DigestUtils.calculateRFC2104HMAC(dataToSign, secretKey);
 
                 // Complete headers with authorization
-                headersData.put("Authorization", "basic " + new String(Base64.encode(campaignAdapter.getMalcomAppId()+ ":" + password).getBytes()));
+                headersData.put("Authorization", "basic " + new String(Base64.encode(campaignAdapter.getMalcomAppId() + ":" + password).getBytes()));
 
                 // End of refactor
 
@@ -165,9 +167,9 @@ public class MCMCampaignAsyncTasks {
                 // Try parse the string to a JSON object
                 jObject = new JSONObject(result);
 
-            }catch(ApplicationConfigurationNotFoundException e){
+            } catch (ApplicationConfigurationNotFoundException e) {
                 throw e;
-            }catch(Exception e){
+            } catch (Exception e) {
                 Log.e(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
             }
 
@@ -178,9 +180,8 @@ public class MCMCampaignAsyncTasks {
     /**
      * DownloadCampaignImage.
      * Async request banner image.
-     *
      */
-    protected static class DownloadCampaignImage extends AsyncTask<MCMCampaignModel, Void, Bitmap>{
+    protected static class DownloadCampaignImage extends AsyncTask<MCMCampaignModel, Void, Bitmap> {
 
         private MCMCampaignModel campaignModel;
         private MCMCampaignAdapter campaignAdapter;
@@ -190,9 +191,9 @@ public class MCMCampaignAsyncTasks {
 
         }
 
-        protected Bitmap doInBackground(MCMCampaignModel ...campaignModels) {
+        protected Bitmap doInBackground(MCMCampaignModel... campaignModels) {
             campaignModel = campaignModels[0];
-            Log.d(MCMCampaignDefines.LOG_TAG,"Downloading CampaignImage for: "+campaignModel.getName());
+            Log.d(MCMCampaignDefines.LOG_TAG, "Downloading CampaignImage for: " + campaignModel.getName());
             Bitmap bitmap = null;
 
             try {
@@ -213,7 +214,7 @@ public class MCMCampaignAsyncTasks {
             // After downloading image, show the banner
             campaignAdapter.setImageBanner(bitmap, campaignModel);
 
-            if(campaignAdapter.delegate!=null){
+            if (campaignAdapter.delegate != null) {
                 campaignAdapter.delegate.campaignDidLoad();
             }
         }
@@ -224,7 +225,6 @@ public class MCMCampaignAsyncTasks {
      * SendHitClick
      * Async request to notify impressions and clicks to Malcom.
      * Needs the event type (CLICK or IMPRESSION) in first param.
-     *
      */
     public static class SendHitClick extends AsyncTask<String, Float, Integer> {
 
@@ -235,7 +235,7 @@ public class MCMCampaignAsyncTasks {
             this.context = context;
         }
 
-        protected Integer doInBackground(String ...valores) {
+        protected Integer doInBackground(String... valores) {
 
             String url;
             try {
@@ -249,8 +249,8 @@ public class MCMCampaignAsyncTasks {
 
                 // Get the service url
                 String campaignHitService = MCMCampaignDefines.CAMPAIGN_HIT_URL
-                        .replace(MCMCampaignDefines.HIT_TYPE_TAG,valores[0])  // CLICK or IMPRESSION
-                        .replace(MCMCampaignDefines.CAMPAIGN_ID_TAG,valores[1])
+                        .replace(MCMCampaignDefines.HIT_TYPE_TAG, valores[0])  // CLICK or IMPRESSION
+                        .replace(MCMCampaignDefines.CAMPAIGN_ID_TAG, valores[1])
                         .replace(MCMCampaignDefines.APP_ID_TAG, encodedMalcomAppId)
                         .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
@@ -262,14 +262,15 @@ public class MCMCampaignAsyncTasks {
 
             } catch (UnsupportedEncodingException e1) {
                 e1.printStackTrace();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
-            };
+            }
+            ;
 
             return 0;
         }
 
-        protected void onPostExecute(Integer bytes) {}
+        protected void onPostExecute(Integer bytes) {
+        }
     }
 }

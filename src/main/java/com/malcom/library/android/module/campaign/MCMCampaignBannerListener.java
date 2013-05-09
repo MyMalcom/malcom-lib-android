@@ -18,7 +18,7 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     private MCMCampaignModel campaign;
     MCMCampaignNotifiedDelegate delegate;
 
-    public MCMCampaignBannerListener(Activity activity, MCMCampaignModel campaignModel, MCMCampaignNotifiedDelegate delegate){
+    public MCMCampaignBannerListener(Activity activity, MCMCampaignModel campaignModel, MCMCampaignNotifiedDelegate delegate) {
         this.activity = activity;
         this.campaign = campaignModel;
         this.delegate = delegate;
@@ -42,8 +42,7 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
         // Open campaign app in PlayStore
         try {
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
-        }
-        catch (android.content.ActivityNotFoundException anfe) {
+        } catch (android.content.ActivityNotFoundException anfe) {
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
         }
     }
