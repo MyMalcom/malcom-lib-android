@@ -171,11 +171,14 @@ public class MCMNotificationModule {
         GCMRegistrar.checkDevice(context);
         // Makes sure the manifest was properly set       
         GCMRegistrar.checkManifest(context);
-        
-        final String regId = GCMRegistrar.getRegistrationId(context);
-        if (regId==null || (regId!=null && regId.length()==0)) {            
-            GCMRegistrar.register(context, SENDER_ID);            
-        }/*else{
+
+        // Force the register in the GCMService to avoid MissmatchedSenderId when the registerId is updated
+        GCMRegistrar.register(context, SENDER_ID);
+//        final String regId = GCMRegistrar.getRegistrationId(context);
+//        if (regId==null || (regId!=null && regId.length()==0)) {
+//            GCMRegistrar.register(context, SENDER_ID);
+//        }
+        /*else{
 	        if(!GCMRegistrar.isRegisteredOnServer(context)){	        
 		        
 	        	final Context oContext = context;
@@ -238,6 +241,11 @@ public class MCMNotificationModule {
 	 */
 	public void gcmUnregisterDevice(Context context){
 		if(GCMRegistrar.isRegistered(context)){
+
+            if (APPLICATION_CODE == null)
+                APPLICATION_CODE = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
+            if (APPLICATION_SECRETKEY == null)
+                APPLICATION_SECRETKEY = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 			
 			//Set the unregistration URL for later usage.
 			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;

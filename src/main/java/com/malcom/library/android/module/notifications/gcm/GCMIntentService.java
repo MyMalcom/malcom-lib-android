@@ -59,9 +59,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onRegistered(Context context, String registrationId) {
-        Log.i(TAG, "Device registered: regId = " + registrationId);        
-        if(!MalcomServerUtilities.register(context, registrationId, ENVIRONMENT_TYPE, APPLICATION_CODE, APPLICATION_SECRETKEY)){
-        	GCMRegistrar.unregister(context);
+        Log.i(TAG, "Device registered: regId = " + registrationId);
+
+        // Get the stored registrationId and if it's not equal, update it at server
+        String regId = GCMRegistrar.getRegistrationId(context);
+        if (regId != null && !regId.equals(registrationId)) {
+            if(!MalcomServerUtilities.register(context, registrationId, ENVIRONMENT_TYPE, APPLICATION_CODE, APPLICATION_SECRETKEY)){
+                GCMRegistrar.unregister(context);
+            }
         }
     }
 
