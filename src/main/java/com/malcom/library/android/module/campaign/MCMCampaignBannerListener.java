@@ -15,10 +15,10 @@ import android.view.View;
 public class MCMCampaignBannerListener implements View.OnClickListener {
 
     private Activity activity;
-    private MCMCampaignModel campaign;
+    private MCMCampaignDTO campaign;
     MCMCampaignNotifiedDelegate delegate;
 
-    public MCMCampaignBannerListener(Activity activity, MCMCampaignModel campaignModel, MCMCampaignNotifiedDelegate delegate) {
+    public MCMCampaignBannerListener(Activity activity, MCMCampaignDTO campaignModel, MCMCampaignNotifiedDelegate delegate) {
         this.activity = activity;
         this.campaign = campaignModel;
         this.delegate = delegate;
@@ -27,9 +27,9 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     public void onClick(View view) {
 
         // Notify delegate the click
-        delegate.campaignPressed(campaign.getPromotionFeature().getPromotionIdentifier());
+        delegate.campaignPressed(campaign.getPromotionIdentifier());
 
-        if (campaign.getType() == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
+        if (campaign.getType() == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
             crossSellingClick();
         }
     }
@@ -37,13 +37,13 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     private void crossSellingClick() {
 
         // Send Click Hit event to Malcom
-        new MCMCampaignAsyncTasks.SendHitClick(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
+        new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
 
         // Open campaign app in PlayStore
         try {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
+            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionIdentifier())));
         } catch (android.content.ActivityNotFoundException anfe) {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionFeature().getPromotionIdentifier())));
+            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionIdentifier())));
         }
     }
 }

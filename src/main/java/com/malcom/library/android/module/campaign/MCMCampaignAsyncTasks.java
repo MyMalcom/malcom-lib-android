@@ -41,23 +41,31 @@ public class MCMCampaignAsyncTasks {
      * DownloadCampaignFile.
      * Async request campaigns data, and parse it to models.
      */
-    protected static class DownloadCampaignFile extends AsyncTask<String, Void, ArrayList<MCMCampaignModel>> {
+    protected static class DownloadCampaignFile extends AsyncTask<String, Void, ArrayList<MCMCampaignDTO>> {
 
-        private MCMCampaignModel.CampaignType campaignType;
+        private MCMCampaignDTO.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
+        private MCMCampaignAdapter.RequestCampaignReceiver requestCampaignReceiver;
 
-        public DownloadCampaignFile(MCMCampaignModel.CampaignType campaignType, MCMCampaignAdapter campaignAdapter) {
+        public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter) {
             this.campaignType = campaignType;
             this.campaignAdapter = campaignAdapter;
 
         }
 
+        public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter,
+                                    MCMCampaignAdapter.RequestCampaignReceiver requestCampaignReceiver) {
+            this.campaignType = campaignType;
+            this.campaignAdapter = campaignAdapter;
+            this.requestCampaignReceiver = requestCampaignReceiver;
+        }
+
         protected void onPreExecute() {
         }
 
-        protected ArrayList<MCMCampaignModel> doInBackground(String... valores) {
+        protected ArrayList<MCMCampaignDTO> doInBackground(String... valores) {
 
-            ArrayList<MCMCampaignModel> campaignsArray = new ArrayList<MCMCampaignModel>();
+            ArrayList<MCMCampaignDTO> campaignsArray = new ArrayList<MCMCampaignDTO>();
 
             try {
                 // Execute request to get JSON
@@ -74,51 +82,32 @@ public class MCMCampaignAsyncTasks {
 
                         for (int i = 0; i < campaignArray.length(); i++) {
                             JSONObject campaignJSON = campaignArray.getJSONObject(i);
-                            campaignsArray.add(new MCMCampaignModel(campaignJSON));
+                            campaignsArray.add(new MCMCampaignDTO(campaignJSON));
                         }
 
                     } else {
-                        if (campaignAdapter.delegate != null)
-                            campaignAdapter.delegate.campaignDidFinish();
+                        campaignAdapter.notifyCampaignDidFail(objectJSON.getString("description"));
                     }
                 } else {
-                    notifyDelegateFailed();
+                    campaignAdapter.notifyCampaignDidFail("Wrong response format");
                 }
 
             } catch (ApplicationConfigurationNotFoundException e) {
                 e.printStackTrace();
-                notifyDelegateFailed();
+                campaignAdapter.notifyCampaignDidFail("The connection failed");
             } catch (JSONException e) {
                 e.printStackTrace();
-                notifyDelegateFailed();
+                campaignAdapter.notifyCampaignDidFail("Wrong response format");
             }
 
             return campaignsArray;
         }
 
-        protected void onPostExecute(ArrayList<MCMCampaignModel> campaignsArray) {
+        protected void onPostExecute(ArrayList<MCMCampaignDTO> campaignsArray) {
 
             // After receiving campaign data, prepare banner
             if (campaignsArray.size() > 0) {
-                if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING ||
-                        campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
-
-                    ArrayList<MCMCampaignModel> selectionCampaignsArray = new ArrayList<MCMCampaignModel>();
-                    if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING) {
-                        ArrayList<MCMCampaignModel> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING);
-                        MCMCampaignModel selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
-                        selectionCampaignsArray.add(selectedCampaign);
-                    } else if (campaignAdapter.getType() == MCMCampaignModel.CampaignType.IN_APP_PROMOTION) {
-                        selectionCampaignsArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignModel.CampaignType.IN_APP_PROMOTION);
-                    }
-                    campaignAdapter.createBanner(selectionCampaignsArray);
-                }
-            }
-        }
-
-        private void notifyDelegateFailed() {
-            if (campaignAdapter.delegate != null) {
-                campaignAdapter.delegate.campaignDidFailed();
+                campaignAdapter.proccessResponse(campaignsArray);
             }
         }
 
@@ -181,9 +170,9 @@ public class MCMCampaignAsyncTasks {
      * DownloadCampaignImage.
      * Async request banner image.
      */
-    protected static class DownloadCampaignImage extends AsyncTask<MCMCampaignModel, Void, Bitmap> {
+    protected static class DownloadCampaignImage extends AsyncTask<MCMCampaignDTO, Void, Bitmap> {
 
-        private MCMCampaignModel campaignModel;
+        private MCMCampaignDTO campaignModel;
         private MCMCampaignAdapter campaignAdapter;
 
         public DownloadCampaignImage(MCMCampaignAdapter campaignAdapter) {
@@ -191,13 +180,13 @@ public class MCMCampaignAsyncTasks {
 
         }
 
-        protected Bitmap doInBackground(MCMCampaignModel... campaignModels) {
+        protected Bitmap doInBackground(MCMCampaignDTO... campaignModels) {
             campaignModel = campaignModels[0];
             Log.d(MCMCampaignDefines.LOG_TAG, "Downloading CampaignImage for: " + campaignModel.getName());
             Bitmap bitmap = null;
 
             try {
-                URL imageUrl = new URL(campaignModel.getMediaFeature().getMedia());
+                URL imageUrl = new URL(campaignModel.getMedia());
                 InputStream imageImputStream = (InputStream) imageUrl.getContent();
                 bitmap = BitmapFactory.decodeStream(imageImputStream);
 
@@ -214,24 +203,22 @@ public class MCMCampaignAsyncTasks {
             // After downloading image, show the banner
             campaignAdapter.setImageBanner(bitmap, campaignModel);
 
-            if (campaignAdapter.delegate != null) {
-                campaignAdapter.delegate.campaignDidLoad();
-            }
+            campaignAdapter.notifyCampaignDidLoad();
         }
     }
 
 
     /**
-     * SendHitClick
+     * NotifyServer
      * Async request to notify impressions and clicks to Malcom.
      * Needs the event type (CLICK or IMPRESSION) in first param.
      */
-    public static class SendHitClick extends AsyncTask<String, Float, Integer> {
+    public static class NotifyServer extends AsyncTask<String, Float, Integer> {
 
         private Bitmap bitmap;
         private Context context;
 
-        public SendHitClick(Context context) {
+        public NotifyServer(Context context) {
             this.context = context;
         }
 

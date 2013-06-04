@@ -10,7 +10,7 @@ public interface MCMCampaignNotifiedDelegate {
 
     public void campaignDidLoad();
 
-    public void campaignDidFailed();
+    public void campaignDidFail();
 
     public void campaignPressed(String promotionCode);
 

@@ -16,7 +16,7 @@ import com.malcom.library.android.exceptions.CoreNotInitializedException;
 import com.malcom.library.android.module.ad.MCMAdAdapter;
 import com.malcom.library.android.module.ad.MCMAdEventHandler;
 import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
-import com.malcom.library.android.module.campaign.MCMCampaignModel;
+import com.malcom.library.android.module.campaign.MCMCampaignDTO;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
 import com.malcom.library.android.module.config.MCMConfigManager;
 import com.malcom.library.android.module.notifications.EnvironmentType;
@@ -645,7 +645,7 @@ public class MCMCoreAdapter {
 	 */
 	public void moduleCampaignAddBanner(Activity activity,MCMCampaignNotifiedDelegate delegate) {
 
-        moduleCampaignAddCrossSelling(activity,delegate);
+        moduleCampaignAddCrossSelling(activity, delegate);
 		
 	}
 	/**
@@ -694,7 +694,7 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignModel.CampaignType.IN_APP_CROSS_SELLING, duration, delegate);
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate);
     }
 
     /**
@@ -712,6 +712,11 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddPromotions(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignModel.CampaignType.IN_APP_PROMOTION, 0, delegate);
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate);
     }
+
+    public void requestCampaignPromotions(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, MCMCampaignAdapter.RequestCampaignReceiver receiver);
+    }
+
 }
