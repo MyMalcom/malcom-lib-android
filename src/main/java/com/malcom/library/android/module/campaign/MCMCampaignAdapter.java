@@ -1,6 +1,7 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
@@ -175,7 +176,7 @@ public class MCMCampaignAdapter {
             if (receiver == null) {
                 createBanner(selectionCampaignsArray);
             } else {
-                receiver.onReceivedPromotions(selectionCampaignsArray);
+                receiver.onReceivedPromotions(createBannersList(activity.getApplicationContext(),selectionCampaignsArray));
             }
         }
     }
@@ -210,7 +211,25 @@ public class MCMCampaignAdapter {
 
             while (campaignsIterator.hasNext()) {
                 // Launch request to get image bitmap and add it to banner layout
-                new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute((MCMCampaignDTO) campaignsIterator.next());
+//                new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute((MCMCampaignDTO) campaignsIterator.next());
+
+                MCMCampaignDTO campaign = (MCMCampaignDTO) campaignsIterator.next();
+
+                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity.getApplicationContext(),campaign);
+//                bannerView.setDelegate(this);
+                bannerLayout.addView(bannerView);
+
+                // Config close button (if banner shows on full screen)
+                if (campaign.isFullScreen()) {
+                    if (RelativeLayout.class.isInstance(bannerLayout))
+                        addCloseButton((RelativeLayout) bannerLayout);
+                }
+
+                //if duration is not zero the banner will be removed automatically
+                if (duration != 0) {
+                    mHandler.removeCallbacks(mRemoveCampaignBanner);
+                    mHandler.postDelayed(mRemoveCampaignBanner, duration * 1000);
+                }
             }
 
         } catch (Exception e) {
@@ -219,6 +238,23 @@ public class MCMCampaignAdapter {
 
         }
 
+    }
+
+    protected static List<MCMCampaignBannerView> createBannersList(Context context, ArrayList<MCMCampaignDTO> campaignsArray) {
+
+        ArrayList<MCMCampaignBannerView> bannersList = new ArrayList<MCMCampaignBannerView>();
+
+        Iterator campaignsIterator = campaignsArray.iterator();
+
+        while (campaignsIterator.hasNext()) {
+            // Launch request to get image bitmap and add it to banner layout
+//                new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute((MCMCampaignDTO) campaignsIterator.next());
+            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(context, (MCMCampaignDTO) campaignsIterator.next());
+//                bannerView.setDelegate(this);
+            bannersList.add(bannerView);
+        }
+
+        return bannersList;
     }
 
     /**
@@ -309,32 +345,14 @@ public class MCMCampaignAdapter {
 
         Log.d(MCMCampaignDefines.LOG_TAG, "setImageBanner campaign: " + campaign.getName());
 
-        ImageView bannerImageView = new ImageView(activity.getApplicationContext());
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        bannerImageView.setLayoutParams(layoutParams);
+        //Ya lo hago en el bannerView
+//        ImageView bannerImageView = new ImageView(activity.getApplicationContext());
+//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+//                ViewGroup.LayoutParams.WRAP_CONTENT);
+//        bannerImageView.setLayoutParams(layoutParams);
+//
+//        bannerLayout.addView(bannerImageView);
 
-        bannerLayout.addView(bannerImageView);
-
-        // Config banner image and click actions
-        bannerImageView.setImageBitmap(bitmap);
-        bannerImageView.setOnClickListener(new MCMCampaignBannerListener(activity, campaign, delegate));
-
-        // Config close button (if banner position is middle or full screen)
-        if (campaign.getCampaignPosition() != CampaignPosition.BOTTOM &&
-                campaign.getCampaignPosition() != CampaignPosition.TOP) {
-            if (RelativeLayout.class.isInstance(bannerLayout))
-                addCloseButton((RelativeLayout) bannerLayout);
-        }
-
-        // Send Impression Hit event to Malcom
-        new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT, campaign.getCampaignId());
-
-        //if duration is not zero the banner will be removed automatically
-        if (duration != 0) {
-            mHandler.removeCallbacks(mRemoveCampaignBanner);
-            mHandler.postDelayed(mRemoveCampaignBanner, duration * 1000);
-        }
     }
 
     /**

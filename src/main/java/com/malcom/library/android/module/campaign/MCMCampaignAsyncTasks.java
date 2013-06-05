@@ -45,19 +45,11 @@ public class MCMCampaignAsyncTasks {
 
         private MCMCampaignDTO.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
-        private MCMCampaignAdapter.RequestCampaignReceiver requestCampaignReceiver;
 
         public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter) {
             this.campaignType = campaignType;
             this.campaignAdapter = campaignAdapter;
 
-        }
-
-        public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter,
-                                    MCMCampaignAdapter.RequestCampaignReceiver requestCampaignReceiver) {
-            this.campaignType = campaignType;
-            this.campaignAdapter = campaignAdapter;
-            this.requestCampaignReceiver = requestCampaignReceiver;
         }
 
         protected void onPreExecute() {
@@ -170,23 +162,21 @@ public class MCMCampaignAsyncTasks {
      * DownloadCampaignImage.
      * Async request banner image.
      */
-    protected static class DownloadCampaignImage extends AsyncTask<MCMCampaignDTO, Void, Bitmap> {
+    protected static class DownloadCampaignImage extends AsyncTask<String, Void, Bitmap> {
 
-        private MCMCampaignDTO campaignModel;
-        private MCMCampaignAdapter campaignAdapter;
+        private MCMCampaignBannerView campaignBannerView;
 
-        public DownloadCampaignImage(MCMCampaignAdapter campaignAdapter) {
-            this.campaignAdapter = campaignAdapter;
+        public DownloadCampaignImage(MCMCampaignBannerView campaignBannerView) {
+            this.campaignBannerView = campaignBannerView;
 
         }
 
-        protected Bitmap doInBackground(MCMCampaignDTO... campaignModels) {
-            campaignModel = campaignModels[0];
-            Log.d(MCMCampaignDefines.LOG_TAG, "Downloading CampaignImage for: " + campaignModel.getName());
+        protected Bitmap doInBackground(String... campaignMedia) {
+            String mediaURL = campaignMedia[0];
             Bitmap bitmap = null;
 
             try {
-                URL imageUrl = new URL(campaignModel.getMedia());
+                URL imageUrl = new URL(mediaURL);
                 InputStream imageImputStream = (InputStream) imageUrl.getContent();
                 bitmap = BitmapFactory.decodeStream(imageImputStream);
 
@@ -201,9 +191,7 @@ public class MCMCampaignAsyncTasks {
         protected void onPostExecute(Bitmap bitmap) {
 
             // After downloading image, show the banner
-            campaignAdapter.setImageBanner(bitmap, campaignModel);
-
-            campaignAdapter.notifyCampaignDidLoad();
+            campaignBannerView.setImageBanner(bitmap);
         }
     }
 

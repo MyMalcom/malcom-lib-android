@@ -252,4 +252,9 @@ public class MCMCampaignDTO {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    public boolean isFullScreen() {
+       return (getCampaignPosition() != CampaignPosition.BOTTOM &&
+                getCampaignPosition() != CampaignPosition.TOP);
+    }
 }

@@ -1,6 +1,7 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -14,12 +15,12 @@ import android.view.View;
  */
 public class MCMCampaignBannerListener implements View.OnClickListener {
 
-    private Activity activity;
+    private Context context;
     private MCMCampaignDTO campaign;
-    MCMCampaignNotifiedDelegate delegate;
+    MCMCampaignBannerView.MCMCampaignBannerDelegate delegate;
 
-    public MCMCampaignBannerListener(Activity activity, MCMCampaignDTO campaignModel, MCMCampaignNotifiedDelegate delegate) {
-        this.activity = activity;
+    public MCMCampaignBannerListener(Context context, MCMCampaignDTO campaignModel, MCMCampaignBannerView.MCMCampaignBannerDelegate delegate) {
+        this.context = context;
         this.campaign = campaignModel;
         this.delegate = delegate;
     }
@@ -27,23 +28,35 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     public void onClick(View view) {
 
         // Notify delegate the click
-        delegate.campaignPressed(campaign.getPromotionIdentifier());
-
-        if (campaign.getType() == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
-            crossSellingClick();
-        }
-    }
-
-    private void crossSellingClick() {
+        delegate.bannerPressed(campaign);
 
         // Send Click Hit event to Malcom
-        new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
+        new MCMCampaignAsyncTasks.NotifyServer(context).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
+    }
 
-        // Open campaign app in PlayStore
-        try {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionIdentifier())));
-        } catch (android.content.ActivityNotFoundException anfe) {
-            activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionIdentifier())));
+    public class MCMCampaignBannerCrossSellingListener extends MCMCampaignBannerListener {
+
+        private Activity activity;
+
+        public MCMCampaignBannerCrossSellingListener(Activity activity, MCMCampaignDTO campaignModel, MCMCampaignBannerView.MCMCampaignBannerDelegate delegate) {
+            super(activity.getApplicationContext(),campaignModel,delegate);
+            this.activity = activity;
         }
+
+        public void onClick(View view) {
+            super.onClick(view);
+
+            crossSellingClick();
+        }
+
+        private void crossSellingClick() {
+            // Open campaign app in PlayStore
+            try {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + campaign.getPromotionIdentifier())));
+            } catch (android.content.ActivityNotFoundException anfe) {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionIdentifier())));
+            }
+        }
+
     }
 }
