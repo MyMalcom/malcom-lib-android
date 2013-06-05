@@ -715,8 +715,8 @@ public class MCMCoreAdapter {
         MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate);
     }
 
-    public void requestCampaignPromotions(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
-        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, MCMCampaignAdapter.RequestCampaignReceiver receiver);
+    public void moduleCampaignRequestPromotions(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
     }
 
 }

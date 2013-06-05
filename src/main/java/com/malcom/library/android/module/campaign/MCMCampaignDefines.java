@@ -15,7 +15,7 @@ public class MCMCampaignDefines {
     protected static final String CAMPAIGN_ID_TAG = "%@CampaignId";
     protected static final String HIT_TYPE_TAG = "%@HitType";
 
-    protected static final String CAMPAIGN_URL = "v2/campaigns/application/"+CAMPAIGN_ID_TAG+"/udid/"+UDID_TAG;
+    protected static final String CAMPAIGN_URL = "v2/campaigns/application/"+APP_ID_TAG+"/udid/"+UDID_TAG;
 //    protected static final String CAMPAIGN_URL = "http://malcom-api-dev.elasticbeanstalk.com/v2/campaigns/application/"+CAMPAIGN_ID_TAG+"/udid/"+UDID_TAG;
     protected static final String CAMPAIGN_HIT_URL = "v1/campaigns/" + CAMPAIGN_ID_TAG + "/hit/" + HIT_TYPE_TAG + "/" + APP_ID_TAG + "/udid/" + UDID_TAG;
 

@@ -28,7 +28,9 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
     public void onClick(View view) {
 
         // Notify delegate the click
-        delegate.bannerPressed(campaign);
+        if (delegate != null) {
+            delegate.bannerPressed(campaign);
+        }
 
         // Send Click Hit event to Malcom
         new MCMCampaignAsyncTasks.NotifyServer(context).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());

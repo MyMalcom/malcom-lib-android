@@ -84,7 +84,6 @@ public class MalcomHttpOperations {
 
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "<<< sendRequestToMalcom ERROR: " + result + " - " + e.getMessage(), e);
-			throw e;
 		}
 	}
 	

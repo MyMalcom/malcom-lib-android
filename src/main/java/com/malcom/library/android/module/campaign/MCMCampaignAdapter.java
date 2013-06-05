@@ -99,32 +99,19 @@ public class MCMCampaignAdapter {
 
         mHandler.removeCallbacks(mRemoveCampaignBanner);
 
+        makeRequest();
 
         this.density = this.activity.getResources().getDisplayMetrics().density;
-        try {
-            // Create URL to get campaigns of my app
-            String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
 
-            malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
-            String devideId = URLEncoder.encode(ToolBox.device_getId(this.activity), "UTF-8");
-
-            campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
-                    .replace(MCMCampaignDefines.UDID_TAG, devideId);
-
-//			String urlCampaign = malcomBaseUrl + campaignResource;
-            String urlCampaign = campaignResource;
-
-            // Launch request to get campaigns data
-            new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
     }
 
     public void requestBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, RequestCampaignReceiver receiver) {
+
+        this.activity = activity;
         this.type = campaignType;
         this.receiver = receiver;
+
+        makeRequest();
     }
 
     /**
@@ -153,6 +140,29 @@ public class MCMCampaignAdapter {
         this.bannerLayout.setVisibility(View.GONE);
 
         notifyCampaignDidFinish();
+    }
+
+    private void makeRequest(){
+
+        try {
+            // Create URL to get campaigns of my app
+            String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
+
+            malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
+            String devideId = URLEncoder.encode(ToolBox.device_getId(this.activity), "UTF-8");
+
+            campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
+                    .replace(MCMCampaignDefines.UDID_TAG, devideId);
+
+			String urlCampaign = malcomBaseUrl + campaignResource;
+
+            // Launch request to get campaigns data
+            new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            notifyCampaignDidFail(e.getMessage());
+        }
     }
 
     /**
