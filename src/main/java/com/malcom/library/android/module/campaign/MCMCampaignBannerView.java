@@ -33,6 +33,9 @@ public class MCMCampaignBannerView extends ImageView {
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
+
+        setScaleType(ScaleType.FIT_XY);
+
     }
 
     @Override
