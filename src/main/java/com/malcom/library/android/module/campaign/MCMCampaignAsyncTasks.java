@@ -57,7 +57,7 @@ public class MCMCampaignAsyncTasks {
 
         protected ArrayList<MCMCampaignDTO> doInBackground(String... valores) {
 
-            ArrayList<MCMCampaignDTO> campaignsArray = new ArrayList<MCMCampaignDTO>();
+            ArrayList<MCMCampaignDTO> receivedCampaignsArray = new ArrayList<MCMCampaignDTO>();
 
             try {
                 // Execute request to get JSON
@@ -74,7 +74,7 @@ public class MCMCampaignAsyncTasks {
 
                         for (int i = 0; i < campaignArray.length(); i++) {
                             JSONObject campaignJSON = campaignArray.getJSONObject(i);
-                            campaignsArray.add(new MCMCampaignDTO(campaignJSON));
+                            receivedCampaignsArray.add(new MCMCampaignDTO(campaignJSON));
                         }
 
                     } else {
@@ -92,7 +92,7 @@ public class MCMCampaignAsyncTasks {
                 campaignAdapter.notifyCampaignDidFail("Wrong response format");
             }
 
-            return campaignsArray;
+            return receivedCampaignsArray;
         }
 
         protected void onPostExecute(ArrayList<MCMCampaignDTO> campaignsArray) {
@@ -152,6 +152,7 @@ public class MCMCampaignAsyncTasks {
                 throw e;
             } catch (Exception e) {
                 Log.e(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
+                campaignAdapter.notifyCampaignDidFail(e.toString());
             }
 
             return jObject;

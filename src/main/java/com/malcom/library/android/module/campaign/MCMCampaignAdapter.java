@@ -155,6 +155,7 @@ public class MCMCampaignAdapter {
                     .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
 			String urlCampaign = malcomBaseUrl + campaignResource;
+            urlCampaign = "http://api.mymalcom.com/v2/campaigns/application/a8be468b-faca-4288-bf79-d4c00d4a8b35/udid/xvQ995mMZDd8cvRFNnTrpA%3D%3D";
 
             // Launch request to get campaigns data
             new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);

@@ -65,7 +65,7 @@ public class MCMCampaignDTO {
             end = json.getString(ATTR_END);
             createdOn = json.getString(ATTR_CREATED_ON);
             if (json.has(ATTR_DESCRIPTION_FEATURE))
-                campaignDescription = json.getJSONObject(ATTR_DESCRIPTION_FEATURE).getString(ATTR_PROMOTION_FEATURE);
+                campaignDescription = json.getJSONObject(ATTR_DESCRIPTION_FEATURE).getString(ATTR_PROMOTION_DESCRIPTION);
             typeJSON = json.getString(ATTR_TYPE);
             if (json.has(ATTR_MEDIA_FEATURE))
                 hydrateMediaFeature(json.getJSONObject(ATTR_MEDIA_FEATURE));
