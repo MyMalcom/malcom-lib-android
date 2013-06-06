@@ -21,6 +21,8 @@ public class MCMCampaignDTO {
     private static final String ATTR_START = "start";
     private static final String ATTR_END = "end";
     private static final String ATTR_CREATED_ON = "createdOn";
+    private static final String ATTR_DESCRIPTION_FEATURE = "descriptionFeature";
+    private static final String ATTR_PROMOTION_DESCRIPTION = "promotionDescription";
     private static final String ATTR_TYPE = "type";
     private static final String ATTR_MEDIA_FEATURE = "mediaFeature";
     private static final String ATTR_MEDIA = "media";
@@ -41,6 +43,7 @@ public class MCMCampaignDTO {
     private String start;
     private String end;
     private String createdOn;
+    private String campaignDescription;
     private CampaignType type;
     private String media;
     private CampaignPosition campaignPosition;
@@ -56,12 +59,14 @@ public class MCMCampaignDTO {
         String typeJSON = null;
 
         try {
-            campaignId = (String) json.get(ATTR_CAMPAIGN_ID).toString();
-            name = (String) json.get(ATTR_NAME);
-            start = (String) json.getString(ATTR_START);
-            end = (String) json.getString(ATTR_END);
-            createdOn = (String) json.getString(ATTR_CREATED_ON);
-            typeJSON = (String) json.getString(ATTR_TYPE);
+            campaignId = json.getString(ATTR_CAMPAIGN_ID);
+            name = json.getString(ATTR_NAME);
+            start = json.getString(ATTR_START);
+            end = json.getString(ATTR_END);
+            createdOn = json.getString(ATTR_CREATED_ON);
+            if (json.has(ATTR_DESCRIPTION_FEATURE))
+                campaignDescription = json.getJSONObject(ATTR_DESCRIPTION_FEATURE).getString(ATTR_PROMOTION_FEATURE);
+            typeJSON = json.getString(ATTR_TYPE);
             if (json.has(ATTR_MEDIA_FEATURE))
                 hydrateMediaFeature(json.getJSONObject(ATTR_MEDIA_FEATURE));
             if (json.has(ATTR_PROMOTION_FEATURE))
@@ -145,56 +150,32 @@ public class MCMCampaignDTO {
         return campaignId;
     }
 
-    public void setCampaignId(String campaignId) {
-        this.campaignId = campaignId;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getStart() {
         return start;
     }
 
-    public void setStart(String start) {
-        this.start = start;
-    }
-
     public String getEnd() {
         return end;
-    }
-
-    public void setEnd(String end) {
-        this.end = end;
     }
 
     public String getCreatedOn() {
         return createdOn;
     }
 
-    public void setCreatedOn(String createdOn) {
-        this.createdOn = createdOn;
+    public String getCampaignDescription() {
+        return campaignDescription;
     }
 
     public CampaignType getType() {
         return type;
     }
 
-    public void setType(CampaignType type) {
-        this.type = type;
-    }
-
     public String getMedia() {
         return media;
-    }
-
-    public void setMedia(String media) {
-        this.media = media;
     }
 
     public CampaignPosition getCampaignPosition() {
@@ -209,48 +190,24 @@ public class MCMCampaignDTO {
         return promotionType;
     }
 
-    public void setPromotionType(String promotionType) {
-        this.promotionType = promotionType;
-    }
-
     public String getPromotionIdentifier() {
         return promotionIdentifier;
-    }
-
-    public void setPromotionIdentifier(String promotionIdentifier) {
-        this.promotionIdentifier = promotionIdentifier;
     }
 
     public String getClientLimitType() {
         return clientLimitType;
     }
 
-    public void setClientLimitType(String clientLimitType) {
-        this.clientLimitType = clientLimitType;
-    }
-
     public String getLimitValue() {
         return limitValue;
     }
 
-    public void setLimitValue(String limitValue) {
-        this.limitValue = limitValue;
-    }
-
-    public Map<String, Object> getCustomParams() {
-        return customParams;
-    }
-
-    public void setCustomParams(HashMap<String, Object> customParams) {
-        this.customParams = customParams;
+    public Object getCustomParam(String key) {
+        return customParams.get(key);
     }
 
     public int getWeight() {
         return weight;
-    }
-
-    public void setWeight(int weight) {
-        this.weight = weight;
     }
 
     public boolean isFullScreen() {
