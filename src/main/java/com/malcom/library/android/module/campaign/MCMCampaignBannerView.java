@@ -1,5 +1,6 @@
 package com.malcom.library.android.module.campaign;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,14 +20,15 @@ import com.malcom.library.android.MCMDefines;
  */
 public class MCMCampaignBannerView extends ImageView {
 
-    private ImageView imageView;
+    private Activity activity;
     private MCMCampaignDTO campaign;
     private MCMCampaignBannerDelegate delegate;
 
     private boolean imageLoaded = false;
 
-    public MCMCampaignBannerView(Context context, MCMCampaignDTO campaign) {
-        super(context);
+    public MCMCampaignBannerView(Activity activity, MCMCampaignDTO campaign) {
+        super(activity.getApplicationContext());
+        this.activity = activity;
         this.campaign = campaign;
 
         //Set the layout params to force the call to onDraw() when parent's addView is called
@@ -79,7 +81,7 @@ public class MCMCampaignBannerView extends ImageView {
 
         // Config banner image and click actions
         setImageBitmap(bitmap);
-        setOnClickListener(new MCMCampaignBannerListener(getContext(), campaign, delegate));
+        setOnClickListener(new MCMCampaignBannerListener(activity, campaign, delegate));
 
     }
 

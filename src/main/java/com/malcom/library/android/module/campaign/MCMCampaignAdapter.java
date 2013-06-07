@@ -186,7 +186,7 @@ public class MCMCampaignAdapter {
             if (receiver == null) {
                 createBanner(selectionCampaignsArray);
             } else {
-                receiver.onReceivedPromotions(createBannersList(activity.getApplicationContext(),selectionCampaignsArray));
+                receiver.onReceivedPromotions(createBannersList(activity,selectionCampaignsArray));
             }
         }
     }
@@ -225,7 +225,7 @@ public class MCMCampaignAdapter {
 
                 MCMCampaignDTO campaign = (MCMCampaignDTO) campaignsIterator.next();
 
-                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity.getApplicationContext(),campaign);
+                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity,campaign);
 //                bannerView.setDelegate(this);
                 bannerLayout.addView(bannerView);
 
@@ -250,7 +250,7 @@ public class MCMCampaignAdapter {
 
     }
 
-    protected static List<MCMCampaignBannerView> createBannersList(Context context, ArrayList<MCMCampaignDTO> campaignsArray) {
+    protected static List<MCMCampaignBannerView> createBannersList(Activity activity, ArrayList<MCMCampaignDTO> campaignsArray) {
 
         ArrayList<MCMCampaignBannerView> bannersList = new ArrayList<MCMCampaignBannerView>();
 
@@ -259,8 +259,7 @@ public class MCMCampaignAdapter {
         while (campaignsIterator.hasNext()) {
             // Launch request to get image bitmap and add it to banner layout
 //                new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute((MCMCampaignDTO) campaignsIterator.next());
-            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(context, (MCMCampaignDTO) campaignsIterator.next());
-//                bannerView.setDelegate(this);
+            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, (MCMCampaignDTO) campaignsIterator.next());
             bannersList.add(bannerView);
         }
 
