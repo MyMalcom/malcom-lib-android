@@ -56,7 +56,7 @@ public class MalcomHttpOperations {
 		
 		String result = "";
 		
-		Log.d(LOG_TAG, ">>> sendRequestToMalcom appId: " + appCode + " appSecretKey: " + appSecretKey);
+		Log.d(LOG_TAG, ">>> sendRequestToMalcom appId: " + appCode);
 		
 		URL urlPath = null;
 		try {
