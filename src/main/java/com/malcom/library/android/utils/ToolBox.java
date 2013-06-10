@@ -131,7 +131,7 @@ public class ToolBox {
 			case POST:
 				httpMethod = new HttpPost(url);
 				//Add the body to the request.
-		    	StringEntity se = new StringEntity(jsonData);
+		    	StringEntity se = new StringEntity(jsonData, "UTF-8");
 		    	((HttpPost)httpMethod).setEntity(se);
 				break;
 			case DELETE:
