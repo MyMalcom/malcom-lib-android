@@ -45,7 +45,7 @@ public class MCMCampaignAsyncTasks {
 
         private MCMCampaignDTO.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
-        private String errorMessage;
+        private String errorMessage = "";
 
         public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter) {
             this.campaignType = campaignType;
@@ -102,7 +102,7 @@ public class MCMCampaignAsyncTasks {
             // After receiving campaign data, prepare banner
             if (campaignsArray.size() > 0) {
                 campaignAdapter.proccessResponse(campaignsArray);
-            } else {
+            } else if (errorMessage.length() > 0){
                 campaignAdapter.notifyCampaignDidFail(errorMessage);
             }
         }
