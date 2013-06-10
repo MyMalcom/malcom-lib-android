@@ -156,7 +156,7 @@ public class MCMCampaignAsyncTasks {
                 throw e;
             } catch (Exception e) {
                 Log.e(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
-                campaignAdapter.notifyCampaignDidFail(e.toString());
+                errorMessage = e.toString();
             }
 
             return jObject;
