@@ -285,7 +285,6 @@ public class MCMStats {
 	}
 
 	private static JSONArray getTagsAsJsonArray() {
-		getTags().values();
 		List<String> listTags = new ArrayList<String>((Collection<? extends String>) getTags().values());
 		Log.d(TAG, "Tags: "+ listTags.toString());
 		return new JSONArray(listTags);
@@ -408,9 +407,10 @@ public class MCMStats {
 	
 	//	TAGS
 	
-	public static Map<String, ?> getTags() {		
+	public static Map<String, ?> getTags() {
 		
-		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE); 
+		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
+        Map<String, ?> tags = preferences.getAll();
 		return preferences.getAll();
 		
 	}
@@ -419,7 +419,7 @@ public class MCMStats {
 		
 		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString(tag,tag );
+		editor.putString(tag,tag);
 		
 		editor.commit();
 		

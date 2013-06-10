@@ -45,6 +45,7 @@ public class MCMCampaignAsyncTasks {
 
         private MCMCampaignDTO.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
+        private String errorMessage;
 
         public DownloadCampaignFile(MCMCampaignDTO.CampaignType campaignType, MCMCampaignAdapter campaignAdapter) {
             this.campaignType = campaignType;
@@ -78,18 +79,19 @@ public class MCMCampaignAsyncTasks {
                         }
 
                     } else {
-                        campaignAdapter.notifyCampaignDidFail(objectJSON.getString("description"));
+                        Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+objectJSON.getString("description"));
+                        errorMessage = objectJSON.getString("description");
                     }
                 } else {
-                    campaignAdapter.notifyCampaignDidFail("Wrong response format");
+                    errorMessage = "Wrong response format";
                 }
 
             } catch (ApplicationConfigurationNotFoundException e) {
                 e.printStackTrace();
-                campaignAdapter.notifyCampaignDidFail("The connection failed");
+                errorMessage = "The connection failed";
             } catch (JSONException e) {
                 e.printStackTrace();
-                campaignAdapter.notifyCampaignDidFail("Wrong response format");
+                errorMessage = "Wrong response format";
             }
 
             return receivedCampaignsArray;
@@ -100,6 +102,8 @@ public class MCMCampaignAsyncTasks {
             // After receiving campaign data, prepare banner
             if (campaignsArray.size() > 0) {
                 campaignAdapter.proccessResponse(campaignsArray);
+            } else {
+                campaignAdapter.notifyCampaignDidFail(errorMessage);
             }
         }
 
