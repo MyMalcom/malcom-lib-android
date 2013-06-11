@@ -150,10 +150,10 @@ public class ToolBox {
     	}
     	
     	HttpResponse response = httpclient.execute(httpMethod);
-    	//Log.d(TAG, "HTTP OPERATION: Read from server - Status Code: " + response.getStatusLine().getStatusCode());
-    	//Log.d(TAG, "HTTP OPERATION: Read from server - Status Message: " + response.getStatusLine().getReasonPhrase());
+//    	Log.d(TAG, "HTTP OPERATION: Read from server - Status Code: " + response.getStatusLine().getStatusCode());
+//    	Log.d(TAG, "HTTP OPERATION: Read from server - Status Message: " + response.getStatusLine().getReasonPhrase());
 //    	System.out.println(response.getStatusLine().getStatusCode());
-    	
+
     	//Get the response body if there is one.
     	HttpEntity entity = response.getEntity();
     	if (entity != null) {
@@ -164,7 +164,7 @@ public class ToolBox {
     	}
     	
     	if (response.getStatusLine().getStatusCode() != 200) {
-    		throw new Exception("Http operation "+method.name()+" failed with error code " + 
+    		throw new Exception("Http operation "+method.name()+" failed with error code " +
     				response.getStatusLine().getStatusCode() + "("+ 
     				response.getStatusLine().getReasonPhrase() +")");
     	}
