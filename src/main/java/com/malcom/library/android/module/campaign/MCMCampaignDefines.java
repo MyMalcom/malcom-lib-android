@@ -32,11 +32,10 @@ public class MCMCampaignDefines {
 
     // Banner Id's
     protected static final String RES_ID_LAYOUT = "campaign_banner_layout";
-    protected static final String RES_ID_IMAGE = "image_campaign_view";
 
     // Banner Configuration
     public static int DEFAULT_CAMPAIGN_DURATION = 15;
-    protected static int SIZE_BANNER = 60;
-    protected static int MIDDLE_MARGIN = 30;
+    protected static int BANNER_SIZE_HEIGHT = 60;
+    protected static int MIDDLE_MARGIN = 50;
     protected static int BACKGROUND_ALPHA = 180; // 0-255
 }

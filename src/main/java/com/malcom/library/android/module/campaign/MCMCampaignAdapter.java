@@ -1,7 +1,6 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
@@ -9,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
 import com.malcom.library.android.module.campaign.MCMCampaignDTO.CampaignPosition;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.utils.MCMUtils;
@@ -28,7 +28,7 @@ import java.util.List;
  * @author Malcom
  * @author Pepe - code refactor, added middle banners, new logs.
  */
-public class MCMCampaignAdapter {
+public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBannerDelegate {
 
     public static int CAMPAIGN_DEFAULT_DURATION = -1;
 
@@ -42,9 +42,6 @@ public class MCMCampaignAdapter {
     private MCMCampaignDTO.CampaignType type;
 
     private Activity activity;
-    private float density = 1;
-    private int resBannerLayoutID;
-    private int resImageLayoutID;
 
     private int duration;                                   //integer to set the duration of the banner
 
@@ -52,9 +49,8 @@ public class MCMCampaignAdapter {
 
     private MCMCampaignNotifiedDelegate delegate;
 
-    public interface RequestCampaignReceiver{
+    public interface RequestCampaignReceiver {
         /**
-         *
          * @param banners
          */
         public void onReceivedPromotions(List banners);
@@ -101,8 +97,6 @@ public class MCMCampaignAdapter {
 
         makeRequest();
 
-        this.density = this.activity.getResources().getDisplayMetrics().density;
-
     }
 
     public void requestBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, RequestCampaignReceiver receiver) {
@@ -122,7 +116,7 @@ public class MCMCampaignAdapter {
     public void removeCurrentBanner(Activity activity) {
 
         // Get layout elements
-        resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
+        int resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
         bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
         this.bannerLayout.setVisibility(View.GONE);
 
@@ -142,7 +136,7 @@ public class MCMCampaignAdapter {
         notifyCampaignDidFinish();
     }
 
-    private void makeRequest(){
+    private void makeRequest() {
 
         try {
             // Create URL to get campaigns of my app
@@ -154,7 +148,7 @@ public class MCMCampaignAdapter {
             campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
                     .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
-			String urlCampaign = malcomBaseUrl + campaignResource;
+            String urlCampaign = malcomBaseUrl + campaignResource;
 
             // Launch request to get campaigns data
             new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);
@@ -167,6 +161,7 @@ public class MCMCampaignAdapter {
 
     /**
      * Method that filters the elements for current campaign type and calls the needed operation after the filtered
+     *
      * @param campaignsArray the campaigns collected from the server's response
      */
     protected void proccessResponse(ArrayList<MCMCampaignDTO> campaignsArray) {
@@ -177,16 +172,24 @@ public class MCMCampaignAdapter {
             ArrayList<MCMCampaignDTO> selectionCampaignsArray = new ArrayList<MCMCampaignDTO>();
             if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
                 ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING);
-                MCMCampaignDTO selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
-                selectionCampaignsArray.add(selectedCampaign);
+
+                //If there is at least one campaign
+                if (filteredArray.size()>0) {
+                    MCMCampaignDTO selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
+                    selectionCampaignsArray.add(selectedCampaign);
+                }
             } else if (type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
                 selectionCampaignsArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION);
             }
 
             if (receiver == null) {
-                createBanner(selectionCampaignsArray);
+                if (selectionCampaignsArray.size()>0) {
+                    createBanners(selectionCampaignsArray);
+                } else {
+                    notifyCampaignDidFail("There is no campaign to show");
+                }
             } else {
-                receiver.onReceivedPromotions(createBannersList(activity,selectionCampaignsArray));
+                receiver.onReceivedPromotions(createBannersList(activity, selectionCampaignsArray));
             }
         }
     }
@@ -197,9 +200,9 @@ public class MCMCampaignAdapter {
      *
      * @param campaignsArray - the campaigns' data to show.
      */
-    protected void createBanner(ArrayList<MCMCampaignDTO> campaignsArray) {
+    protected void createBanners(ArrayList<MCMCampaignDTO> campaignsArray) {
 
-        Log.d(MCMCampaignDefines.LOG_TAG, "createBanner - type: " + type + " campaigns: " + campaignsArray.size());
+        Log.d(MCMCampaignDefines.LOG_TAG, "createBanners - type: " + type + " campaigns: " + campaignsArray.size());
 
         if (campaignsArray == null) {
             return;
@@ -207,9 +210,11 @@ public class MCMCampaignAdapter {
 
         // Get layout elements
         try {
-            resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
+            int resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
+            if (resBannerLayoutID==0) {
+                throw new Exception("The layout with id = \"campaign_banner_layout\" was not found ");
+            }
             bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
-            resImageLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_IMAGE, "id", activity.getPackageName());
 
             if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
                 congigureCrossSellingCampaignLayout(campaignsArray.get(0), bannerLayout);
@@ -217,16 +222,25 @@ public class MCMCampaignAdapter {
                 bannerLayout = createPromotionsLayout(activity, (RelativeLayout) bannerLayout);
             }
 
-            Iterator campaignsIterator = campaignsArray.iterator();
+            for (MCMCampaignDTO campaign : campaignsArray) {
 
-            while (campaignsIterator.hasNext()) {
-                // Launch request to get image bitmap and add it to banner layout
-//                new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute((MCMCampaignDTO) campaignsIterator.next());
+                //Creates the bannerView with the campaign data
+                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign);
 
-                MCMCampaignDTO campaign = (MCMCampaignDTO) campaignsIterator.next();
+                //Calculates the banner height
+                float density = activity.getResources().getDisplayMetrics().density;
+                int bannerHeight = (int) (MCMCampaignDefines.BANNER_SIZE_HEIGHT * density + 0.5f);
+                if (campaign.isFullScreen()) {
+                    bannerHeight = ViewGroup.LayoutParams.MATCH_PARENT;
+                }
 
-                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity,campaign);
-//                bannerView.setDelegate(this);
+                //Configures the banner view
+                bannerView.setLayoutParams(new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        bannerHeight));
+                bannerView.setDelegate(this);
+
+                //When a bannerView is added to a view, the remoteimage starts to download
                 bannerLayout.addView(bannerView);
 
                 // Config close button (if banner shows on full screen)
@@ -243,8 +257,10 @@ public class MCMCampaignAdapter {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
 
             Log.d(MCMCampaignDefines.LOG_TAG, "Create banner error: Attends to load the layout " + MCMCampaignDefines.RES_ID_LAYOUT);
+            notifyCampaignDidFail(e.getMessage());
 
         }
 
@@ -269,7 +285,7 @@ public class MCMCampaignAdapter {
     /**
      * Method that notifies the delegate that the campaign was loaded
      */
-    protected void notifyCampaignDidLoad(){
+    protected void notifyCampaignDidLoad() {
         if (delegate != null) {
             delegate.campaignDidLoad();
         }
@@ -278,7 +294,7 @@ public class MCMCampaignAdapter {
     /**
      * Method that notifies the delegate that the campaign finished
      */
-    protected void notifyCampaignDidFinish(){
+    protected void notifyCampaignDidFinish() {
         if (delegate != null) {
             delegate.campaignDidFinish();
         }
@@ -286,11 +302,12 @@ public class MCMCampaignAdapter {
 
     /**
      * Method that notifies the delegate that the campaign failed
+     *
      * @param errorMessage the message of the error
      */
     protected void notifyCampaignDidFail(String errorMessage) {
         if (delegate != null) {
-            delegate.campaignDidFail();
+            delegate.campaignDidFail(errorMessage);
         }
 
         if (receiver != null) {
@@ -300,12 +317,17 @@ public class MCMCampaignAdapter {
 
     private static LinearLayout createPromotionsLayout(Activity activity, RelativeLayout layout) {
 
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+
         //Create the ScrollView to can add more banners
         ScrollView scroll = new ScrollView(activity);
         scroll.setBackgroundColor(android.R.color.transparent);
-        scroll.setLayoutParams(layout.getLayoutParams());
+        scroll.setLayoutParams(layoutParams);
 
         LinearLayout resultantLayout = new LinearLayout(activity);
+        resultantLayout.setLayoutParams(layoutParams);
         resultantLayout.setOrientation(LinearLayout.VERTICAL);
 
         //Add the views in hierarchy
@@ -323,11 +345,11 @@ public class MCMCampaignAdapter {
 //        bannerLayout.setGravity(Gravity.CENTER);
         if (campaign.getCampaignPosition() == CampaignPosition.BOTTOM) {
 
-            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.SIZE_BANNER);
+            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.BANNER_SIZE_HEIGHT);
             params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         } else if (campaign.getCampaignPosition() == CampaignPosition.TOP) {
 
-            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.SIZE_BANNER);
+            params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.BANNER_SIZE_HEIGHT);
             params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         } else if (campaign.getCampaignPosition() == CampaignPosition.MIDDLE_LANDSCAPE ||
                 campaign.getCampaignPosition() == CampaignPosition.MIDDLE_PORTRAIT) {
@@ -341,27 +363,6 @@ public class MCMCampaignAdapter {
 
         // Apply params to banner layout
         layout.setLayoutParams(params);
-    }
-
-    /**
-     * Shows banner image after download finish.
-     * Configures close button if needed, and adds click events for banner and close button.
-     *
-     * @param bitmap   - the downloaded image.
-     * @param campaign - the campaign object that is showed.
-     */
-    protected void setImageBanner(Bitmap bitmap, final MCMCampaignDTO campaign) {
-
-        Log.d(MCMCampaignDefines.LOG_TAG, "setImageBanner campaign: " + campaign.getName());
-
-        //Ya lo hago en el bannerView
-//        ImageView bannerImageView = new ImageView(activity.getApplicationContext());
-//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT);
-//        bannerImageView.setLayoutParams(layoutParams);
-//
-//        bannerLayout.addView(bannerImageView);
-
     }
 
     /**
@@ -420,6 +421,26 @@ public class MCMCampaignAdapter {
 
     public String getMalcomAppId() {
         return malcomAppId;
+    }
+
+    @Override
+    public void bannerDidLoad(MCMCampaignDTO campaign) {
+
+    }
+
+    @Override
+    public void bannerDidFail() {
+
+    }
+
+    @Override
+    public void bannerClosed() {
+
+    }
+
+    @Override
+    public void bannerPressed(MCMCampaignDTO campaign) {
+
     }
 
 }

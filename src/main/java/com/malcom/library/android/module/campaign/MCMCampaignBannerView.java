@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.malcom.library.android.MCMDefines;
 
@@ -32,8 +33,13 @@ public class MCMCampaignBannerView extends ImageView {
         this.campaign = campaign;
 
         //Set the layout params to force the call to onDraw() when parent's addView is called
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT,
+//                ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
+
         setLayoutParams(layoutParams);
 
         setScaleType(ScaleType.FIT_XY);
@@ -73,6 +79,10 @@ public class MCMCampaignBannerView extends ImageView {
         this.delegate = delegate;
     }
 
+    /**
+     * Shows banner image after download finish.
+     * @param bitmap   - the downloaded image.
+     */
     public void setImageBanner(Bitmap bitmap) {
 
         notifyBannerDidLoad();

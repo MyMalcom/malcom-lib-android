@@ -223,7 +223,7 @@ public final class GCMRegistrar {
 
     static void internalRegister(Context context, String... senderIds) {
         String flatSenderIds = "";
-        Log.d("GCMRegistrar", "senderIds: "+senderIds);
+        Log.d(TAG, "senderIds: "+senderIds);
         flatSenderIds = getFlatSenderIds(senderIds);
         
         Log.v(TAG, "Registering app "  + context.getPackageName() +
