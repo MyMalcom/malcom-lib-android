@@ -4,6 +4,7 @@
 
   <groupId>com.malcom.library.android</groupId>
   <artifactId>malcom-android-library</artifactId>
+  <version>1.0.3-SNAPSHOT</version>
 
   <name>Malcom - Android Library</name>
   <description>Malcom Android library.</description>
@@ -199,6 +200,4 @@
       	  	<url>s3://maven-repo.mobivery.com/snapshot</url>  
      	</snapshotRepository> 
 	</distributionManagement>
-
-  <version>1.0.2-SNAPSHOT</version>
 </project>
