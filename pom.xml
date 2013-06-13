@@ -56,21 +56,17 @@
 
 	<!-- External not-mavenized libs -->
 	<dependency>
-	    <groupId>com.google.ads</groupId>
-	    <artifactId>GoogleAdMobAdsSdk</artifactId>
-	    <version>4.3.1</version>
-	    <scope>system</scope>
-	    <systemPath>${project.basedir}/external-libs/GoogleAdMobAdsSdk-4.3.1.jar</systemPath>
+	  <groupId>com.google.android.admob</groupId>
+	  <artifactId>admob</artifactId>
+	  <version>6.4.1-r11</version>
 	</dependency>
 
 	<!--
-	<dependency>
-	    <groupId>com.google.android.gcm</groupId>
-	    <artifactId>googleCM</artifactId>
-	    <version>3</version>
-	    <scope>system</scope>
-	    <systemPath>${project.basedir}/libs/googleCM-3.jar</systemPath>
-	</dependency>
+<dependency>
+  <groupId>com.google.android.gcm</groupId>
+  <artifactId>gcm-client</artifactId>
+  <version>3</version>
+</dependency>
 	 -->
 
   </dependencies>
