@@ -63,7 +63,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
         // Get the stored registrationId and if it's not equal, update it at server
         String regId = GCMRegistrar.getRegistrationId(context);
-        if (regId != null && !regId.equals(registrationId)) {
+        if (regId != null) {
             if(!MalcomServerUtilities.register(context, registrationId, ENVIRONMENT_TYPE, APPLICATION_CODE, APPLICATION_SECRETKEY)){
                 GCMRegistrar.unregister(context);
             }
