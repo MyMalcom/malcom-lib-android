@@ -187,10 +187,10 @@ public class MCMCampaignAsyncTasks {
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                campaignBannerView.notifyBannerFailLoading();
+                campaignBannerView.notifyBannerFailLoading(e.getMessage());
             } catch (IOException e) {
                 e.printStackTrace();
-                campaignBannerView.notifyBannerFailLoading();
+                campaignBannerView.notifyBannerFailLoading(e.getMessage());
             }
             return bitmap;
         }

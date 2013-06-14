@@ -701,9 +701,9 @@ public class MCMCoreAdapter {
      * Method that adds the promotions campaign to the specified activity.  By default, campaigns will last 15 seconds.
      * @param activity where the banner will be placed
      */
-    public void moduleCampaignAddPromotions(Activity activity) {
+    public void moduleCampaignAddPromotion(Activity activity) {
 
-        moduleCampaignAddPromotions(activity, null);
+        moduleCampaignAddPromotion(activity, null);
     }
 
     /**
@@ -711,11 +711,11 @@ public class MCMCoreAdapter {
      * @param activity where the banner will be placed
      * @param delegate delegate for handling the performing of the banners
      */
-    public void moduleCampaignAddPromotions(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
         MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate);
     }
 
-    public void moduleCampaignRequestPromotions(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+    public void moduleCampaignRequestPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
     }
 

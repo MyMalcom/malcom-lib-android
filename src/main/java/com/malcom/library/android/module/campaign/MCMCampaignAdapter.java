@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.module.campaign.MCMCampaignDTO.CampaignPosition;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.utils.MCMUtils;
@@ -170,24 +171,19 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
                 type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
 
-            ArrayList<MCMCampaignDTO> selectionCampaignsArray = new ArrayList<MCMCampaignDTO>();
-            if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
-                ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING);
+            MCMCampaignDTO selectedCampaign = null;
+            ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, type);
 
-                //If there is at least one campaign
-                if (filteredArray.size()>0) {
-                    MCMCampaignDTO selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
-                    selectionCampaignsArray.add(selectedCampaign);
-                }
-            } else if (type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
-                selectionCampaignsArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION);
+            //If there is at least one campaign
+            if (filteredArray.size()>0) {
+                selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
             }
 
-            if (selectionCampaignsArray.size()>0) {
+            if (selectedCampaign != null) {
                 if (receiver == null) {
-                        createBanners(selectionCampaignsArray);
+                        createBanner(selectedCampaign);
                 } else {
-                    receiver.onReceivedPromotions(createBannersList(activity, selectionCampaignsArray));
+                    receiver.onReceivedPromotions(createBannersList(activity, filteredArray));
                 }
             } else {
                 notifyCampaignDidFail("There is no campaign to show");
@@ -199,15 +195,11 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      * Initiates banner layout depending on position.
      * Launches request to get remote image.
      *
-     * @param campaignsArray - the campaigns' data to show.
+     * @param campaign - the campaign data to show.
      */
-    protected void createBanners(ArrayList<MCMCampaignDTO> campaignsArray) {
+    protected void createBanner(MCMCampaignDTO campaign) {
 
-        Log.d(MCMCampaignDefines.LOG_TAG, "createBanners - type: " + type + " campaigns: " + campaignsArray.size());
-
-        if (campaignsArray == null) {
-            return;
-        }
+        Log.d(MCMCampaignDefines.LOG_TAG, "createBanner - type: " + type + " campaign: " + campaign);
 
         // Get layout elements
         try {
@@ -217,44 +209,37 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
             }
             bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
 
-            if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING) {
-                congigureCrossSellingCampaignLayout(campaignsArray.get(0), bannerLayout);
-            } else if (type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
-                bannerLayout = createPromotionsLayout(activity, (RelativeLayout) bannerLayout);
+            //Configures the layout
+            congigureCampaignLayout(campaign, bannerLayout);
+
+            //Creates the bannerView with the campaign data
+            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign);
+
+            //Calculates the banner height
+            float density = activity.getResources().getDisplayMetrics().density;
+            int bannerHeight = (int) (MCMCampaignDefines.BANNER_SIZE_HEIGHT * density + 0.5f);
+            if (campaign.isFullScreen()) {
+                bannerHeight = ViewGroup.LayoutParams.MATCH_PARENT;
             }
 
-            for (MCMCampaignDTO campaign : campaignsArray) {
+            //Configures the banner view
+            bannerView.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,bannerHeight));
+            bannerView.setDelegate(this);
 
-                //Creates the bannerView with the campaign data
-                MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign);
+            //When a bannerView is added to a view, the remoteimage starts to download
+            bannerLayout.addView(bannerView);
 
-                //Calculates the banner height
-                float density = activity.getResources().getDisplayMetrics().density;
-                int bannerHeight = (int) (MCMCampaignDefines.BANNER_SIZE_HEIGHT * density + 0.5f);
-                if (campaign.isFullScreen()) {
-                    bannerHeight = ViewGroup.LayoutParams.MATCH_PARENT;
-                }
+            // Config close button (if banner shows on full screen)
+            if (campaign.isFullScreen()) {
+                if (RelativeLayout.class.isInstance(bannerLayout))
+                    addCloseButton((RelativeLayout) bannerLayout);
+            }
 
-                //Configures the banner view
-                bannerView.setLayoutParams(new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        bannerHeight));
-                bannerView.setDelegate(this);
-
-                //When a bannerView is added to a view, the remoteimage starts to download
-                bannerLayout.addView(bannerView);
-
-                // Config close button (if banner shows on full screen)
-                if (campaign.isFullScreen()) {
-                    if (RelativeLayout.class.isInstance(bannerLayout))
-                        addCloseButton((RelativeLayout) bannerLayout);
-                }
-
-                //if duration is not zero the banner will be removed automatically
-                if (duration != 0) {
-                    mHandler.removeCallbacks(mRemoveCampaignBanner);
-                    mHandler.postDelayed(mRemoveCampaignBanner, duration * 1000);
-                }
+            //if duration is not zero the banner will be removed automatically
+            if (duration != 0) {
+                mHandler.removeCallbacks(mRemoveCampaignBanner);
+                mHandler.postDelayed(mRemoveCampaignBanner, duration * 1000);
             }
 
         } catch (Exception e) {
@@ -339,7 +324,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
     }
 
 
-    private static void congigureCrossSellingCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
+    private static void congigureCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
 
         // Config layout params depending on position
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
@@ -371,7 +356,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      *
      * @param layout RelativeLayout where the button will be added
      */
-    private static void addCloseButton(final RelativeLayout layout) {
+    private void addCloseButton(final RelativeLayout layout) {
 
         Button closeButton = new Button(layout.getContext());
         closeButton.setText("X");
@@ -405,6 +390,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
                 // Hide banner
                 layout.setVisibility(View.GONE);
+                MCMCampaignAdapter.this.notifyCampaignDidFinish();
             }
         });
     }
@@ -445,20 +431,33 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
     @Override
     public void bannerDidLoad(MCMCampaignDTO campaign) {
 
+        if (delegate != null) {
+            delegate.campaignDidLoad();
+        }
+
     }
 
     @Override
-    public void bannerDidFail() {
+    public void bannerDidFail(String errorMessage) {
+
+        notifyCampaignDidFail(errorMessage);
 
     }
 
     @Override
     public void bannerClosed() {
 
+        notifyCampaignDidFinish();
+
     }
 
     @Override
     public void bannerPressed(MCMCampaignDTO campaign) {
+        Log.d(MCMDefines.LOG_TAG,"Banner pressed: "+campaign.getName());
+
+        if (delegate != null) {
+            delegate.campaignPressed(campaign.getPromotionIdentifier());
+        }
 
     }
 

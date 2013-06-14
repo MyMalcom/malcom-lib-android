@@ -67,9 +67,9 @@ public class MCMCampaignBannerView extends ImageView {
         new MCMCampaignAsyncTasks.NotifyServer(getContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT, campaign.getCampaignId());
     }
 
-    public void notifyBannerFailLoading() {
+    public void notifyBannerFailLoading(String errorMessage) {
         if (delegate != null) {
-            delegate.bannerDidFail();
+            delegate.bannerDidFail(errorMessage);
         }
 
         Log.e(MCMDefines.LOG_TAG,"There was a problem loading the banner for campaign: "+campaign.getName());
@@ -106,7 +106,7 @@ public class MCMCampaignBannerView extends ImageView {
          */
         public void bannerDidLoad(MCMCampaignDTO campaign);
 
-        public void bannerDidFail();
+        public void bannerDidFail(String errorMessage);
 
         public void bannerClosed();
 
