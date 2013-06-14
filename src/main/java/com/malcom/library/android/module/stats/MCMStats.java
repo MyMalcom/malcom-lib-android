@@ -103,26 +103,6 @@ public class MCMStats {
 			mBeacon = new MCMStats(context, properties, uselocation, tags);
 			mBeacon.startBeacon();
 			
-			
-		     /*waitTimer = new CountDownTimer(1000, 300) {
-
-		       public void onTick(long millisUntilFinished) {
-		          //called every 300 milliseconds, which could be used to
-		          //send messages or some other action
-		    	   
-		    	   System.out.println("Cada 300 ms");
-		    	   
-		       }
-
-		       public void onFinish() {
-		          //After 60000 milliseconds (60 sec) finish current 
-		          //if you would like to execute something when time finishes   
-		    	   
-		    	   System.out.println("___________Terminado");
-		    	   
-		       }
-		     }.start();*/
-			
 		}
 		
 		
@@ -149,17 +129,7 @@ public class MCMStats {
 		mEndTime = BeaconUtils.timeIntervalSince1970(new Date());
 		String beaconData = getJSON();
 		try {
-			if(beaconData!=null){			
-				/*if(ToolBox.network_haveNetworkConnection(mContext)){
-					//Send current beacon					
-					//sendToMalcom(beaconData);	
-
-					SendBeaconToMalcom sendToMalcom = new SendBeaconToMalcom(beaconData);
-					sendToMalcom.start();
-					
-				}else{
-					cacheBeacon(beaconData);
-				}*/
+			if(beaconData!=null){
 				
 				cacheBeacon(beaconData);
 				

@@ -37,5 +37,6 @@ public class MCMCampaignDefines {
     public static int DEFAULT_CAMPAIGN_DURATION = 15;
     protected static int BANNER_SIZE_HEIGHT = 60;
     protected static int MIDDLE_MARGIN = 50;
-    protected static int BACKGROUND_ALPHA = 180; // 0-255
+    protected static int CLOSE_BUTTON_SIZE = 40;
+    protected static int BACKGROUND_ALPHA = 140; // 0-255
 }

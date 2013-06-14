@@ -1,8 +1,9 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -182,14 +183,14 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
                 selectionCampaignsArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION);
             }
 
-            if (receiver == null) {
-                if (selectionCampaignsArray.size()>0) {
-                    createBanners(selectionCampaignsArray);
+            if (selectionCampaignsArray.size()>0) {
+                if (receiver == null) {
+                        createBanners(selectionCampaignsArray);
                 } else {
-                    notifyCampaignDidFail("There is no campaign to show");
+                    receiver.onReceivedPromotions(createBannersList(activity, selectionCampaignsArray));
                 }
             } else {
-                receiver.onReceivedPromotions(createBannersList(activity, selectionCampaignsArray));
+                notifyCampaignDidFail("There is no campaign to show");
             }
         }
     }
@@ -371,15 +372,33 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      * @param layout RelativeLayout where the button will be added
      */
     private static void addCloseButton(final RelativeLayout layout) {
+
         Button closeButton = new Button(layout.getContext());
         closeButton.setText("X");
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.addRule(RelativeLayout.ALIGN_RIGHT, layout.getId());
-        params.addRule(RelativeLayout.ALIGN_TOP, layout.getId());
+
+        //Sets layout params
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                MCMUtils.getDPI(layout.getContext(),MCMCampaignDefines.CLOSE_BUTTON_SIZE),
+                MCMUtils.getDPI(layout.getContext(),MCMCampaignDefines.CLOSE_BUTTON_SIZE));
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, layout.getId());
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, layout.getId());
+        //Margins
+        int margin = MCMUtils.getDPI(layout.getContext(),10);
+        params.setMargins(margin, margin, margin, margin);
         closeButton.setLayoutParams(params);
+
+        //RoundButton
+        int radius = MCMUtils.getDPI(layout.getContext(),65);
+        RoundRectShape rs = new RoundRectShape(new float[] { radius, radius, radius, radius, radius, radius, radius, radius}, null, null);
+        ShapeDrawable sd = new ShapeDrawable(rs);
+        sd.getPaint().setColor(Color.argb(MCMCampaignDefines.BACKGROUND_ALPHA, 0, 0, 0));
+        closeButton.setBackground(sd);
+
+        //Adds the view
         layout.addView(closeButton);
         layout.setBackgroundColor(Color.argb(MCMCampaignDefines.BACKGROUND_ALPHA, 0, 0, 0));
+
+        //Onclick
         closeButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
