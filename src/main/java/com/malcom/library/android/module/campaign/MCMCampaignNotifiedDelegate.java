@@ -12,6 +12,6 @@ public interface MCMCampaignNotifiedDelegate {
 
     public void campaignDidFail(String errorMessage);
 
-    public void campaignPressed(String promotionCode);
+    public void campaignPressed(MCMCampaignDTO campaign);
 
 }

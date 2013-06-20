@@ -456,7 +456,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         Log.d(MCMDefines.LOG_TAG,"Banner pressed: "+campaign.getName());
 
         if (delegate != null) {
-            delegate.campaignPressed(campaign.getPromotionIdentifier());
+            delegate.campaignPressed(campaign);
         }
 
     }
