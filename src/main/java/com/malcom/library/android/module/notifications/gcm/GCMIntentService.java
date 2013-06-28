@@ -1,9 +1,9 @@
 package com.malcom.library.android.module.notifications.gcm;
 
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_CODE;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_SECRETKEY;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.ENVIRONMENT_TYPE;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.SENDER_ID;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationCode;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationSecretkey;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.environmentType;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.senderId;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,13 +20,13 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.PowerManager;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
 import com.malcom.library.android.exceptions.ApplicationPackageNotFoundException;
-import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.MCMNotificationModule;
 
 /**
@@ -46,7 +46,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     private static int idNotification;
     
     public GCMIntentService() {
-        super(SENDER_ID);
+        super(senderId);
         idNotification = 0;
     }
     
@@ -64,7 +64,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         // Get the stored registrationId and if it's not equal, update it at server
         String regId = GCMRegistrar.getRegistrationId(context);
         if (regId != null) {
-            if(!MalcomServerUtilities.register(context, registrationId, ENVIRONMENT_TYPE, APPLICATION_CODE, APPLICATION_SECRETKEY)){
+            if(!MalcomServerUtilities.register(context, registrationId, environmentType, applicationCode, applicationSecretkey)){
                 GCMRegistrar.unregister(context);
             }
         }
@@ -74,7 +74,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onUnregistered(Context context, String registrationId) {
         Log.i(TAG, "Device unregistered");        
         if (GCMRegistrar.isRegisteredOnServer(context)) {        	
-            MalcomServerUtilities.unregister(context, registrationId,APPLICATION_CODE, APPLICATION_SECRETKEY);
+            MalcomServerUtilities.unregister(context, registrationId, applicationCode, applicationSecretkey);
         } else {
             // This callback results from the call to unregister made on
             // MalcomServerUtilities when the registration to the server failed.
@@ -125,7 +125,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			
 			SharedPreferences prefs = context.getSharedPreferences( "GCM_SETTINGS", 0);
 			
-			String title = prefs.getString("GCM_TITLE_NOTIFICATION", "");
+			String title = prefs.getString(MCMNotificationModule.GCM_TITLE_NOTIFICATION, "");
 	        
 	        String message = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY);
 	        
@@ -149,11 +149,19 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        Notification notification = new Notification(iconResId, message, when);
 	        
 	        // Hide the notification after its selected
-	        notification.flags |= Notification.FLAG_AUTO_CANCEL; 
-	        // Sound and vibration
-	        notification.defaults |= Notification.DEFAULT_SOUND;
+	        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+	        // Vibration
 	        notification.defaults |= Notification.DEFAULT_VIBRATE;
 	        notification.defaults |= Notification.DEFAULT_LIGHTS;
+
+            // Sound
+            int notificationSoundId = prefs.getInt(MCMNotificationModule.GCM_SOUND_ID, 0);
+            if (notificationSoundId != 0) {
+                notification.sound = Uri.parse("android.resource://" + context.getPackageName() + "/"+notificationSoundId);
+            } else {
+                notification.defaults |= Notification.DEFAULT_SOUND;
+            }
 
 	        //notification.sound = Uri.parse("android.resource://com.myPackageName.org/" + R.raw.myNotificationSound);
 

@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.omg.PortableInterceptor.LOCATION_FORWARD;
 
 import android.app.Service;
 import android.content.Context;

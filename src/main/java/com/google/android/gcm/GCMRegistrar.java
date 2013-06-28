@@ -252,7 +252,7 @@ public final class GCMRegistrar {
         }
         catch (NullPointerException e) {
         	
-        	Log.d("GCMRegistrar", "Error en el senderId");      	
+        	Log.d(TAG, "Error en el senderId");
         	return "";
         	
         }

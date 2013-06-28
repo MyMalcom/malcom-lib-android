@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.EnvironmentType;
 import com.malcom.library.android.module.notifications.MCMNotificationModule;
@@ -264,7 +265,8 @@ public final class MalcomServerUtilities {
         registration.setApplicationCode(params.get(PARAM_APPLICATION_CODE));       
         
         //...get the JSON body from the object using Google JSON library
-        Gson gson = new Gson();
+//        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         jsonBody = "{\"NotificationRegistration\":" + gson.toJson(registration) + "}";
                 
         Log.v(MCMNotificationModule.TAG, "Sending device registration body: '" + jsonBody + "' to " + url);

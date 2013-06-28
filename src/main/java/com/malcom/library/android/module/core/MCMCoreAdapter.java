@@ -544,6 +544,38 @@ public class MCMCoreAdapter {
 		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, true, clazz);
 		
 	}
+
+    /**
+     * Registers the device with GCM and Malcom push notification system.
+     *
+     * NOTE:
+     * The environment is set by looking for the application debug mode,
+     * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
+     *
+     * @param	context
+     * @param	title		Title for the notification
+     * @param 	clazz		Class to call when clicking in the notification
+     * @param   soundId     The id of the custom sound for the notification
+     */
+    public void moduleNotificationsRegister(Context context, String title, Class<?> clazz, int soundId){
+
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, true, clazz);
+
+    }
+
+    /**
+     * Registers the device with GCM and Malcom push notification system.
+     *
+     * @param	context
+     * @param	environment Destination environment. See @ENvironmentType.
+     * @param	title		Title for the notification
+     * @param 	clazz		Class to call when clicking in the notification
+     */
+    public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
+
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz, 0);
+
+    }
 	
 	/**
 	 * Registers the device with GCM and Malcom push notification system.
@@ -552,12 +584,14 @@ public class MCMCoreAdapter {
 	 * @param	environment Destination environment. See @ENvironmentType. 
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
+     * @param   soundId     The id of the custom sound for the notification
 	 */
-	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
+	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz, int soundId){
 		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz);
+		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz, soundId);
 		
 	}
+
 	
 	/**
 	 * Registers the device with GCM and Malcom push notification system.
@@ -586,9 +620,10 @@ public class MCMCoreAdapter {
 	 */
 	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Boolean showAlert, Class<?> clazz){
 		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz);
+		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz, 0);
 		
 	}
+
 	
 	/**
 	 * Un-registers the device from GCM and from Malcom.

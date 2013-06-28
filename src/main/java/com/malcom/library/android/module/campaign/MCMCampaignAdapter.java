@@ -373,11 +373,11 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         closeButton.setLayoutParams(params);
 
         //RoundButton
-        int radius = MCMUtils.getDPI(layout.getContext(),65);
-        RoundRectShape rs = new RoundRectShape(new float[] { radius, radius, radius, radius, radius, radius, radius, radius}, null, null);
-        ShapeDrawable sd = new ShapeDrawable(rs);
-        sd.getPaint().setColor(Color.argb(MCMCampaignDefines.BACKGROUND_ALPHA, 0, 0, 0));
-        closeButton.setBackground(sd);
+//        int radius = MCMUtils.getDPI(layout.getContext(),65);
+//        RoundRectShape rs = new RoundRectShape(new float[] { radius, radius, radius, radius, radius, radius, radius, radius}, null, null);
+//        ShapeDrawable sd = new ShapeDrawable(rs);
+//        sd.getPaint().setColor(Color.argb(MCMCampaignDefines.BACKGROUND_ALPHA, 0, 0, 0));
+//        closeButton.setBackground(sd);
 
         //Adds the view
         layout.addView(closeButton);
