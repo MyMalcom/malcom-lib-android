@@ -47,8 +47,12 @@ public class MalcomNotificationReceiver extends BroadcastReceiver {
 	        String richMediaUrl = intent.getExtras().getString(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 			
 	        if (MCMNotificationModule.showAlert) {
-	        
-	        	createAlertDialog(context, message, richMediaUrl).show();	
+
+                try {
+                    createAlertDialog(context, message, richMediaUrl).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 	        
 	        }
 	        else {
@@ -69,7 +73,11 @@ public class MalcomNotificationReceiver extends BroadcastReceiver {
 	        final Context aContext = context;
 	        Thread t = new Thread(new Runnable() {				
 				public void run() {
-					MalcomServerUtilities.doAck(aContext, notId, segmentId, environmentType.name(), applicationCode, applicationSecretkey);
+                    try {
+                        MalcomServerUtilities.doAck(aContext, notId, segmentId, environmentType.name(), applicationCode, applicationSecretkey);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 					
 				}
 			});
