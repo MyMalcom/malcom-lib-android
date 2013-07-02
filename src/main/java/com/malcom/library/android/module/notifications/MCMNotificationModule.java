@@ -52,6 +52,7 @@ public class MCMNotificationModule {
 	public static final String ANDROID_MESSAGE_SEGMENT_KEY = "segmentId";
 	public static final String ANDROID_MESSAGE_KEY = "msg";
 	public static final String ANDROID_MESSAGE_RICHMEDIA_KEY = "web_url";
+    public static final String ANDROID_NOTIFICATION_SOUND_KEY = "sound";
 	
     /** Custom intent used to show the alert in the UI about a received push. */
     public static final String SHOW_NOTIFICATION_ACTION = "com.malcom.library.android.gcm.DISPLAY_MESSAGE";
@@ -60,7 +61,6 @@ public class MCMNotificationModule {
     public static final String GCM_SENDER_ID ="GCM_SENDER_ID";
     public static final String GCM_CLASS ="GCM_CLASS";
     public static final String GCM_TITLE_NOTIFICATION ="GCM_TITLE_NOTIFICATION";
-    public static final String GCM_SOUND_ID ="GCM_SOUND_ID";
 	
 	private AsyncTask<Void, Void, Void> mRegisterTask;
 
@@ -113,7 +113,7 @@ public class MCMNotificationModule {
 			environment = EnvironmentType.SANDBOX;
 		}
 		
-		gcmRegisterDevice(context, environment, title, showAlert, clazz, 0);
+		gcmRegisterDevice(context, environment, title, showAlert, clazz);
 	}
 	
 	/**
@@ -123,10 +123,9 @@ public class MCMNotificationModule {
 	 * @param 	environment	Allows to set the environment type. 
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
-     * @param   soundId     The id of the custom sound for the notification
 	 */
 	public void gcmRegisterDevice(Context context, final EnvironmentType environment,
-								  String title, Boolean showAlert, Class<?> clazz, int soundId){
+								  String title, Boolean showAlert, Class<?> clazz){
 		
 		//Initializes the required variables
         senderId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_GCM_SENDERID);
@@ -145,10 +144,6 @@ public class MCMNotificationModule {
 		if (title != null) {
             prefsEditor.putString(GCM_TITLE_NOTIFICATION, title);
 		}
-
-        if (soundId != 0) {
-            prefsEditor.putInt(GCM_SOUND_ID, soundId);
-        }
 
         prefsEditor.commit();
 

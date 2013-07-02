@@ -140,52 +140,6 @@ public class MCMCoreAdapter {
 	}
 	
 	/**
-	 * Required. Initialize the Malcom Android LIbrary core module.
-	 * 
-	 * @param context
-	 * @param applicationPackage
-	 */
-	/*public void coreInitialize(Context context) {
-		
-		coreInitialize(context, context.getPackageName());
-				
-	}*/
-	
-	/**
-	 * Required. Initialize the Malcom Android LIbrary core module.
-	 * 
-	 * @param context
-	 * @param applicationPackage
-	 */
-	/*public void coreInitialize(Context context, String applicationPackage) {
-		
-		Resources resources = context.getResources();
-		AssetManager assetManager = resources.getAssets();
-		
-		Log.d("CORE", "Version sdk: " + SDK_VERSION);
-		
-		try {
-			if(!coreInitialized){
-				MCMCoreAdapter.applicationPackage = applicationPackage;
-				// Read from the /assets directory		
-				InputStream inputStream = assetManager.open(MALCOM_PROPERTIES_FILE);
-			    properties = new Properties();
-			    properties.load(inputStream);			    
-			    Log.d("CORE","The application Malcom properties are now loaded");
-			    coreInitialized = true;
-			    
-			    SERVER_URL = properties.getProperty(PROPERTIES_MALCOM_BASEURL);
-			}else{
-				Log.d("CORE","The application Malcom properties are already loaded");
-			}			
-		} 
-		catch (IOException e) {
-			coreInitialized = false;
-			Log.e("CORE", "Error initializing the Malcom Android Core module! ("+e.getMessage()+")",e);
-		}		
-	}*/
-	
-	/**
 	 * Gets the android device unique id.
 	 * 
 	 * @param context
@@ -493,6 +447,14 @@ public class MCMCoreAdapter {
 	
 	
 	// --- ADS
+
+    /**
+     *
+     * @param context
+     * @param layoutAd
+     * @param eventHandler
+     * @deprecated use Malcom's campaigns module instead.
+     */
 	
 	public void moduleAdsActivate(Activity context, LinearLayout layoutAd, MCMAdEventHandler eventHandler){
 		
@@ -504,14 +466,9 @@ public class MCMCoreAdapter {
 	 * 
 	 * @param context
 	 * @param layoutAd
+     * @deprecated use Malcom's campaigns module instead.
 	 */
 	public void moduleAdsActivate(Activity context, String adsID, LinearLayout layoutAd){
-
-		/*if (!coreInitialized) {
-			
-			coreInitialize(context);
-			
-		}*/
 		
 		MCMAdAdapter.getInstance().createAds(context, layoutAd, adsID, adWidth, adHeight);
 		
@@ -548,24 +505,6 @@ public class MCMCoreAdapter {
     /**
      * Registers the device with GCM and Malcom push notification system.
      *
-     * NOTE:
-     * The environment is set by looking for the application debug mode,
-     * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
-     *
-     * @param	context
-     * @param	title		Title for the notification
-     * @param 	clazz		Class to call when clicking in the notification
-     * @param   soundId     The id of the custom sound for the notification
-     */
-    public void moduleNotificationsRegister(Context context, String title, Class<?> clazz, int soundId){
-
-        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, true, clazz);
-
-    }
-
-    /**
-     * Registers the device with GCM and Malcom push notification system.
-     *
      * @param	context
      * @param	environment Destination environment. See @ENvironmentType.
      * @param	title		Title for the notification
@@ -573,24 +512,9 @@ public class MCMCoreAdapter {
      */
     public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
 
-        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz, 0);
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz);
 
     }
-	
-	/**
-	 * Registers the device with GCM and Malcom push notification system.
-	 * 
-	 * @param	context
-	 * @param	environment Destination environment. See @ENvironmentType. 
-	 * @param	title		Title for the notification
-	 * @param 	clazz		Class to call when clicking in the notification
-     * @param   soundId     The id of the custom sound for the notification
-	 */
-	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz, int soundId){
-		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz, soundId);
-		
-	}
 
 	
 	/**
@@ -620,7 +544,7 @@ public class MCMCoreAdapter {
 	 */
 	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Boolean showAlert, Class<?> clazz){
 		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz, 0);
+		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz);
 		
 	}
 
