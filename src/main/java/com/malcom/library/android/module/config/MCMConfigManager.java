@@ -768,12 +768,6 @@ public class MCMConfigManager {
     private class DownloadConfigurationFile extends AsyncTask<Void, Float, Integer>{
     	
    	 	 protected void onPreExecute() {
-   	 		//showProgressDialog();
-   	 			
-   	 		 /*dialog.setProgress(0);
-	   		 dialog.setMax(100);
-	         dialog.show(); //Mostramos el diálogo antes de comenzar
-	         */
          }
 
          protected Integer doInBackground(Void ...valores) {        	 

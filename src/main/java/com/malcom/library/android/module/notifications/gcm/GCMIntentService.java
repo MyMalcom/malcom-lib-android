@@ -134,7 +134,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			} catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
 	        
 	        String web_url = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
 	        										 + MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);

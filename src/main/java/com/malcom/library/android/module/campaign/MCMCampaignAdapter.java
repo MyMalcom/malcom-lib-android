@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.*;
 import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.module.campaign.MCMCampaignDTO.CampaignPosition;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.utils.LocationUtils;
 import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.ToolBox;
 
@@ -151,6 +153,13 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
                     .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
             String urlCampaign = malcomBaseUrl + campaignResource;
+
+            //Add the location to the URL
+            Location lastKnownLocation = LocationUtils.getLocation(activity.getApplicationContext());
+            if (lastKnownLocation!=null) {
+                urlCampaign = urlCampaign+"?lat="+lastKnownLocation.getLatitude()
+                        +"&lng="+lastKnownLocation.getLongitude();
+            }
 
             // Launch request to get campaigns data
             new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);

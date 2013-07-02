@@ -187,7 +187,7 @@ public class MCMCampaignAsyncTasks {
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                campaignBannerView.notifyBannerFailLoading(e.getMessage());
+                campaignBannerView.notifyBannerFailLoading("There was a problem loading the banner for campaign: "+campaignBannerView.getCampaign().getName());
             } catch (IOException e) {
                 e.printStackTrace();
                 campaignBannerView.notifyBannerFailLoading(e.getMessage());

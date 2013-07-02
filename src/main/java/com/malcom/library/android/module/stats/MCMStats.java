@@ -25,6 +25,7 @@ import com.malcom.library.android.module.stats.BeaconUtils;
 import com.malcom.library.android.module.stats.Subbeacon;
 import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
 import com.malcom.library.android.module.stats.services.PendingBeaconsDeliveryService;
+import com.malcom.library.android.utils.LocationUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.encoding.DigestUtils;
@@ -92,7 +93,6 @@ public class MCMStats {
 	 * @param properties
 	 * @param appCode
 	 * @param uselocation
-	 * @param useWiFi
 	 */
 	public synchronized static void initAndStartBeacon(final Context context, Properties properties, 
 														boolean uselocation) {
@@ -231,10 +231,10 @@ public class MCMStats {
 			beaconContentJson.put("time_zone", BeaconUtils.getDeviceTimeZone());						
 			beaconContentJson.put("country", BeaconUtils.getDeviceIsoCountry());
 			beaconContentJson.put("tags", (getTagsAsJsonArray()));			
-			beaconContentJson.put("city", mUseLocation?BeaconUtils.getDeviceCityLocation(mContext):"");			
+			beaconContentJson.put("city", mUseLocation? LocationUtils.getDeviceCityLocation(mContext):"");
 			beaconContentJson.put("started_on", mStartTime);
 			beaconContentJson.put("stopped_on", mEndTime);
-			beaconContentJson.put("location", BeaconUtils.getLocationJson(mContext));
+			beaconContentJson.put("location", LocationUtils.getLocationJson(mContext));
 			beaconContentJson.put("subbeacons", getSubbeaconsJsonArray());
 			beaconContentJson.put("user_metadata", getUserMetadata());
 			
