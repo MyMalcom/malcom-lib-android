@@ -265,7 +265,6 @@ public final class MalcomServerUtilities {
         registration.setApplicationCode(params.get(PARAM_APPLICATION_CODE));       
         
         //...get the JSON body from the object using Google JSON library
-//        Gson gson = new Gson();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         jsonBody = "{\"NotificationRegistration\":" + gson.toJson(registration) + "}";
                 
@@ -319,7 +318,7 @@ public final class MalcomServerUtilities {
 			
 			System.out.println("Endpoint al desregistrar: "+endpoint);
 			
-			ToolBox.net_httpclient_doAction(HTTP_METHOD.DELETE, endpoint, null, headersData);			
+			ToolBox.net_httpclient_doAction(HTTP_METHOD.DELETE, endpoint, null, headersData);
         
         } catch(Exception e) {
         	Log.e(MCMNotificationModule.TAG, "Error sending un-registration data to Malcom service url '"+url.toString()+"': "+e.getMessage(),e);
@@ -359,7 +358,7 @@ public final class MalcomServerUtilities {
         ack.setAckDate(formatDate(date));
         
         //...get the JSON body from the object using Google JSON library
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         jsonBody = "{\"notificationReceipt\":" + gson.toJson(ack) + "}";
         
         if(!ToolBox.network_haveNetworkConnection(context)){

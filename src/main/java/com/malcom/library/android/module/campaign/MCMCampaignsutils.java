@@ -46,11 +46,9 @@ public class MCMCampaignsUtils {
     public static MCMCampaignDTO getCampaignPerWeight(ArrayList<MCMCampaignDTO> campaignsArray) {
         ArrayList<Integer> weightedArray = new ArrayList<Integer>();
 
-        //Log.d(MCMDefines.LOG_TAG, "campaignObjectsArray : " + campaignsArray.size());
         //generates the array to random weighted selection
         for (int i = 0; i < campaignsArray.size(); i++) {
             MCMCampaignDTO campaignModel = campaignsArray.get(i);
-            //Log.d(MCMDefines.LOG_TAG, "campaignModel.weight : " + campaignModel.getWeight());
             //adds to the weighted array as ids as weight has
             for (int j = 0; j < campaignModel.getWeight(); j++) {
                 weightedArray.add(i);
@@ -58,7 +56,6 @@ public class MCMCampaignsUtils {
         }
 
         //generates random number
-        //Log.d(MCMDefines.LOG_TAG, "Searching number : " + weightedArray.size());
         int selection = 0;
         if (weightedArray.size() > 1) {
             selection = new Random().nextInt(weightedArray.size() - 1);

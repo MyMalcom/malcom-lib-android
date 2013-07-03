@@ -124,7 +124,7 @@ public class GCMIntentService extends GCMBaseIntentService {
                 npe.printStackTrace();
             }
 	        
-	        String web_url = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
+	        String webUrl = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 	        										 + MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 	        String efficacyKey = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
 	        											 + MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY);
@@ -154,13 +154,11 @@ public class GCMIntentService extends GCMBaseIntentService {
             }
 	        
 	        String className = prefs.getString("GCM_CLASS", null );
-//	        Log.d(MCMDefines.LOG_TAG, "Class: "+className);
 	        Class classNotification = null;
 			try {
 				classNotification = Class.forName(className);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
+
 				Log.d(MCMDefines.LOG_TAG, "Class not found: "+className);
 			}
 	        
@@ -181,7 +179,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        if(segmentId!=null)
 	        	notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY,segmentId);
 	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_KEY, message);
-	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, web_url);
+	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, webUrl);
 	        
 	        //	Add custom fields
 	        

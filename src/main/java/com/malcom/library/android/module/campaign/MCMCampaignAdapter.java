@@ -122,7 +122,9 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         // Get layout elements
         int resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
         bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
-        this.bannerLayout.setVisibility(View.GONE);
+        if (bannerLayout!=null) {
+            bannerLayout.setVisibility(View.GONE);
+        }
 
         notifyCampaignDidFinish();
     }
@@ -219,7 +221,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
             bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
 
             //Configures the layout
-            congigureCampaignLayout(campaign, bannerLayout);
+            configureCampaignLayout(campaign, bannerLayout);
 
             //Creates the bannerView with the campaign data
             MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign);
@@ -333,11 +335,11 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
     }
 
 
-    private static void congigureCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
+    private static void configureCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
 
         // Config layout params depending on position
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
-//        bannerLayout.setGravity(Gravity.CENTER);
+
         if (campaign.getCampaignPosition() == CampaignPosition.BOTTOM) {
 
             params.height = MCMUtils.getDPI(layout.getContext(), MCMCampaignDefines.BANNER_SIZE_HEIGHT);

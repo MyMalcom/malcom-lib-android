@@ -12,6 +12,7 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.utils.encoding.base64.Base64;
 import com.malcom.library.android.utils.io.IOUtils;
@@ -147,9 +148,6 @@ public class ToolBox {
     	}
     	
     	HttpResponse response = httpclient.execute(httpMethod);
-//    	Log.d(TAG, "HTTP OPERATION: Read from server - Status Code: " + response.getStatusLine().getStatusCode());
-//    	Log.d(TAG, "HTTP OPERATION: Read from server - Status Message: " + response.getStatusLine().getReasonPhrase());
-//    	System.out.println(response.getStatusLine().getStatusCode());
 
     	//Get the response body if there is one.
     	HttpEntity entity = response.getEntity();
@@ -157,7 +155,7 @@ public class ToolBox {
     	    InputStream instream = entity.getContent();
 
     	    responseData = IOUtils.convertStreamToString(instream);
-    	    System.err.println("HTTP OPERATION: Read from server - return: " + responseData);
+            Log.e(MCMDefines.LOG_TAG, "HTTP OPERATION: Read from server - return: " + responseData);
     	}
     	
     	if (response.getStatusLine().getStatusCode() != 200) {
@@ -191,21 +189,21 @@ public class ToolBox {
 		 }
 		 return haveConnectedWifi || haveConnectedMobile;
 	 }
-	 
+
 	 /*
-	 public static boolean network_isOnline(Activity activity) {		
-		 NetworkInfo info = ((ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();		
-		 if (info==null || !info.isConnected()) {            
+	 public static boolean network_isOnline(Activity activity) {
+		 NetworkInfo info = ((ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		 if (info==null || !info.isConnected()) {
 			return false;
 		 }
-		
+
 		 if (info.isRoaming()) {
            // here is the roaming option you can change it if you want to disable internet while roaming, just return false
            return true;
-		 }		
-		 return true;		
+		 }
+		 return true;
 	 }*/
-	 
+
 	
 	// Storage Related -----------------------------------------------------------------------------------------------------------------------------
 	

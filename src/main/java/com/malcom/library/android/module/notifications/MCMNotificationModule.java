@@ -161,10 +161,6 @@ public class MCMNotificationModule {
 
         // Force the register in the GCMService to avoid MissmatchedSenderId when the registerId is updated
         GCMRegistrar.register(context, senderId);
-//        final String regId = GCMRegistrar.getRegistrationId(context);
-//        if (regId==null || (regId!=null && regId.length()==0)) {
-//            GCMRegistrar.register(context, SENDER_ID);
-//        }
 
 	}
 	

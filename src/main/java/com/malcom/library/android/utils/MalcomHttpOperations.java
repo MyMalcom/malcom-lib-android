@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.util.Log;
 
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;

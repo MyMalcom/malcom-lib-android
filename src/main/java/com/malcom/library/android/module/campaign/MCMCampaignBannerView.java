@@ -33,9 +33,6 @@ public class MCMCampaignBannerView extends ImageView {
         this.campaign = campaign;
 
         //Set the layout params to force the call to onDraw() when parent's addView is called
-//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
-//                ViewGroup.LayoutParams.MATCH_PARENT,
-//                ViewGroup.LayoutParams.MATCH_PARENT);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
