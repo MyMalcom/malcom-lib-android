@@ -111,7 +111,7 @@ public class ToolBox {
 	 * @return The content of the request if there is one.
 	 * @throws Exception
 	 */
-	public static String net_httpclient_doAction(HTTP_METHOD method, String url, String jsonData, Map<String, String> headers) throws Exception{
+	public static String net_httpclient_doAction(HTTP_METHOD method, String url, String jsonData, Map<String, String> headers) throws IOException{
     	String responseData = null;
 		
 		DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -155,11 +155,11 @@ public class ToolBox {
     	    InputStream instream = entity.getContent();
 
     	    responseData = IOUtils.convertStreamToString(instream);
-            Log.e(MCMDefines.LOG_TAG, "HTTP OPERATION: Read from server - return: " + responseData);
+            Log.d(MCMDefines.LOG_TAG, "HTTP OPERATION: Read from server - return: " + responseData);
     	}
     	
     	if (response.getStatusLine().getStatusCode() != 200) {
-    		throw new Exception("Http operation "+method.name()+" failed with error code " +
+    		throw new IOException("Http operation "+method.name()+" failed with error code " +
     				response.getStatusLine().getStatusCode() + "("+ 
     				response.getStatusLine().getReasonPhrase() +")");
     	}
