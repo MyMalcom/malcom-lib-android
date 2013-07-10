@@ -40,7 +40,7 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  *		<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
  * 	</pre>
  * 
- * Please, see documentation for more information.
+ * Please, see documentation on https://github.com/MyMalcom/malcom-lib-android/ for more information.
  * 
  * @author	Malcom Ventures, S.L.
  * @since	2012
@@ -166,8 +166,7 @@ public class MCMCoreAdapter {
 	public void moduleConfigurationActivate(Activity activity) throws CoreNotInitializedException{
 				
 		if (coreInitialized) {
-		
-		
+
 			MCMConfigManager.getInstance().createConfig(activity, applicationPackage);
 			
 		}
@@ -178,26 +177,45 @@ public class MCMCoreAdapter {
 		}
 		
 	}
+
+    /**
+     * This method resturn the value of the specified configuration property. When using this method the configuration
+     * module should already loaded by using "useConfigModule()" method.
+     *
+     * @param key	Property
+     * @return      The property value or null if the specified property does not exist or if the property is null
+     * @throws      CoreNotInitializedException
+     * @throws      ConfigModuleNotInitializedException
+     * @deprecated  Use moduleConfigurationGerProperty(String key, ConfigListener listener) instead.
+     */
+    public String moduleConfigurationGetProperty(String key) throws CoreNotInitializedException, ConfigModuleNotInitializedException{
+        if(coreInitialized)
+            if(MCMConfigManager.getInstance().isConfigurationLoaded()){
+                return MCMConfigManager.getInstance().getKeyValue(key);
+            }else{
+                //TODO: Pedro - Cargamos el fichero de configuración y cuando termina llamamos al callback con el
+
+                if(MCMConfigManager.getInstance().isConfigurationLoading())
+                    throw new ConfigModuleNotInitializedException("Config module is being initialized, wait until is fully initialized before call this method.");
+                else
+                    throw new ConfigModuleNotInitializedException("Config module has not been initialized, use useConfigModule().");
+            }
+        else
+            throw new CoreNotInitializedException("Core has not been initialized, use initMalcom method.");
+    }
 	
 	/**
 	 * This method resturn the value of the specified configuration property. When using this method the configuration
 	 * module should already loaded by using "useConfigModule()" method.
 	 * 
 	 * @param key	Property
-	 * @return		The property value or null if the specified property does not exist or if the property is null
-	 * @throws CoreNotInitializedException
-	 * @throws ConfigModuleNotInitializedException
+	 * @return      The property value or null if the specified property does not exist or if the property is null
+	 * @throws      CoreNotInitializedException
+	 * @throws      ConfigModuleNotInitializedException
 	 */
-	public String moduleConfigurationGetProperty(String key) throws CoreNotInitializedException, ConfigModuleNotInitializedException{
+	public void moduleConfigurationGetProperty(String key, ConfigListener listener) throws CoreNotInitializedException, ConfigModuleNotInitializedException{
 		if(coreInitialized)
-			if(MCMConfigManager.getInstance().isConfigurationLoaded()){
-				return MCMConfigManager.getInstance().getKeyValue(key);
-			}else{
-				if(MCMConfigManager.getInstance().isConfigurationLoading())
-					throw new ConfigModuleNotInitializedException("Config module is being initialized, wait until is fully initialized before call this method.");
-				else
-					throw new ConfigModuleNotInitializedException("Config module has not been initialized, use useConfigModule().");
-			}
+            MCMConfigManager.getInstance().getProperty(key,listener);
 		else
 			throw new CoreNotInitializedException("Core has not been initialized, use initMalcom method.");
 	}
@@ -208,7 +226,8 @@ public class MCMCoreAdapter {
 	 * 
 	 * @param key	Property
 	 * @return		The property value or null if the specified property does not exist or if the property is null
-	 * @throws ConfigModuleNotInitializedException
+	 * @throws      ConfigModuleNotInitializedException
+     * @deprecated  Use moduleConfigurationGerProperty(String key, ConfigListener listener) instead.
 	 */
 	public String moduleConfigurationGetProperty(Activity context, String key) throws ConfigModuleNotInitializedException{
 		
@@ -231,6 +250,10 @@ public class MCMCoreAdapter {
 		return SDK_VERSION;
 		
 	}
+
+    public interface ConfigListener {
+        public void onReceivedParameter(String parameter, String value);
+    }
 	
 	
 	// --- BEACONS & SUB-BEACONS
@@ -654,6 +677,10 @@ public class MCMCoreAdapter {
      */
     public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
         MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate);
+    }
+
+    public void moduleCampaignRequestCrossSelling(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, receiver);
     }
 
     /**
