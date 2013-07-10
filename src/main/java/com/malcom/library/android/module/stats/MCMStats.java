@@ -25,6 +25,7 @@ import com.malcom.library.android.module.stats.BeaconUtils;
 import com.malcom.library.android.module.stats.Subbeacon;
 import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
 import com.malcom.library.android.module.stats.services.PendingBeaconsDeliveryService;
+import com.malcom.library.android.utils.LocationUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.encoding.DigestUtils;
@@ -92,7 +93,6 @@ public class MCMStats {
 	 * @param properties
 	 * @param appCode
 	 * @param uselocation
-	 * @param useWiFi
 	 */
 	public synchronized static void initAndStartBeacon(final Context context, Properties properties, 
 														boolean uselocation) {
@@ -102,26 +102,6 @@ public class MCMStats {
 			Log.i(TAG, "Starting beacon...");
 			mBeacon = new MCMStats(context, properties, uselocation, tags);
 			mBeacon.startBeacon();
-			
-			
-		     /*waitTimer = new CountDownTimer(1000, 300) {
-
-		       public void onTick(long millisUntilFinished) {
-		          //called every 300 milliseconds, which could be used to
-		          //send messages or some other action
-		    	   
-		    	   System.out.println("Cada 300 ms");
-		    	   
-		       }
-
-		       public void onFinish() {
-		          //After 60000 milliseconds (60 sec) finish current 
-		          //if you would like to execute something when time finishes   
-		    	   
-		    	   System.out.println("___________Terminado");
-		    	   
-		       }
-		     }.start();*/
 			
 		}
 		
@@ -149,17 +129,7 @@ public class MCMStats {
 		mEndTime = BeaconUtils.timeIntervalSince1970(new Date());
 		String beaconData = getJSON();
 		try {
-			if(beaconData!=null){			
-				/*if(ToolBox.network_haveNetworkConnection(mContext)){
-					//Send current beacon					
-					//sendToMalcom(beaconData);	
-
-					SendBeaconToMalcom sendToMalcom = new SendBeaconToMalcom(beaconData);
-					sendToMalcom.start();
-					
-				}else{
-					cacheBeacon(beaconData);
-				}*/
+			if(beaconData!=null){
 				
 				cacheBeacon(beaconData);
 				
@@ -261,10 +231,10 @@ public class MCMStats {
 			beaconContentJson.put("time_zone", BeaconUtils.getDeviceTimeZone());						
 			beaconContentJson.put("country", BeaconUtils.getDeviceIsoCountry());
 			beaconContentJson.put("tags", (getTagsAsJsonArray()));			
-			beaconContentJson.put("city", mUseLocation?BeaconUtils.getDeviceCityLocation(mContext):"");			
+			beaconContentJson.put("city", mUseLocation? LocationUtils.getDeviceCityLocation(mContext):"");
 			beaconContentJson.put("started_on", mStartTime);
 			beaconContentJson.put("stopped_on", mEndTime);
-			beaconContentJson.put("location", BeaconUtils.getLocationJson(mContext));
+			beaconContentJson.put("location", LocationUtils.getLocationJson(mContext));
 			beaconContentJson.put("subbeacons", getSubbeaconsJsonArray());
 			beaconContentJson.put("user_metadata", getUserMetadata());
 			
@@ -285,7 +255,6 @@ public class MCMStats {
 	}
 
 	private static JSONArray getTagsAsJsonArray() {
-		getTags().values();
 		List<String> listTags = new ArrayList<String>((Collection<? extends String>) getTags().values());
 		Log.d(TAG, "Tags: "+ listTags.toString());
 		return new JSONArray(listTags);
@@ -408,9 +377,10 @@ public class MCMStats {
 	
 	//	TAGS
 	
-	public static Map<String, ?> getTags() {		
+	public static Map<String, ?> getTags() {
 		
-		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE); 
+		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
+        Map<String, ?> tags = preferences.getAll();
 		return preferences.getAll();
 		
 	}
@@ -419,7 +389,7 @@ public class MCMStats {
 		
 		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
-		editor.putString(tag,tag );
+		editor.putString(tag,tag);
 		
 		editor.commit();
 		

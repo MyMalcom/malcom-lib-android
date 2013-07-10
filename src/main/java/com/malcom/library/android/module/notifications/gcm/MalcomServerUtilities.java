@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.EnvironmentType;
 import com.malcom.library.android.module.notifications.MCMNotificationModule;
@@ -264,7 +265,7 @@ public final class MalcomServerUtilities {
         registration.setApplicationCode(params.get(PARAM_APPLICATION_CODE));       
         
         //...get the JSON body from the object using Google JSON library
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         jsonBody = "{\"NotificationRegistration\":" + gson.toJson(registration) + "}";
                 
         Log.v(MCMNotificationModule.TAG, "Sending device registration body: '" + jsonBody + "' to " + url);
@@ -317,7 +318,7 @@ public final class MalcomServerUtilities {
 			
 			System.out.println("Endpoint al desregistrar: "+endpoint);
 			
-			ToolBox.net_httpclient_doAction(HTTP_METHOD.DELETE, endpoint, null, headersData);			
+			ToolBox.net_httpclient_doAction(HTTP_METHOD.DELETE, endpoint, null, headersData);
         
         } catch(Exception e) {
         	Log.e(MCMNotificationModule.TAG, "Error sending un-registration data to Malcom service url '"+url.toString()+"': "+e.getMessage(),e);
@@ -357,7 +358,7 @@ public final class MalcomServerUtilities {
         ack.setAckDate(formatDate(date));
         
         //...get the JSON body from the object using Google JSON library
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         jsonBody = "{\"notificationReceipt\":" + gson.toJson(ack) + "}";
         
         if(!ToolBox.network_haveNetworkConnection(context)){

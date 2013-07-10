@@ -10,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +19,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
@@ -39,7 +37,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundException;
 import com.malcom.library.android.exceptions.ConfigModuleNotInitializedException;
@@ -768,12 +765,6 @@ public class MCMConfigManager {
     private class DownloadConfigurationFile extends AsyncTask<Void, Float, Integer>{
     	
    	 	 protected void onPreExecute() {
-   	 		//showProgressDialog();
-   	 			
-   	 		 /*dialog.setProgress(0);
-	   		 dialog.setMax(100);
-	         dialog.show(); //Mostramos el diálogo antes de comenzar
-	         */
          }
 
          protected Integer doInBackground(Void ...valores) {        	 

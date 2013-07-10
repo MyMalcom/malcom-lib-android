@@ -1,5 +1,32 @@
 package com.malcom.library.android.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
+import android.util.Log;
+
+import com.malcom.library.android.MCMDefines;
+import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.utils.encoding.base64.Base64;
+import com.malcom.library.android.utils.io.IOUtils;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,35 +40,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-
-import sun.security.provider.MD5;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.provider.Settings.Secure;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-
-import com.malcom.library.android.module.core.MCMCoreAdapter;
-import com.malcom.library.android.utils.encoding.base64.Base64;
-import com.malcom.library.android.utils.io.IOUtils;
 
 
 /**
@@ -131,7 +129,7 @@ public class ToolBox {
 			case POST:
 				httpMethod = new HttpPost(url);
 				//Add the body to the request.
-		    	StringEntity se = new StringEntity(jsonData);
+		    	StringEntity se = new StringEntity(jsonData, "UTF-8");
 		    	((HttpPost)httpMethod).setEntity(se);
 				break;
 			case DELETE:
@@ -150,21 +148,18 @@ public class ToolBox {
     	}
     	
     	HttpResponse response = httpclient.execute(httpMethod);
-    	//Log.d(TAG, "HTTP OPERATION: Read from server - Status Code: " + response.getStatusLine().getStatusCode());
-    	//Log.d(TAG, "HTTP OPERATION: Read from server - Status Message: " + response.getStatusLine().getReasonPhrase());
-    	System.out.println(response.getStatusLine().getStatusCode());
-    	
+
     	//Get the response body if there is one.
     	HttpEntity entity = response.getEntity();
     	if (entity != null) {
     	    InputStream instream = entity.getContent();
 
     	    responseData = IOUtils.convertStreamToString(instream);
-    	    System.err.println("HTTP OPERATION: Read from server - return: " + responseData);
+            Log.e(MCMDefines.LOG_TAG, "HTTP OPERATION: Read from server - return: " + responseData);
     	}
     	
     	if (response.getStatusLine().getStatusCode() != 200) {
-    		throw new Exception("Http operation "+method.name()+" failed with error code " + 
+    		throw new Exception("Http operation "+method.name()+" failed with error code " +
     				response.getStatusLine().getStatusCode() + "("+ 
     				response.getStatusLine().getReasonPhrase() +")");
     	}
@@ -194,21 +189,21 @@ public class ToolBox {
 		 }
 		 return haveConnectedWifi || haveConnectedMobile;
 	 }
-	 
+
 	 /*
-	 public static boolean network_isOnline(Activity activity) {		
-		 NetworkInfo info = ((ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();		
-		 if (info==null || !info.isConnected()) {            
+	 public static boolean network_isOnline(Activity activity) {
+		 NetworkInfo info = ((ConnectivityManager)activity.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+		 if (info==null || !info.isConnected()) {
 			return false;
 		 }
-		
+
 		 if (info.isRoaming()) {
            // here is the roaming option you can change it if you want to disable internet while roaming, just return false
            return true;
-		 }		
-		 return true;		
+		 }
+		 return true;
 	 }*/
-	 
+
 	
 	// Storage Related -----------------------------------------------------------------------------------------------------------------------------
 	

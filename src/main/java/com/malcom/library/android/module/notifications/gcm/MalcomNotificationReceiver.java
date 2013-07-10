@@ -1,8 +1,8 @@
 package com.malcom.library.android.module.notifications.gcm;
 
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_CODE;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_SECRETKEY;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.ENVIRONMENT_TYPE;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationCode;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationSecretkey;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.environmentType;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -46,9 +46,13 @@ public class MalcomNotificationReceiver extends BroadcastReceiver {
 			
 	        String richMediaUrl = intent.getExtras().getString(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 			
-	        if (MCMNotificationModule.SHOW_ALERT) {
-	        
-	        	createAlertDialog(context, message, richMediaUrl).show();	
+	        if (MCMNotificationModule.showAlert) {
+
+                try {
+                    createAlertDialog(context, message, richMediaUrl).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 	        
 	        }
 	        else {
@@ -69,7 +73,11 @@ public class MalcomNotificationReceiver extends BroadcastReceiver {
 	        final Context aContext = context;
 	        Thread t = new Thread(new Runnable() {				
 				public void run() {
-					MalcomServerUtilities.doAck(aContext, notId, segmentId, ENVIRONMENT_TYPE.name(), APPLICATION_CODE, APPLICATION_SECRETKEY);
+                    try {
+                        MalcomServerUtilities.doAck(aContext, notId, segmentId, environmentType.name(), applicationCode, applicationSecretkey);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 					
 				}
 			});

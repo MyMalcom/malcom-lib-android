@@ -16,6 +16,7 @@ import com.malcom.library.android.exceptions.CoreNotInitializedException;
 import com.malcom.library.android.module.ad.MCMAdAdapter;
 import com.malcom.library.android.module.ad.MCMAdEventHandler;
 import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
+import com.malcom.library.android.module.campaign.MCMCampaignDTO;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
 import com.malcom.library.android.module.config.MCMConfigManager;
 import com.malcom.library.android.module.notifications.EnvironmentType;
@@ -46,7 +47,7 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  */
 public class MCMCoreAdapter {
 	
-	public static final String SDK_VERSION = "1.0.2";
+	public static final String SDK_VERSION = "1.0.3";
 	public static final String MALCOM_LIBRARY_PREFERENCES_FILE_NAME = "com.malcom.library.android";
 	
 	public static final String PROPERTIES_MALCOM_BASEURL = "MalcomBaseURL";
@@ -137,52 +138,6 @@ public class MCMCoreAdapter {
 		coreInitialized = true;
 		
 	}
-	
-	/**
-	 * Required. Initialize the Malcom Android LIbrary core module.
-	 * 
-	 * @param context
-	 * @param applicationPackage
-	 */
-	/*public void coreInitialize(Context context) {
-		
-		coreInitialize(context, context.getPackageName());
-				
-	}*/
-	
-	/**
-	 * Required. Initialize the Malcom Android LIbrary core module.
-	 * 
-	 * @param context
-	 * @param applicationPackage
-	 */
-	/*public void coreInitialize(Context context, String applicationPackage) {
-		
-		Resources resources = context.getResources();
-		AssetManager assetManager = resources.getAssets();
-		
-		Log.d("CORE", "Version sdk: " + SDK_VERSION);
-		
-		try {
-			if(!coreInitialized){
-				MCMCoreAdapter.applicationPackage = applicationPackage;
-				// Read from the /assets directory		
-				InputStream inputStream = assetManager.open(MALCOM_PROPERTIES_FILE);
-			    properties = new Properties();
-			    properties.load(inputStream);			    
-			    Log.d("CORE","The application Malcom properties are now loaded");
-			    coreInitialized = true;
-			    
-			    SERVER_URL = properties.getProperty(PROPERTIES_MALCOM_BASEURL);
-			}else{
-				Log.d("CORE","The application Malcom properties are already loaded");
-			}			
-		} 
-		catch (IOException e) {
-			coreInitialized = false;
-			Log.e("CORE", "Error initializing the Malcom Android Core module! ("+e.getMessage()+")",e);
-		}		
-	}*/
 	
 	/**
 	 * Gets the android device unique id.
@@ -285,7 +240,6 @@ public class MCMCoreAdapter {
 	 * 
 	 * @param context
 	 * @param useLocation	Set to TRUE to also store location data in the beacon.
-	 * @param tags			Tags.
 	 */
 	public void moduleStatsStartBeacon(Context context, boolean useLocation){
 		
@@ -493,6 +447,14 @@ public class MCMCoreAdapter {
 	
 	
 	// --- ADS
+
+    /**
+     *
+     * @param context
+     * @param layoutAd
+     * @param eventHandler
+     * @deprecated use Malcom's campaigns module instead.
+     */
 	
 	public void moduleAdsActivate(Activity context, LinearLayout layoutAd, MCMAdEventHandler eventHandler){
 		
@@ -504,14 +466,9 @@ public class MCMCoreAdapter {
 	 * 
 	 * @param context
 	 * @param layoutAd
+     * @deprecated use Malcom's campaigns module instead.
 	 */
 	public void moduleAdsActivate(Activity context, String adsID, LinearLayout layoutAd){
-
-		/*if (!coreInitialized) {
-			
-			coreInitialize(context);
-			
-		}*/
 		
 		MCMAdAdapter.getInstance().createAds(context, layoutAd, adsID, adWidth, adHeight);
 		
@@ -536,7 +493,6 @@ public class MCMCoreAdapter {
 	 * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
 	 * 
 	 * @param	context
-	 * @param	environment Destination environment. See @ENvironmentType. 
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
 	 */
@@ -545,20 +501,21 @@ public class MCMCoreAdapter {
 		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, true, clazz);
 		
 	}
-	
-	/**
-	 * Registers the device with GCM and Malcom push notification system.
-	 * 
-	 * @param	context
-	 * @param	environment Destination environment. See @ENvironmentType. 
-	 * @param	title		Title for the notification
-	 * @param 	clazz		Class to call when clicking in the notification
-	 */
-	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
-		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz);
-		
-	}
+
+    /**
+     * Registers the device with GCM and Malcom push notification system.
+     *
+     * @param	context
+     * @param	environment Destination environment. See @ENvironmentType.
+     * @param	title		Title for the notification
+     * @param 	clazz		Class to call when clicking in the notification
+     */
+    public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
+
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz);
+
+    }
+
 	
 	/**
 	 * Registers the device with GCM and Malcom push notification system.
@@ -568,7 +525,6 @@ public class MCMCoreAdapter {
 	 * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
 	 * 
 	 * @param	context
-	 * @param	environment Destination environment. See @ENvironmentType. 
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
 	 */
@@ -591,6 +547,7 @@ public class MCMCoreAdapter {
 		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz);
 		
 	}
+
 	
 	/**
 	 * Un-registers the device from GCM and from Malcom.
@@ -632,7 +589,7 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that adds the campaigns to the specified activity.  By default, campaigns will last 15 seconds.
 	 * @param activity
-	 * @return
+     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
 	 */
 	public void moduleCampaignAddBanner(Activity activity) {
 		
@@ -643,18 +600,17 @@ public class MCMCoreAdapter {
 	 * Method that adds the campaigns to the specified activity. With this method you can use the delegates for handling the performing of the banners.  By default, campaigns will last 15 seconds.
 	 * @param activity
 	 * @param delegate
-	 * @return
+     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
 	 */
 	public void moduleCampaignAddBanner(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-		
-		MCMCampaignAdapter.getInstance().addBanner(activity,delegate);
+
+        moduleCampaignAddCrossSelling(activity, delegate);
 		
 	}
 	/**
 	 * Method that sets the duration of the Banner
-	 * @param duration integer indicating the time that is going to be shown the banner in seconds. If the banner is desired to be always on screen you'll need to set to zero the duration. 
-	 * By default, campaigns will last 15 seconds. 
-	 * @return
+	 * @param duration integer indicating the time that is going to be shown the banner in seconds. If the banner is desired to be always on screen you'll need to set to zero the duration.
+     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
 	 */
 	public void moduleCampaignSetBannerDuration(int duration) {
 		
@@ -664,10 +620,62 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that removes the current banner shown in activity.
 	 * @param activity
-	 * @return
 	 */
 	public void moduleCampaignRemoveCurrentBanner(Activity activity) {
 		
 		MCMCampaignAdapter.getInstance().removeCurrentBanner(activity);
 	}
+
+    //	Multitype Campaings
+
+    /**
+     * Method that adds the cross selling campaign to the specified activity.  By default, campaigns will last 15 seconds.
+     * @param activity where the banner will be placed
+     */
+    public void moduleCampaignAddCrossSelling(Activity activity) {
+
+        moduleCampaignAddCrossSelling(activity, null);
+    }
+
+    /**
+     * Method that adds the cross selling campaign to the specified activity.  By default, campaigns will last 15 seconds.
+     * @param activity where the banner will be placed
+     * @param delegate delegate for handling the performing of the banners
+     */
+    public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate);
+    }
+
+    /**
+     * Method that adds the cross selling campaign to the specified activity.
+     * @param activity where the banner will be placed
+     * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
+     * @param delegate delegate for handling the performing of the banners
+     */
+    public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate);
+    }
+
+    /**
+     * Method that adds the promotions campaign to the specified activity.  By default, campaigns will last 15 seconds.
+     * @param activity where the banner will be placed
+     */
+    public void moduleCampaignAddPromotion(Activity activity) {
+
+        moduleCampaignAddPromotion(activity, null);
+    }
+
+    /**
+     * Method that adds the promotions campaign to the specified activity.  By default, campaigns will last 15 seconds.
+     * @param activity where the banner will be placed
+     * @param delegate delegate for handling the performing of the banners
+     */
+    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate);
+    }
+
+    public void moduleCampaignRequestPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
+    }
+
 }

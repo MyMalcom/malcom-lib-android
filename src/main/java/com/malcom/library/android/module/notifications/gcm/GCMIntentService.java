@@ -1,9 +1,9 @@
 package com.malcom.library.android.module.notifications.gcm;
 
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_CODE;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.APPLICATION_SECRETKEY;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.ENVIRONMENT_TYPE;
-import static com.malcom.library.android.module.notifications.MCMNotificationModule.SENDER_ID;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationCode;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.applicationSecretkey;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.environmentType;
+import static com.malcom.library.android.module.notifications.MCMNotificationModule.senderId;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -20,13 +20,15 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
+import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
 import com.google.android.gcm.GCMRegistrar;
+import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.exceptions.ApplicationPackageNotFoundException;
-import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.MCMNotificationModule;
 
 /**
@@ -46,7 +48,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     private static int idNotification;
     
     public GCMIntentService() {
-        super(SENDER_ID);
+        super(senderId);
         idNotification = 0;
     }
     
@@ -59,21 +61,26 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onRegistered(Context context, String registrationId) {
-        Log.i(TAG, "Device registered: regId = " + registrationId);        
-        if(!MalcomServerUtilities.register(context, registrationId, ENVIRONMENT_TYPE, APPLICATION_CODE, APPLICATION_SECRETKEY)){
-        	GCMRegistrar.unregister(context);
+        Log.i(MCMDefines.LOG_TAG, "Device registered: regId = " + registrationId);
+
+        // Get the stored registrationId and if it's not equal, update it at server
+        String regId = GCMRegistrar.getRegistrationId(context);
+        if (regId != null) {
+            if(!MalcomServerUtilities.register(context, registrationId, environmentType, applicationCode, applicationSecretkey)){
+                GCMRegistrar.unregister(context);
+            }
         }
     }
 
     @Override
     protected void onUnregistered(Context context, String registrationId) {
-        Log.i(TAG, "Device unregistered");        
+        Log.i(MCMDefines.LOG_TAG, "Device unregistered");
         if (GCMRegistrar.isRegisteredOnServer(context)) {        	
-            MalcomServerUtilities.unregister(context, registrationId,APPLICATION_CODE, APPLICATION_SECRETKEY);
+            MalcomServerUtilities.unregister(context, registrationId, applicationCode, applicationSecretkey);
         } else {
             // This callback results from the call to unregister made on
             // MalcomServerUtilities when the registration to the server failed.
-            Log.i(TAG, "Ignoring unregister callback");
+            Log.i(MCMDefines.LOG_TAG, "Ignoring unregister callback");
         }
     }
 
@@ -81,33 +88,15 @@ public class GCMIntentService extends GCMBaseIntentService {
     
     @Override
     protected void onMessage(Context context, Intent intent) {
-        Log.i(TAG, "Received a new notification message");        
+        Log.i(MCMDefines.LOG_TAG, "Received a new notification message");
         generateNotification(context.getApplicationContext(), intent);
     }
 
-    
-    /*@Override
-    protected void onDeletedMessages(Context context, int total) {
-        Log.i(TAG, "Received deleted messages notification");
-      
-    }*/
-
     @Override
     public void onError(Context context, String errorId) {
-        Log.i(TAG, "Received error: " + errorId);
+        Log.e(MCMDefines.LOG_TAG, "Received error: " + errorId);
         
     }
-
-    /*@Override
-    protected boolean onRecoverableError(Context context, String errorId) {
-        // log message
-        Log.i(TAG, "Received recoverable error: " + errorId);        
-        return super.onRecoverableError(context, errorId);
-    }*/
-
-    
-    
-    
     
     /*
      * Issues a notification to inform the user about the received notification.
@@ -120,7 +109,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 			
 			SharedPreferences prefs = context.getSharedPreferences( "GCM_SETTINGS", 0);
 			
-			String title = prefs.getString("GCM_TITLE_NOTIFICATION", "");
+			String title = prefs.getString(MCMNotificationModule.GCM_TITLE_NOTIFICATION, "");
+
+            Bundle extras = i.getExtras();
 	        
 	        String message = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY);
 	        
@@ -129,9 +120,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 			} catch (UnsupportedEncodingException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-			}
+			} catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
 	        
-	        String web_url = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
+	        String webUrl = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 	        										 + MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 	        String efficacyKey = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
 	        											 + MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY);
@@ -144,29 +137,29 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        Notification notification = new Notification(iconResId, message, when);
 	        
 	        // Hide the notification after its selected
-	        notification.flags |= Notification.FLAG_AUTO_CANCEL; 
-	        // Sound and vibration
-	        notification.defaults |= Notification.DEFAULT_SOUND;
+	        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+	        // Vibration
 	        notification.defaults |= Notification.DEFAULT_VIBRATE;
 	        notification.defaults |= Notification.DEFAULT_LIGHTS;
 
-	        //notification.sound = Uri.parse("android.resource://com.myPackageName.org/" + R.raw.myNotificationSound);
-
-	        
-	        //Intent notificationIntent = new Intent(context, MCMNotificationModule.NOTIFICATION_ACTIVITY_TO_CALL);
-	        
-	        //Class classNotification = MCMNotificationModule.NOTIFICATION_ACTIVITY_TO_CALL;
-	        
+            // Sound
+            String soundName = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
+                    + MCMNotificationModule.ANDROID_NOTIFICATION_SOUND_KEY);
+            int notificationSoundId = context.getResources().getIdentifier(soundName , "raw", context.getPackageName());
+            if (notificationSoundId != 0) {
+                notification.sound = Uri.parse("android.resource://" + context.getPackageName() + "/"+notificationSoundId);
+            } else {
+                notification.defaults |= Notification.DEFAULT_SOUND;
+            }
 	        
 	        String className = prefs.getString("GCM_CLASS", null );
-	        Log.d("GCMIntentService", "Class: "+className);
 	        Class classNotification = null;
 			try {
 				classNotification = Class.forName(className);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-				Log.d("GCMIntentService", "Class not found: "+className);
+
+				Log.d(MCMDefines.LOG_TAG, "Class not found: "+className);
 			}
 	        
 	        if (classNotification == null) {
@@ -186,7 +179,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        if(segmentId!=null)
 	        	notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY,segmentId);
 	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_KEY, message);
-	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, web_url);
+	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, webUrl);
 	        
 	        //	Add custom fields
 	        
@@ -226,10 +219,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        idNotification = randomGenerator.nextInt(1000);
 	        notificationManager.notify(idNotification, notification);
 	        
-	        Log.d(TAG, "Notification created for the recieve PUSH message.");
+	        Log.d(MCMDefines.LOG_TAG, "Notification created for the recieve PUSH message.");
 	        
 		} catch (ApplicationPackageNotFoundException e) { 
-			Log.e(MCMNotificationModule.TAG, "The notification could not be created because it is not possible to locate the application icon.");
+			Log.e(MCMDefines.LOG_TAG, "The notification could not be created because it is not possible to locate the application icon.");
 		}
         
     }
@@ -250,7 +243,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			return app.icon;
 			
 		} catch (NameNotFoundException e) {
-			Log.e(MCMNotificationModule.TAG, "Application package not found!.");
+			Log.e(MCMDefines.LOG_TAG, "Application package not found!.");
 			throw new ApplicationPackageNotFoundException();
 		}
     }
@@ -262,14 +255,11 @@ public class GCMIntentService extends GCMBaseIntentService {
      */
     public static void wakeUp(Context ctx) {
     	   	
-    	Log.e(MCMNotificationModule.TAG, "Wake up!.");
+//    	Log.d(MCMDefines.LOG_TAG, "Wake up!.");
     	
     	if (wakeLock != null) wakeLock.release();
 
         PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-        /*wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                PowerManager.ACQUIRE_CAUSES_WAKEUP, "malcom_library_wakeup");
-        wakeLock.acquire();*/
     	
     	boolean isScreenOn = pm.isScreenOn();
 

@@ -2,10 +2,6 @@ package com.malcom.library.android.module.stats.services;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -13,12 +9,9 @@ import android.util.Log;
 
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.stats.MCMStats;
-import com.malcom.library.android.utils.HttpDateUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
-import com.malcom.library.android.utils.encoding.DigestUtils;
-import com.malcom.library.android.utils.encoding.base64.Base64;
 
 /**
  * Service that delivers the pending beacons to malcom server.

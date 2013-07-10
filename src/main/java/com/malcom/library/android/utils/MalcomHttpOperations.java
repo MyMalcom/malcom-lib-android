@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.util.Log;
 
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
@@ -56,7 +54,7 @@ public class MalcomHttpOperations {
 		
 		String result = "";
 		
-		Log.d(LOG_TAG, ">>> sendRequestToMalcom appId: " + appCode + " appSecretKey: " + appSecretKey);
+		Log.d(LOG_TAG, ">>> sendRequestToMalcom appId: " + appCode);
 		
 		URL urlPath = null;
 		try {
@@ -84,7 +82,6 @@ public class MalcomHttpOperations {
 
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "<<< sendRequestToMalcom ERROR: " + result + " - " + e.getMessage(), e);
-			throw e;
 		}
 	}
 	

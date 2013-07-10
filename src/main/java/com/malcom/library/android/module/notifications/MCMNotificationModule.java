@@ -52,34 +52,30 @@ public class MCMNotificationModule {
 	public static final String ANDROID_MESSAGE_SEGMENT_KEY = "segmentId";
 	public static final String ANDROID_MESSAGE_KEY = "msg";
 	public static final String ANDROID_MESSAGE_RICHMEDIA_KEY = "web_url";
+    public static final String ANDROID_NOTIFICATION_SOUND_KEY = "sound";
 	
     /** Custom intent used to show the alert in the UI about a received push. */
     public static final String SHOW_NOTIFICATION_ACTION = "com.malcom.library.android.gcm.DISPLAY_MESSAGE";
-	
+
+    /** Notification parameters */
+    public static final String GCM_SENDER_ID ="GCM_SENDER_ID";
+    public static final String GCM_CLASS ="GCM_CLASS";
+    public static final String GCM_TITLE_NOTIFICATION ="GCM_TITLE_NOTIFICATION";
 	
 	private AsyncTask<Void, Void, Void> mRegisterTask;
 
-		
 	//This will hold the C2DM device registration token.
 	public String deviceToken =null;
 	
 	/**
      * Google API project id registered to use GCM.
      */
-    public static String SENDER_ID = "";
-    
-    public static String APPLICATION_CODE = null;
-    public static String APPLICATION_SECRETKEY = null;
-    public static EnvironmentType ENVIRONMENT_TYPE = null;    
-    
-    public static String NOTIFICATION_TITLE = null;
-    public static Class<?> NOTIFICATION_ACTIVITY_TO_CALL = null;
-    
-    public static String SERVER_UNREG_URL = null;
-    
-    public static Boolean SHOW_ALERT = true;
-    
-	
+    public static String senderId = "";
+    public static String applicationCode = null;
+    public static String applicationSecretkey = null;
+    public static EnvironmentType environmentType = null;
+    public static Boolean showAlert = true;
+
 	protected MCMNotificationModule() {
 		// Exists only to defeat instantiation.
 	}	
@@ -132,79 +128,40 @@ public class MCMNotificationModule {
 								  String title, Boolean showAlert, Class<?> clazz){
 		
 		//Initializes the required variables
-		SENDER_ID = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_GCM_SENDERID);
+        senderId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_GCM_SENDERID);
+
+        final SharedPreferences.Editor prefsEditor = context.getSharedPreferences( "GCM_SETTINGS", 0).edit();
 		
-		//	Lo guardamos en memoria para el caso en que sea nulo
-		
-		final SharedPreferences prefs = context.getSharedPreferences( "GCM_SETTINGS", 0);
-		
-		if (SENDER_ID != null) {
-				        
-	        prefs.edit().putString("GCM_SENDER_ID", SENDER_ID).commit();
-			
+		if (senderId != null) {
+            prefsEditor.putString(GCM_SENDER_ID, senderId);
 		}
 		
 		if (clazz != null) {
-			
 			String className = clazz.getCanonicalName();
-	        
-	        prefs.edit().putString("GCM_CLASS", className).commit();
-			
+            prefsEditor.putString(GCM_CLASS, className);
 		}
 		
 		if (title != null) {
-	        
-	        prefs.edit().putString("GCM_TITLE_NOTIFICATION", title).commit();
-			
+            prefsEditor.putString(GCM_TITLE_NOTIFICATION, title);
 		}
-		
-		ENVIRONMENT_TYPE = environment;
-		APPLICATION_CODE = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
-		APPLICATION_SECRETKEY = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
-		
-		NOTIFICATION_TITLE = title;
-		NOTIFICATION_ACTIVITY_TO_CALL = clazz;
-		SHOW_ALERT = showAlert;
+
+        prefsEditor.commit();
+
+        this.showAlert = showAlert;
+        environmentType = environment;
+
+		applicationCode = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
+		applicationSecretkey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 		
 		// Verifies that the device supports GCM and throws an exception if it does not 
 		//(for instance, if it is an emulator that does not contain the Google APIs)
         GCMRegistrar.checkDevice(context);
         // Makes sure the manifest was properly set       
         GCMRegistrar.checkManifest(context);
-        
-        final String regId = GCMRegistrar.getRegistrationId(context);
-        if (regId==null || (regId!=null && regId.length()==0)) {            
-            GCMRegistrar.register(context, SENDER_ID);            
-        }/*else{
-	        if(!GCMRegistrar.isRegisteredOnServer(context)){	        
-		        
-	        	final Context oContext = context;
-		        mRegisterTask = new AsyncTask<Void, Void, Void>() {
-		
-		            @Override
-		            protected Void doInBackground(Void... params) {
-		                boolean registered = MalcomServerUtilities.register(oContext, regId, environment);
-		                // At this point all attempts to register with the app
-		                // server failed, so we need to unregister the device
-		                // from GCM - the app will try to register again when
-		                // it is restarted. Note that GCM will send an
-		                // unregistered callback upon completion, but
-		                // GCMIntentService.onUnregistered() will ignore it.
-		                if (!registered) {
-		                    GCMRegistrar.unregister(oContext);
-		                }
-		                return null;
-		            }
-		
-		            @Override
-		            protected void onPostExecute(Void result) {
-		                mRegisterTask = null;
-		            }
-		
-		        };
-		        mRegisterTask.execute(null, null, null);
-	        }
-        }*/
+
+        // Force the register in the GCMService to avoid MissmatchedSenderId when the registerId is updated
+        GCMRegistrar.register(context, senderId);
+
 	}
 	
 	
@@ -238,13 +195,17 @@ public class MCMNotificationModule {
 	 */
 	public void gcmUnregisterDevice(Context context){
 		if(GCMRegistrar.isRegistered(context)){
+
+            if (applicationCode == null)
+                applicationCode = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
+            if (applicationSecretkey == null)
+                applicationSecretkey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 			
 			//Set the unregistration URL for later usage.
 			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
-			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, APPLICATION_CODE);
+			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, applicationCode);
             serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, ToolBox.device_getId(context));
-			SERVER_UNREG_URL = serverUrl;
-			
+
 			//Un-register the device from GCM.
 			GCMRegistrar.unregister(context);
 		}
@@ -273,7 +234,6 @@ public class MCMNotificationModule {
 			try {
 				message = URLDecoder.decode(message, "UTF8");
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	    	String richMediaUrl = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
