@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -38,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundException;
 import com.malcom.library.android.exceptions.ConfigModuleNotInitializedException;
 import com.malcom.library.android.exceptions.ConfigurationException;
@@ -52,19 +54,17 @@ import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
  * @since  2012
  */
 public class MCMConfigManager {
-
-	private final static String TAG = "MCMConfigManager";
 	
 	/** MALCOM API endpoint */
-	private final String globalconf = "v1/globalconf/";
+	private final static String GLOBAL_CONF = "v1/globalconf/";
 	/** MALCOM library remote configuration file name */
-	private final String configFileName = "config.json";
+	private final static String CONFIG_FILE_NAME = "config.json";
 	/** MALCOM library basic bundled configuration. This name is used when saving the remote configuration data. */
-	private final String bundledConfigFileName = "mcmconfiginfo.json";
+	private final static String BUNDLE_CONFIG_FILE_NAME = "mcmconfiginfo.json";
 	/** MALCOM splash image file name used when store the remote file in disk */
-	private final String CONFIG_SPLASH_IMAGE_NAME = "splash.img";
+	private final static String CONFIG_SPLASH_IMAGE_NAME = "splash.img";
 	/** MALCOM off-line splash image file name used when there is no network and no splash has never been downloaded. */
-	private final String CONFIG_SPLASH_ASSETS_IMAGE_NAME = "splash.img";
+	private final static String CONFIG_SPLASH_ASSETS_IMAGE_NAME = "splash.img";
 	/** Value returned by Malcom when an application does not have a configuration specified. */
 	private final static String NO_CONFIGURATION_DATA = "{}\n";
 	
@@ -89,7 +89,7 @@ public class MCMConfigManager {
 	private Button interstitialClose;
 	private LinearLayout interstitial_progress_zone;
 			
-	private Activity context;
+	private Activity activity;
 	
 	private ProgressDialog dialog;	
 	private boolean isLoading = false;
@@ -102,8 +102,8 @@ public class MCMConfigManager {
 	
 	private static boolean configShown;
 	
-	
-	
+
+
 	protected MCMConfigManager() {
 		// Exists only to defeat instantiation.
 	}	
@@ -128,64 +128,35 @@ public class MCMConfigManager {
 	 * if there is no previous one, it will load the bundled default (configurable) 
 	 * configuration stored in the assets directory.
 	 *
-	 * @param  context  	Activity in which to display the information.
+	 * @param  activity  	Activity in which to display the information.
 	 * @param  appPackage 	package of the application
-	 * @param  activity		Activity to call when splash, interstitial or alert closes.
-	 * @param  execute		If TRUE, the configuration is launched showing the splash/interstitial/alert
-	 * 						otherwise only configuration is loaded.
 	 */
-	public void createConfig(final Activity context, String appPackage) {
+	public void createConfig(final Activity activity, String appPackage) {
 
-		this.context = context;
+		this.activity = activity;
 		
 		executeAfterLoad = true;
-				
-		configLayoutResId = context.getResources().getIdentifier("config_layout", "id", appPackage);
-        int resSplashID = context.getResources().getIdentifier("image_view", "id", appPackage);
-        int resInterstitialID = context.getResources().getIdentifier("webview", "id", appPackage);
-        int resInterstitialCloseButtonID = context.getResources().getIdentifier("web_view_close", "id", appPackage);
-        int resInterstitialLayoutID = context.getResources().getIdentifier("webview_layout", "id", appPackage);
-        int resInterstitialProgressZoneID = context.getResources().getIdentifier("progresszone", "id", appPackage);
-        int resSplashProgressZoneID = context.getResources().getIdentifier("splash_progresszone", "id", appPackage);
-        int resSplashLayoutID = context.getResources().getIdentifier("splash_layout", "id", appPackage);
+
+        // Gets the resources ids
+		configLayoutResId = activity.getResources().getIdentifier("config_layout", "id", appPackage);
+        int resSplashID = activity.getResources().getIdentifier("image_view", "id", appPackage);
+        int resInterstitialID = activity.getResources().getIdentifier("webview", "id", appPackage);
+        int resInterstitialCloseButtonID = activity.getResources().getIdentifier("web_view_close", "id", appPackage);
+        int resInterstitialLayoutID = activity.getResources().getIdentifier("webview_layout", "id", appPackage);
+        int resInterstitialProgressZoneID = activity.getResources().getIdentifier("progresszone", "id", appPackage);
+        int resSplashProgressZoneID = activity.getResources().getIdentifier("splash_progresszone", "id", appPackage);
+        int resSplashLayoutID = activity.getResources().getIdentifier("splash_layout", "id", appPackage);
         
-        this.splashImageView = (ImageView) context.findViewById(resSplashID);
-        
+        this.splashImageView = (ImageView) activity.findViewById(resSplashID);
+
+        // Initializes the layout components
         initializeLayoutComponents(resSplashID, resInterstitialLayoutID, resInterstitialID, 
 				resInterstitialCloseButtonID, resInterstitialProgressZoneID,
 				resSplashProgressZoneID, resSplashLayoutID);
-        
+
+        // Loads the remote configuration from server
         loadConfiguration();
-        
-        /*if(configLayoutResId==0 || 
-        		resSplashID==0 || resInterstitialID==0 || resInterstitialCloseButtonID==0 ||
-        		resInterstitialLayoutID==0 || resInterstitialProgressZoneID==0 ||
-        		resSplashProgressZoneID==0 || resSplashLayoutID==0) {
-        	Log.e(TAG, "Required layout resources not found!.Configuration module could not be initialized, skipping.");
-        	context.startActivity(principalActivity);
-			context.finish();
-			
-        }else{
-        	initializeLayoutComponents(resSplashID, resInterstitialLayoutID, resInterstitialID, 
-        							resInterstitialCloseButtonID, resInterstitialProgressZoneID,
-        							resSplashProgressZoneID, resSplashLayoutID);
-			
-			this.executeAfterLoad = execute;
-			if(activity==null){
-				//In case the user does not provides the activity to show after configuration, it has no sense
-				//to execute the configuration
-				this.executeAfterLoad = execute;
-			}
-			
-			//We only execute the config if the application is being created, not resumed.
-			if(!configShown){
-				loadConfiguration();
-			}else{
-				((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.GONE);
-				context.startActivity(principalActivity);
-				context.finish();
-			}
-        }*/
+
 	}
 	
 	private void initializeLayoutComponents(int resSplashID, int resInterstitialLayoutID, int resInterstitialID,
@@ -194,39 +165,39 @@ public class MCMConfigManager {
 		
 		if (resSplashID != 0) {
 		
-			this.splashImageView = (ImageView) context.findViewById(resSplashID);
+			this.splashImageView = (ImageView) activity.findViewById(resSplashID);
 			
 		}
 		if (resInterstitialLayoutID != 0) {
 		
-			this.interstitialLayout = (LinearLayout) context.findViewById(resInterstitialLayoutID);
+			this.interstitialLayout = (LinearLayout) activity.findViewById(resInterstitialLayoutID);
 			
 		}
 		if (resInterstitialCloseButtonID != 0) {
 		
-			this.interstitialClose = (Button) context.findViewById(resInterstitialCloseButtonID);
+			this.interstitialClose = (Button) activity.findViewById(resInterstitialCloseButtonID);
 		
 		}
-		this.originalTitle = this.context.getTitle().toString();	
+		this.originalTitle = this.activity.getTitle().toString();
 		if (resInterstitialProgressZoneID != 0) {
 		
-			this.interstitial_progress_zone = (LinearLayout)context.findViewById(resInterstitialProgressZoneID);
+			this.interstitial_progress_zone = (LinearLayout) activity.findViewById(resInterstitialProgressZoneID);
 			
 		}
 		if (resSplashProgressZoneID != 0) {
 		
-			this.splash_progress_zone = (LinearLayout)context.findViewById(resSplashProgressZoneID);
+			this.splash_progress_zone = (LinearLayout) activity.findViewById(resSplashProgressZoneID);
 			
 		}
 		if (resSplashLayoutID != 0) {
 		
-			this.splash_layout = (LinearLayout)context.findViewById(resSplashLayoutID);
+			this.splash_layout = (LinearLayout) activity.findViewById(resSplashLayoutID);
 			
 		}
 		
 		if (resInterstitialID != 0) {
 		
-			this.interstitial = (WebView) context.findViewById(resInterstitialID);
+			this.interstitial = (WebView) activity.findViewById(resInterstitialID);
 		
 			if (this.interstitial != null) {
 			
@@ -264,6 +235,21 @@ public class MCMConfigManager {
 		}
 		
 	}
+
+    public void getProperty(String key, MCMCoreAdapter.ConfigListener listener) throws ConfigModuleNotInitializedException {
+        if(isConfigurationLoaded()){
+            listener.onReceivedParameter(key, (String) configuration.getProperty(key));
+        }else{
+            //TODO: Pedro - Cargamos el fichero de configuración y cuando termina llamamos al callback con el
+            executeAfterLoad = false;
+            loadConfiguration();
+            if(isLoading)
+                throw new ConfigModuleNotInitializedException("Config module is being initialized, wait until is fully initialized before call this method.");
+            else
+                throw new ConfigModuleNotInitializedException("Config module has not been initialized, use useConfigModule().");
+        }
+
+    }
 	
 	
 	/**
@@ -279,8 +265,8 @@ public class MCMConfigManager {
 				if(configuration!=null){
 					return configuration.getProperty(key)!=null?(String)configuration.getProperty(key):null;
 				}else{
-					Log.e(TAG,"CONFIG_GET_KEY_VALUE. There is no config available (not even the default one)!. " +
-							"Please do not forget to include in your project the file '"+bundledConfigFileName+"' file.");
+					Log.e(MCMDefines.LOG_TAG,"CONFIG_GET_KEY_VALUE. There is no config available (not even the default one)!. " +
+							"Please do not forget to include in your project the file '"+ BUNDLE_CONFIG_FILE_NAME +"' file.");
 					throw new ConfigModuleNotInitializedException("Config module has not been initialized, use useConfigModule().");
 				}
 			}else{
@@ -307,7 +293,7 @@ public class MCMConfigManager {
 		if(!isLoading){
 			
 			isLoading = true;
-			dialog = new ProgressDialog(context);
+			dialog = new ProgressDialog(activity);
 			//dialog.setMessage("Loading application...");			
 			dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			dialog.setCancelable(false);
@@ -328,8 +314,9 @@ public class MCMConfigManager {
 	private void loadConfiguration(){
 		
 		configShown = true;
-		if(ToolBox.network_haveNetworkConnection(context)){
-			config_download();			
+		if(ToolBox.network_haveNetworkConnection(activity)){
+            Log.d(MCMDefines.LOG_TAG, "READ_CONGIF_DOWNLOAD. On-Line. Downloading configuration.");
+            new DownloadConfigurationFile().execute();
 		}else{
 			loadLocalConfiguration();
 		}
@@ -337,7 +324,7 @@ public class MCMConfigManager {
 	
 	
 	private void loadLocalConfiguration(){
-		if(context.getFileStreamPath(configFileName).exists()){				
+		if(activity.getFileStreamPath(CONFIG_FILE_NAME).exists()){
 			config_useDownloaded();			
 		} else {
 			config_useBundled();			
@@ -354,26 +341,19 @@ public class MCMConfigManager {
 	// -- Configuration load options methods.
 	
 	
-	
-	private void config_download(){
-		Log.d(TAG, "READ_CONGIF_DOWNLOAD. On-Line. Downloading configuration.");
-		new DownloadConfigurationFile().execute();
-	}
-	
-	
 	private void config_useDownloaded(){
-		Log.d(TAG, "READ_CONGIF_DOWNLOADED. Off-line. The configuration was already downloaded, using this configuration.");
+		Log.d(MCMDefines.LOG_TAG, "READ_CONGIF_DOWNLOADED. Off-line. The configuration was already downloaded, using this configuration.");
 		try{
 			//showProgressDialog();
 			
-			FileInputStream fIn = context.openFileInput(configFileName);
+			FileInputStream fIn = activity.openFileInput(CONFIG_FILE_NAME);
 			InputStreamReader isr = new InputStreamReader(fIn);
 			char[] data = new char[fIn.available()]; 
 			isr.read(data);
 
 			loadConfigurationFileFromDisk(new String(data));
 		}catch(Exception e){
-			Log.e(TAG, "READ_CONGIF_DOWNLOADED_ERROR. Problems obtaining the configuration from '"+configFileName+"':"+e.getMessage(),e);
+			Log.e(MCMDefines.LOG_TAG, "READ_CONGIF_DOWNLOADED_ERROR. Problems obtaining the configuration from '"+ CONFIG_FILE_NAME +"':"+e.getMessage(),e);
 		} finally {
 			//closeProgressDialog();
 		}
@@ -381,18 +361,18 @@ public class MCMConfigManager {
 	
 	
 	private void config_useBundled(){
-		Log.d(TAG, "READ_CONGIF_BUNDLED. Off-line. The configuration was not previously downloaded. using the default bundled one.");
+		Log.d(MCMDefines.LOG_TAG, "READ_CONGIF_BUNDLED. Off-line. The configuration was not previously downloaded. using the default bundled one.");
 		try{
 			//showProgressDialog();
 			
-			InputStream assetIn = context.getAssets().open(bundledConfigFileName);
+			InputStream assetIn = activity.getAssets().open(BUNDLE_CONFIG_FILE_NAME);
 			InputStreamReader isr = new InputStreamReader(assetIn);
 			char[] assetData = new char[assetIn.available()]; 
 			isr.read(assetData);
 			
 			loadConfigurationFileFromDisk(new String(assetData));
 		}catch(Exception e){
-			Log.e(TAG, "READ_CONGIF_BUNDLED_ERROR. Problems obtaining the default configuration from '"+bundledConfigFileName+"':"+e.getMessage(),e);
+			Log.e(MCMDefines.LOG_TAG, "READ_CONGIF_BUNDLED_ERROR. Problems obtaining the default configuration from '"+ BUNDLE_CONFIG_FILE_NAME +"':"+e.getMessage(),e);
 		} finally {
 			//closeProgressDialog();
 		}
@@ -404,8 +384,8 @@ public class MCMConfigManager {
 	
 	
 	private void executeConfig(boolean isNetworkAccess) {
-		//((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.VISIBLE);
-		Log.d("MCMConfig", "Execute config with configuration: "+configuration);
+		//((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.VISIBLE);
+		Log.d(MCMDefines.LOG_TAG, "Execute config with configuration: "+configuration);
 		if(configuration!=null){
 			if(configuration.isSplash()){				
 				showSplash(isNetworkAccess);
@@ -414,16 +394,16 @@ public class MCMConfigManager {
 				showInterstitial(isNetworkAccess);
 			} 
 			if(configuration.isAlert()) {
-				//((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.GONE);
+				//((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.GONE);
 				showAlert();
 			}/*else {
-				((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.GONE);
+				((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.GONE);
 				//There is configuration but none of the possibilities are active.
-				context.startActivity(principalActivity);
-				context.finish();
+				activity.startActivity(principalActivity);
+				activity.finish();
 			}*/
 		}else{
-			Log.e(TAG, "EXECUTE_CONFIG_ERROR. There is no configuration available to execute!");
+			Log.e(MCMDefines.LOG_TAG, "EXECUTE_CONFIG_ERROR. There is no configuration available to execute!");
 		}
 	}
 	
@@ -434,12 +414,12 @@ public class MCMConfigManager {
 		try{
 			URL configPath = obtainConfigurationURLPath();		
 			configuration = new Configuration(getJSONfromURL(configPath.toString()),Locale.getDefault().getLanguage());
-			Log.i(TAG, "CONFIG_LANGUAGE." + Locale.getDefault().getLanguage());
+			Log.i(MCMDefines.LOG_TAG, "CONFIG_LANGUAGE." + Locale.getDefault().getLanguage());
 			configLoaded = true;
 		}catch(ApplicationConfigurationNotFoundException e){
-			Log.i(TAG, "CONFIGURATION_GET_FROM_SERVER. Application does not have a configuration.");
+			Log.i(MCMDefines.LOG_TAG, "CONFIGURATION_GET_FROM_SERVER. Application does not have a configuration.");
 		}catch(ConfigurationException e){
-			Log.e(TAG, "LOAD_CONFIG_FILE_FROM_SERVER_ERROR." + e.getMessage());			
+			Log.e(MCMDefines.LOG_TAG, "LOAD_CONFIG_FILE_FROM_SERVER_ERROR." + e.getMessage());
 		}
 		
 		return configLoaded;
@@ -451,7 +431,7 @@ public class MCMConfigManager {
 			JSONObject jObject = new JSONObject(configData);
 			configuration = new Configuration(jObject,Locale.getDefault().getLanguage());
 		} catch( Exception e){			
-			Log.e(TAG, "LOAD_CONFIG_FROM_DISK_ERROR. "+e.getMessage());
+			Log.e(MCMDefines.LOG_TAG, "LOAD_CONFIG_FROM_DISK_ERROR. "+e.getMessage());
 		}
 	}
 	
@@ -459,21 +439,21 @@ public class MCMConfigManager {
 	
 	private URL obtainConfigurationURLPath() throws ConfigurationException{
 		try{
-			TelephonyManager tm = (TelephonyManager) context.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);			
-			//String path = properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL).toString() + globalconf
+			TelephonyManager tm = (TelephonyManager) activity.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+			//String path = properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL).toString() + GLOBAL_CONF
 			//		+ properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_APPID).toString() + "/"
-			//		+ tm.getDeviceId() + "/" + configFileName;
+			//		+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
 			
-			String path = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + globalconf
+			String path = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + GLOBAL_CONF
 					+ MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID) + "/"
-					+ tm.getDeviceId() + "/" + configFileName;
+					+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
 			
 			URL url = new URL(path);
-			Log.d(TAG, "CONFIG. " + path);
+			Log.d(MCMDefines.LOG_TAG, "CONFIG. " + path);
 			return url;
 		
 		}catch(MalformedURLException e){
-			Log.e(TAG, "CONFIG_GET_SERVER_PATH." + e.getMessage());
+			Log.e(MCMDefines.LOG_TAG, "CONFIG_GET_SERVER_PATH." + e.getMessage());
 			throw new ConfigurationException("Bad server configuration path!",ConfigurationException.CONFIGURATION_EXCEPTION_BAD_SERVER_CONFIG_PATH);
 		}
     }
@@ -493,10 +473,10 @@ public class MCMConfigManager {
     	    //try parse the string to a JSON object
     	    jObject = new JSONObject(result);
     	        	    
-    	}catch(ApplicationConfigurationNotFoundException e){
-    		throw e;
-    	}catch(Exception e){    		
-    	    Log.e(TAG, "CONFIGURATION_GET_FROM_SERVER. Error getting the configuration from http connection "+e.toString());
+    	}catch(JSONException e){
+            Log.e(MCMDefines.LOG_TAG, "Error getting the configuration from http connection "+e.toString());
+    	}catch(IOException e){
+    	    Log.e(MCMDefines.LOG_TAG, "Error getting the configuration from http connection "+e.toString());
     	}
     	
     	return jObject;    	
@@ -508,13 +488,13 @@ public class MCMConfigManager {
     	FileOutputStream fos;
 		try {
 			if(configuration!=null){
-				fos = context.openFileOutput(configFileName, Context.MODE_PRIVATE);
+				fos = activity.openFileOutput(CONFIG_FILE_NAME, Context.MODE_PRIVATE);
 				
 				fos.write(configuration.getConfigDataRaw().getBytes());
 				fos.close();		
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "CONFIGURATION_SAVE_ERROR."+e.getMessage());			
+			Log.e(MCMDefines.LOG_TAG, "CONFIGURATION_SAVE_ERROR."+e.getMessage());
 		}
     }
     
@@ -524,7 +504,7 @@ public class MCMConfigManager {
     
     private void showSplash(final boolean isNetworkAccess){
     	//Get the splash image.
-    	Log.d("MCMConfig", "Show splash");
+    	Log.d(MCMDefines.LOG_TAG, "Show splash");
     	if (splash_layout != null) {
 	    	
     		this.splash_layout.setVisibility(View.VISIBLE);
@@ -541,26 +521,19 @@ public class MCMConfigManager {
     
 
     private void removeSplash(boolean isNetworkAccess) {
-    	Log.d("MCMConfig", "Remove splash");
-    	//((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.GONE);
+    	Log.d(MCMDefines.LOG_TAG, "Remove splash");
+    	//((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.GONE);
     	this.splashImageView.postInvalidate();
     	this.splashImageView.setImageBitmap(null);
     	this.splashImageView.setVisibility(View.GONE);
     	this.splash_layout.setVisibility(View.GONE);
     	
     	updateFullscreenStatus(false, true);
-		
-		/*if(configuration.isInterstitial()){
-			//((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.VISIBLE);
-			showInterstitial(isNetworkAccess);
-		}else if(configuration.isAlert() && !configuration.isInterstitial()){			
-			showAlert();
-		}*/
 	}   
         
     private void showInterstitial(boolean isNetworkAccess){
     	
-    	Log.d("MCMConfig", "Show Intersitial");
+    	Log.d(MCMDefines.LOG_TAG, "Show Intersitial");
     	if(isNetworkAccess && interstitial != null && interstitial_checkTimesShown()){
     		
 	    	interstitial.getSettings().setJavaScriptEnabled(true);
@@ -587,7 +560,7 @@ public class MCMConfigManager {
     	boolean show = true;
     	
     	//Check if there are still times to be shown
-		SharedPreferences librarySettings = context.getSharedPreferences(MCMCoreAdapter.MALCOM_LIBRARY_PREFERENCES_FILE_NAME, 0);
+		SharedPreferences librarySettings = activity.getSharedPreferences(MCMCoreAdapter.MALCOM_LIBRARY_PREFERENCES_FILE_NAME, 0);
 		SharedPreferences.Editor editor = librarySettings.edit();
 		if(configuration.getInterstitialTimesToShow()!=null){
 			
@@ -627,12 +600,12 @@ public class MCMConfigManager {
     
     private void removeInterstitial(){
     	
-    	Log.d("MCMConfig", "Remove intersitial");
+    	Log.d(MCMDefines.LOG_TAG, "Remove intersitial");
     	if (configLayoutResId != 0) {
     	
     		if (interstitial != null) {
     		
-	    		//((RelativeLayout)context.findViewById(configLayoutResId)).setVisibility(View.GONE);
+	    		//((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.GONE);
 	    	
 		    	interstitial.postInvalidate();
 		    	interstitial.setVisibility(View.GONE);
@@ -643,10 +616,6 @@ public class MCMConfigManager {
 		    	
 		    	updateFullscreenStatus(false, false);
 		    	
-		    	/*if(configuration.isAlert()){    		
-					showAlert();
-				}*/
-		    	
     		}	
 	    	
     	}
@@ -655,15 +624,15 @@ public class MCMConfigManager {
     
     private void showAlert() {
 
-    	Log.d("MCMConfig", "Show alert");
+    	Log.d(MCMDefines.LOG_TAG, "Show alert");
 		try {			
 			boolean showAlert = true;
 			
 			String alertAppVersion = configuration.getAlertAppStoreVersion();						
-			String appVersionName = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
+			String appVersionName = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
 						
-			Log.d("MCMConfig", "App Version: "+alertAppVersion);
-			Log.d("MCMConfig", "Version Name: "+appVersionName);
+			Log.d(MCMDefines.LOG_TAG, "App Version: "+alertAppVersion);
+			Log.d(MCMDefines.LOG_TAG, "Version Name: "+appVersionName);
 			
 			if (alertAppVersion != null) {
 				alertAppVersion= normalisedVersion(alertAppVersion);
@@ -672,7 +641,7 @@ public class MCMConfigManager {
 			}
 			
 			if (showAlert) {
-				AlertDialog alertDialog = ConfigurationUtils.createAlertDialog(context, configuration);
+				AlertDialog alertDialog = ConfigurationUtils.createAlertDialog(activity, configuration);
 				if(alertDialog != null)
 						alertDialog.show();
 			}
@@ -690,20 +659,15 @@ public class MCMConfigManager {
     private void updateFullscreenStatus(boolean useFullscreen, boolean isSplash)
     {   
        if(useFullscreen)
-       {   	
-    	   	/*if(isSplash){
-    	   		context.setTitle("Splash");
-    	   	}else{
-    	   		context.setTitle("Interstitial");
-    	   	}*/
-            context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);            
+       {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
         }
         else
         {
-        	context.setTitle(originalTitle);
-        	context.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-        	context.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        	activity.setTitle(originalTitle);
+        	activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        	activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
        
        
@@ -768,9 +732,9 @@ public class MCMConfigManager {
          }
 
          protected Integer doInBackground(Void ...valores) {        	 
-        	 if(!loadConfigurationFile(context)){
+        	 if(!loadConfigurationFile(activity)){
         		//If there is a failure downloading the config, we try from our local store.			
-        		if(context.getFileStreamPath(configFileName).exists()){				
+        		if(activity.getFileStreamPath(CONFIG_FILE_NAME).exists()){
     				config_useDownloaded();			
     			} else {
     				config_useBundled();			
@@ -780,17 +744,11 @@ public class MCMConfigManager {
         	 return 0;
          }
 
-         protected void onProgressUpdate (Float... valores) {        	 
-	       	  //int p = Math.round(100*valores[0]);
-	       	  //dialog.setProgress(p);
-         }
-
          protected void onPostExecute(Integer bytes) {
         	 saveConfigurationFile();
-        	 //closeProgressDialog();
         	 
         	 if(executeAfterLoad)
-        		 executeConfig(true);        	 
+        		 executeConfig(true);
          }
     }
     
@@ -824,13 +782,13 @@ public class MCMConfigManager {
 	    		downloadSplashFile(configuration.getSplashImageUrl());	    		
 	    	}
 	    	
-			if(ToolBox.storage_checkIfFileExistsInInternalStorage(context, CONFIG_SPLASH_IMAGE_NAME)){
+			if(ToolBox.storage_checkIfFileExistsInInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME)){
 	    		try{
 	    			//Load the image from disk.
-	    			splashBitmapData = ToolBox.media_loadBitmapFromInternalStorage(context, CONFIG_SPLASH_IMAGE_NAME);
+	    			splashBitmapData = ToolBox.media_loadBitmapFromInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME);
 	    		}catch(Exception e){
 	    			splashBitmapData = null;
-	    			Log.e(TAG,"showSplash(). Error loading stored splash image from internal storage. ("+e.getMessage()+")",e);
+	    			Log.e(MCMDefines.LOG_TAG,"showSplash(). Error loading stored splash image from internal storage. ("+e.getMessage()+")",e);
 	    		}
 	    	}else{
 	    		//No previously downloaded splash image so we use the provided one in the
@@ -877,7 +835,7 @@ public class MCMConfigManager {
 		private synchronized void downloadSplashFile(String imageHttpAddress) {
 			
 			URL imageUrl = null;
-			Log.d(TAG, "DOWNLOAD_SPLASH_IMAGE: " + imageHttpAddress);
+			Log.d(MCMDefines.LOG_TAG, "DOWNLOAD_SPLASH_IMAGE: " + imageHttpAddress);
 			
 			try {
 				imageUrl = new URL(imageHttpAddress);	
@@ -887,13 +845,13 @@ public class MCMConfigManager {
 				conn.connect();
 				
 				//We save the image for off-line later usage.
-				File f = ToolBox.storage_getAppInternalStorageFilePath(context, CONFIG_SPLASH_IMAGE_NAME);
+				File f = ToolBox.storage_getAppInternalStorageFilePath(activity, CONFIG_SPLASH_IMAGE_NAME);
 				FileOutputStream fOut = new FileOutputStream(f);
 				ToolBox.storage_copyStream(conn.getInputStream(), fOut, 1024);
 				fOut.close();										
 			} 
 			catch (Exception e) {				
-				Log.e(TAG, "DOWNLOAD_SPLASH_IMAGE_ERROR: ("+ imageUrl.toString()+") : " + e.getMessage());
+				Log.e(MCMDefines.LOG_TAG, "DOWNLOAD_SPLASH_IMAGE_ERROR: ("+ imageUrl.toString()+") : " + e.getMessage());
 			}
 		}
 		
@@ -905,12 +863,12 @@ public class MCMConfigManager {
 		private Bitmap loadSplashFromAssetsFolder(){
 			
 			try{	    			
-    			InputStream is=context.getAssets().open(CONFIG_SPLASH_ASSETS_IMAGE_NAME);
+    			InputStream is= activity.getAssets().open(CONFIG_SPLASH_ASSETS_IMAGE_NAME);
     			return BitmapFactory.decodeStream(is);
     		}catch(IOException e){    			
-    			Log.i(TAG,"showSplash(). There is no splash image ('splash.img') in the assets folder to load.");
+    			Log.i(MCMDefines.LOG_TAG,"showSplash(). There is no splash image ('splash.img') in the assets folder to load.");
     		}catch(Exception e){
-    			Log.e(TAG,"showSplash(). Error loading assets default splash image. ("+e.getMessage()+")",e);
+    			Log.e(MCMDefines.LOG_TAG,"showSplash(). Error loading assets default splash image. ("+e.getMessage()+")",e);
     		}
     		
     		return null;

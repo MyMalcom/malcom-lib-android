@@ -86,9 +86,6 @@ public class MCMCampaignAsyncTasks {
                     errorMessage = "Wrong response format";
                 }
 
-            } catch (ApplicationConfigurationNotFoundException e) {
-                e.printStackTrace();
-                errorMessage = "The connection failed";
             } catch (JSONException e) {
                 e.printStackTrace();
                 errorMessage = "Wrong response format";
@@ -115,7 +112,7 @@ public class MCMCampaignAsyncTasks {
          * @throws ApplicationConfigurationNotFoundException
          *
          */
-        private JSONObject getJSONfromURL(String url) throws ApplicationConfigurationNotFoundException {
+        private JSONObject getJSONfromURL(String url) {
 
             String result = "";
             JSONObject jObject = null;
@@ -152,8 +149,6 @@ public class MCMCampaignAsyncTasks {
                 // Try parse the string to a JSON object
                 jObject = new JSONObject(result);
 
-            } catch (ApplicationConfigurationNotFoundException e) {
-                throw e;
             } catch (Exception e) {
                 Log.e(MCMCampaignDefines.LOG_TAG, "<<< getJSONfromURL ERROR: " + e.toString() + " - " + e.getMessage());
                 errorMessage = e.toString();
