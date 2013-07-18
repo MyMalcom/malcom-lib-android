@@ -191,4 +191,5 @@
 			<url>s3://maven-repo.mobivery.com/snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>
+    
 </project>
