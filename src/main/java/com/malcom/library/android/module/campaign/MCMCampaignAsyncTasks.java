@@ -205,7 +205,6 @@ public class MCMCampaignAsyncTasks {
      */
     public static class NotifyServer extends AsyncTask<String, Float, Integer> {
 
-        private Bitmap bitmap;
         private Context context;
 
         public NotifyServer(Context context) {

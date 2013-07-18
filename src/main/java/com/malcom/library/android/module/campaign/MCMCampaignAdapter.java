@@ -57,7 +57,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         /**
          * @param banners
          */
-        public void onReceivedPromotions(List banners);
+        public void onReceivedPromotions(List<MCMCampaignBannerView> banners);
 
         public void onRequestFailed(String errorMessage);
     }
@@ -149,7 +149,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
             String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
 
             malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
-            String devideId = URLEncoder.encode(ToolBox.device_getId(this.activity), "UTF-8");
+            String devideId = URLEncoder.encode(ToolBox.device_getId(activity.getApplicationContext()), "UTF-8");
 
             campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
                     .replace(MCMCampaignDefines.UDID_TAG, devideId);

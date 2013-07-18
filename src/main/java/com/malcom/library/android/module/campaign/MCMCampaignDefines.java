@@ -27,8 +27,8 @@ public class MCMCampaignDefines {
 
     // Service tags
     protected static final String ATTR_CAMPAIGNS_ARRAY = "campaigns";
-    protected static final String ATTR_IMPRESSION_HIT = "IMPRESSION";
-    protected static final String ATTR_CLICK_HIT = "CLICK";
+    public static final String ATTR_IMPRESSION_HIT = "IMPRESSION";
+    public static final String ATTR_CLICK_HIT = "CLICK";
 
     // Banner Id's
     protected static final String RES_ID_LAYOUT = "campaign_banner_layout";
