@@ -21,13 +21,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jraf.android.util.activitylifecyclecallbackscompat.app;
+package android.util.activitylifecyclecallbackscompat.app;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-import org.jraf.android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import org.jraf.android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
+import android.util.activitylifecyclecallbackscompat.ApplicationHelper;
+import android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
 
 /**
  * Extension of {@link FragmentActivity} that dispatches its life cycle calls to registered listeners.

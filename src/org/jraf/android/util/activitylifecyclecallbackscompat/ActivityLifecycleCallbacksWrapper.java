@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jraf.android.util.activitylifecyclecallbackscompat;
+package android.util.activitylifecyclecallbackscompat;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -34,9 +34,9 @@ import android.os.Bundle;
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 /* package */class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
-    private org.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat mCallback;
+    private android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat mCallback;
 
-    public ActivityLifecycleCallbacksWrapper(org.jraf.android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat callback) {
+    public ActivityLifecycleCallbacksWrapper(android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat callback) {
         mCallback = callback;
     }
 

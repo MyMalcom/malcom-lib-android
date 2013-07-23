@@ -21,7 +21,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jraf.android.util.activitylifecyclecallbackscompat;
+package android.util.activitylifecyclecallbackscompat;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
