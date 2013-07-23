@@ -24,8 +24,8 @@
 package android.util.activitylifecyclecallbackscompat.app;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 
 import android.util.activitylifecyclecallbackscompat.ApplicationHelper;
 import android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
@@ -33,7 +33,7 @@ import android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
 /**
  * Extension of {@link Activity} that dispatches its life cycle calls to registered listeners.
  */
-public class LifecycleDispatchListActivity extends ListActivity {
+public class MalcomPreferenceActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -32,7 +32,7 @@ import android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
 /**
  * Extension of {@link FragmentActivity} that dispatches its life cycle calls to registered listeners.
  */
-public class LifecycleDispatchFragmentActivity extends FragmentActivity {
+public class MalcomFragmentActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
