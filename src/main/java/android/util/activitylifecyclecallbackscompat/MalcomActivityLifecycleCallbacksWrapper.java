@@ -30,13 +30,13 @@ import android.os.Build;
 import android.os.Bundle;
 
 /**
- * Wraps an {@link ActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
+ * Wraps an {@link MalcomActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-/* package */class ActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
-    private android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat mCallback;
+/* package */class MalcomActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
+    private MalcomActivityLifecycleCallbacksCompat mCallback;
 
-    public ActivityLifecycleCallbacksWrapper(android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat callback) {
+    public MalcomActivityLifecycleCallbacksWrapper(MalcomActivityLifecycleCallbacksCompat callback) {
         mCallback = callback;
     }
 
@@ -78,8 +78,8 @@ import android.os.Bundle;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ActivityLifecycleCallbacksWrapper)) return false;
-        return ((ActivityLifecycleCallbacksWrapper) o).mCallback == mCallback;
+        if (!(o instanceof MalcomActivityLifecycleCallbacksWrapper)) return false;
+        return ((MalcomActivityLifecycleCallbacksWrapper) o).mCallback == mCallback;
     }
 
     @Override

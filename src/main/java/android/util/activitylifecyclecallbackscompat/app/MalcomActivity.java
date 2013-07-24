@@ -26,8 +26,8 @@ package android.util.activitylifecyclecallbackscompat.app;
 import android.app.Activity;
 import android.os.Bundle;
 
-import android.util.activitylifecyclecallbackscompat.ApplicationHelper;
-import android.util.activitylifecyclecallbackscompat.MainLifecycleDispatcher;
+import android.util.activitylifecyclecallbackscompat.MalcomApplicationHelper;
+import android.util.activitylifecyclecallbackscompat.MalcomMainLifecycleDispatcher;
 
 /**
  * Extension of {@link Activity} that dispatches its life cycle calls to registered listeners.
@@ -36,42 +36,42 @@ public abstract class MalcomActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityCreated(this, savedInstanceState);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityCreated(this, savedInstanceState);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityStarted(this);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityStarted(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityResumed(this);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityResumed(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityPaused(this);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityPaused(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityStopped(this);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityStopped(this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivitySaveInstanceState(this, outState);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivitySaveInstanceState(this, outState);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (ApplicationHelper.PRE_ICS) MainLifecycleDispatcher.get().onActivityDestroyed(this);
+        if (MalcomApplicationHelper.PRE_ICS) MalcomMainLifecycleDispatcher.get().onActivityDestroyed(this);
     }
 }

@@ -32,29 +32,29 @@ import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
 /**
- * Keeps a list of {@link ActivityLifecycleCallbacksCompat}s that will be called following the life cycle of the application's {@link Activity activities}.
+ * Keeps a list of {@link MalcomActivityLifecycleCallbacksCompat}s that will be called following the life cycle of the application's {@link Activity activities}.
  * This class is used when the app is running on an older platform version that does not support
  * {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
  * {@link Application#unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks)}.
  */
-public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat {
-    private static final MainLifecycleDispatcher INSTANCE = new MainLifecycleDispatcher();
+public class MalcomMainLifecycleDispatcher implements MalcomActivityLifecycleCallbacksCompat {
+    private static final MalcomMainLifecycleDispatcher INSTANCE = new MalcomMainLifecycleDispatcher();
 
-    public static MainLifecycleDispatcher get() {
+    public static MalcomMainLifecycleDispatcher get() {
         return INSTANCE;
     }
 
-    private MainLifecycleDispatcher() {}
+    private MalcomMainLifecycleDispatcher() {}
 
-    private ArrayList<ActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<ActivityLifecycleCallbacksCompat>();
+    private ArrayList<MalcomActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<MalcomActivityLifecycleCallbacksCompat>();
 
-    /* package */void registerActivityLifecycleCallbacks(ActivityLifecycleCallbacksCompat callback) {
+    /* package */void registerActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {
             mActivityLifecycleCallbacks.add(callback);
         }
     }
 
-    /* package */void unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacksCompat callback) {
+    /* package */void unregisterActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {
             mActivityLifecycleCallbacks.remove(callback);
         }
@@ -75,7 +75,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityCreated(activity, savedInstanceState);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityCreated(activity, savedInstanceState);
             }
         }
     }
@@ -85,7 +85,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityStarted(activity);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityStarted(activity);
             }
         }
     }
@@ -95,7 +95,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityResumed(activity);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityResumed(activity);
             }
         }
     }
@@ -105,7 +105,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityPaused(activity);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityPaused(activity);
             }
         }
     }
@@ -115,7 +115,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityStopped(activity);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityStopped(activity);
             }
         }
     }
@@ -125,7 +125,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivitySaveInstanceState(activity, outState);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivitySaveInstanceState(activity, outState);
             }
         }
     }
@@ -135,7 +135,7 @@ public class MainLifecycleDispatcher implements ActivityLifecycleCallbacksCompat
         Object[] callbacks = collectActivityLifecycleCallbacks();
         if (callbacks != null) {
             for (Object callback : callbacks) {
-                ((ActivityLifecycleCallbacksCompat) callback).onActivityDestroyed(activity);
+                ((MalcomActivityLifecycleCallbacksCompat) callback).onActivityDestroyed(activity);
             }
         }
     }

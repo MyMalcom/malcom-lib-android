@@ -3,14 +3,14 @@ package com.malcom.library.android;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.activitylifecyclecallbackscompat.ActivityLifecycleCallbacksCompat;
+import android.util.activitylifecyclecallbackscompat.MalcomActivityLifecycleCallbacksCompat;
 
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 
 /**
  * Created by PedroDuran on 23/07/13.
  */
-public class MalcomActivityLifecycleCallbacks implements ActivityLifecycleCallbacksCompat {
+public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycleCallbacksCompat {
 
     private static int openActivities;
     private static int resumed;

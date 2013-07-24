@@ -25,27 +25,32 @@
 package android.util.activitylifecyclecallbackscompat;
 
 import android.app.Activity;
-import android.app.Application;
-import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
 /**
- * Equivalent of {@link ActivityLifecycleCallbacks} to be used with
- * {@link ApplicationHelper#registerActivityLifecycleCallbacks(Application, ActivityLifecycleCallbacksCompat)} and
- * {@link ApplicationHelper#unregisterActivityLifecycleCallbacks(Application, ActivityLifecycleCallbacksCompat)}.
+ * This adapter class provides empty implementations of the methods from {@link MalcomActivityLifecycleCallbacksCompat}.
+ * Any custom listener that cares only about a subset of the methods of this listener can simply subclass this
+ * adapter class instead of implementing the interface directly.
  */
-public interface ActivityLifecycleCallbacksCompat {
-    void onActivityCreated(Activity activity, Bundle savedInstanceState);
+public class MalcomActivityLifecycleCallbacksAdapter implements MalcomActivityLifecycleCallbacksCompat {
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
-    void onActivityStarted(Activity activity);
+    @Override
+    public void onActivityStarted(Activity activity) {}
 
-    void onActivityResumed(Activity activity);
+    @Override
+    public void onActivityResumed(Activity activity) {}
 
-    void onActivityPaused(Activity activity);
+    @Override
+    public void onActivityPaused(Activity activity) {}
 
-    void onActivityStopped(Activity activity);
+    @Override
+    public void onActivityStopped(Activity activity) {}
 
-    void onActivitySaveInstanceState(Activity activity, Bundle outState);
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
-    void onActivityDestroyed(Activity activity);
+    @Override
+    public void onActivityDestroyed(Activity activity) {}
 }
