@@ -13,6 +13,17 @@ import com.malcom.library.android.module.core.MCMCoreAdapter;
 public class MalcomActivityLifecycleCallbacks implements ActivityLifecycleCallbacksCompat {
 
     private static int openActivities;
+    private static int resumed;
+    private static int stopped;
+
+    // And add this public static function
+    public static boolean isApplicationInForeground() {
+        return resumed > stopped;
+    }
+
+    public static boolean isApplicationClosing() {
+        return (openActivities == 0) && (resumed == stopped);
+    }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -21,9 +32,8 @@ public class MalcomActivityLifecycleCallbacks implements ActivityLifecycleCallba
 
     @Override
     public void onActivityStarted(Activity activity) {
-        if (openActivities == 0) {
-            //TODO: Pedro: StartBeacon
-            Log.w("Pedro", "Se está arrancando la app - Se inicia la sesión");
+        if (!isApplicationInForeground()) {
+            Log.d(MCMDefines.LOG_TAG, "Malcom session starts");
             MCMCoreAdapter.getInstance().moduleStatsStartBeacon(activity.getApplicationContext(),true);
         }
     }
@@ -31,6 +41,7 @@ public class MalcomActivityLifecycleCallbacks implements ActivityLifecycleCallba
     @Override
     public void onActivityResumed(Activity activity) {
         openActivities++;
+        resumed++;
     }
 
     @Override
@@ -40,9 +51,9 @@ public class MalcomActivityLifecycleCallbacks implements ActivityLifecycleCallba
 
     @Override
     public void onActivityStopped(Activity activity) {
-        if (openActivities == 0) {
-            //TODO: Pedro: EndBeacon
-            Log.w("Pedro", "Se está cerrando la app - Se cierra la sesión");
+        stopped++;
+        if (isApplicationClosing()) {
+            Log.d(MCMDefines.LOG_TAG, "Malcom session stops");
             MCMCoreAdapter.getInstance().moduleStatsEndBeacon();
         }
     }
