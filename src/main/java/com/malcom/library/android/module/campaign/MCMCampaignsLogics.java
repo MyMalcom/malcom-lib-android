@@ -14,7 +14,7 @@ import java.util.Random;
  * Time: 15:45
  * To change this template use File | Settings | File Templates.
  */
-public class MCMCampaignsUtils {
+public class MCMCampaignsLogics {
 
     /**
      * Method that filter the promotion campaign items from arrayList

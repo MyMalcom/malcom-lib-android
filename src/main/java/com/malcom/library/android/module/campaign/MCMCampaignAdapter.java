@@ -2,8 +2,6 @@ package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
@@ -112,6 +110,14 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         makeRequest();
     }
 
+    public void addRateAlert(Activity activity, MCMCampaignNotifiedDelegate delegate) {
+        this.activity = activity;
+        this.type = MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP;
+        this.delegate = delegate;
+
+        makeRequest();
+    }
+
     /**
      * Method that removes the banner and notifies it to delegate if delegate is set.
      *
@@ -179,26 +185,45 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      */
     protected void proccessResponse(ArrayList<MCMCampaignDTO> campaignsArray) {
 
-        if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
-                type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
+        //Gets the campaigns for the current type
+        MCMCampaignDTO selectedCampaign = null;
+        ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsLogics.getFilteredCampaigns(campaignsArray, type);
 
-            MCMCampaignDTO selectedCampaign = null;
-            ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, type);
+        //If there is at least one campaign
+        if (filteredArray.size() > 0) {
+            selectedCampaign = MCMCampaignsLogics.getCampaignPerWeight(filteredArray);
+        }
 
-            //If there is at least one campaign
-            if (filteredArray.size()>0) {
-                selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
-            }
+        if (selectedCampaign != null) {
 
-            if (selectedCampaign != null) {
+            if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
+                    type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
                 if (receiver == null) {
-                        createBanner(selectedCampaign);
+                    createBanner(selectedCampaign);
                 } else {
                     receiver.onReceivedPromotions(createBannersList(activity, filteredArray));
                 }
-            } else {
-                notifyCampaignDidFail("There is no campaign to show");
+            } else if (type == MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP) {
+                MCMCampaignHelper.showRateMyAppDialog(activity, selectedCampaign, new MCMCampaignHelper.RateMyAppDialogDelegate() {
+                    @Override
+                    public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
+                        Log.d(MCMDefines.LOG_TAG,"Rate pressed");
+//                mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
+                    }
+
+                    @Override
+                    public void dialogDisablePressed(MCMCampaignDTO campaignDTO) {
+                        Log.d(MCMDefines.LOG_TAG,"Disable rate pressed");
+                    }
+
+                    @Override
+                    public void dialogRemindMeLaterPressed(MCMCampaignDTO campaignDTO) {
+                        Log.d(MCMDefines.LOG_TAG,"Remind me later pressed");
+                    }
+                });
             }
+        } else {
+            notifyCampaignDidFail("There is no campaign to show");
         }
     }
 

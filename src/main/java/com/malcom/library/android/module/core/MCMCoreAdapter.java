@@ -705,4 +705,13 @@ public class MCMCoreAdapter {
         MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
     }
 
+    /**
+     * Method that add an RateMyApp alert based on the server params
+     * @param activity where the alert will be shown
+     * @param delegate for handle the campaign behaviour
+     */
+    public void moduleCampaignAddRateMyApp(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+        MCMCampaignAdapter.getInstance().addRateAlert(activity, delegate);
+    }
+
 }
