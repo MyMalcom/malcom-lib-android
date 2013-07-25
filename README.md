@@ -59,6 +59,7 @@ Secondly you'll need to set the MalcomActivityLifecycleCallbacks to allow Malcom
 Thirdly, if your application is targeted for Android version before 4 (API 14), you'll need all your activities extend `MalcomActivity.java`.
 We have develop some Activity base classes to allow the use of `FragmentActivity`, `ListActivity` or `PreferenceActivity` but if you want to use other libraries (such ActionbarSherlock) that requires your activities extend too, 
 this is an example about how do that:
+
 [Example for the extend of Activity (ActionBarSherlock library)](https://github.com/MyMalcom/malcom-lib-android/wiki/ActivityExtendExample)
 
 
