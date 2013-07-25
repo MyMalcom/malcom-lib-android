@@ -1,6 +1,8 @@
 package com.malcom.library.android.module.campaign;
 
 import com.malcom.library.android.utils.JSONHelper;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +32,7 @@ public class MCMCampaignDTO {
     private static final String ATTR_PROMOTION_FEATURE = "promotionFeature";
     private static final String ATTR_PROMOTION_TYPE = "promotionType";
     private static final String ATTR_PROMOTION_IDENTIFIER = "promotionIdentifier";
-    private static final String ATTR_CLIENT_LIMIT_FEATURE = "clientLimitFeature";
+    private static final String ATTR_CLIENT_LIMIT_FEATURE = "clientLimitFeatures";
     private static final String ATTR_CLIENT_LIMIT_TYPE = "clientLimitType";
     private static final String ATTR_LIMIT_VALUE = "limitValue";
     private static final String ATTR_CUSTOM_PARAMS = "customParamsFeature";
@@ -49,10 +51,35 @@ public class MCMCampaignDTO {
     private CampaignPosition campaignPosition;
     private String promotionType;
     private String promotionIdentifier;
-    private String clientLimitType;
-    private String limitValue;
+    private ArrayList<ClientLimitFeature> clientLimitFeatures;
     private Map<String, Object> customParams;
     private int weight;
+
+    public class ClientLimitFeature {
+        private String clientLimitType;
+        private String limitValue;
+
+        public ClientLimitFeature(JSONObject jsonObject) {
+            hydrate(jsonObject);
+        }
+
+        public String getClientLimitType() {
+            return clientLimitType;
+        }
+
+        public String getLimitValue() {
+            return limitValue;
+        }
+
+        private void hydrate(JSONObject jsonObject) {
+            try {
+                clientLimitType = (String) jsonObject.get(ATTR_CLIENT_LIMIT_TYPE);
+                limitValue = (String) jsonObject.getString(ATTR_LIMIT_VALUE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public MCMCampaignDTO(JSONObject json) {
 
@@ -72,7 +99,7 @@ public class MCMCampaignDTO {
             if (json.has(ATTR_PROMOTION_FEATURE))
                 hydratePromotionFeature(json.getJSONObject(ATTR_PROMOTION_FEATURE));
             if (json.has(ATTR_CLIENT_LIMIT_FEATURE))
-                hydrateClientLimitFeature(json.getJSONObject(ATTR_CLIENT_LIMIT_FEATURE));
+                hydrateClientLimitFeatures(json.getJSONArray(ATTR_CLIENT_LIMIT_FEATURE));
             if (json.has(ATTR_CUSTOM_PARAMS) && json.getJSONObject(ATTR_CUSTOM_PARAMS).has(ATTR_CUSTOM_PARAMS_PROPERTIES))
                 customParams = JSONHelper.toMap(json.getJSONObject(ATTR_CUSTOM_PARAMS).getJSONObject(ATTR_CUSTOM_PARAMS_PROPERTIES));
             weight = json.has(ATTR_WEIGHT_CAMPAIGN) ? json.getInt(ATTR_WEIGHT_CAMPAIGN) : 1;
@@ -137,12 +164,16 @@ public class MCMCampaignDTO {
         }
     }
 
-    private void hydrateClientLimitFeature(JSONObject json) {
-        try {
-            clientLimitType = (String) json.get(ATTR_CLIENT_LIMIT_TYPE);
-            limitValue = (String) json.getString(ATTR_LIMIT_VALUE);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void hydrateClientLimitFeatures(JSONArray jsonArray) {
+        clientLimitFeatures = new ArrayList<ClientLimitFeature>();
+
+        for (int i=0; i<jsonArray.length(); i++) {
+            try {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                clientLimitFeatures.add(new ClientLimitFeature(jsonObject));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -194,12 +225,8 @@ public class MCMCampaignDTO {
         return promotionIdentifier;
     }
 
-    public String getClientLimitType() {
-        return clientLimitType;
-    }
-
-    public String getLimitValue() {
-        return limitValue;
+    public ArrayList<ClientLimitFeature> getClientLimitFeatures() {
+        return clientLimitFeatures;
     }
 
     public Object getCustomParam(String key) {
