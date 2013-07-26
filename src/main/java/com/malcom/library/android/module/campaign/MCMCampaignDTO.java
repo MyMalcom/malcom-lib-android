@@ -51,35 +51,9 @@ public class MCMCampaignDTO {
     private CampaignPosition campaignPosition;
     private String promotionType;
     private String promotionIdentifier;
-    private ArrayList<ClientLimitFeature> clientLimitFeatures;
+    private Map<String, String> clientLimitFeatures;
     private Map<String, Object> customParams;
     private int weight;
-
-    public class ClientLimitFeature {
-        private String clientLimitType;
-        private String limitValue;
-
-        public ClientLimitFeature(JSONObject jsonObject) {
-            hydrate(jsonObject);
-        }
-
-        public String getClientLimitType() {
-            return clientLimitType;
-        }
-
-        public String getLimitValue() {
-            return limitValue;
-        }
-
-        private void hydrate(JSONObject jsonObject) {
-            try {
-                clientLimitType = (String) jsonObject.get(ATTR_CLIENT_LIMIT_TYPE);
-                limitValue = (String) jsonObject.getString(ATTR_LIMIT_VALUE);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public MCMCampaignDTO(JSONObject json) {
 
@@ -165,12 +139,13 @@ public class MCMCampaignDTO {
     }
 
     private void hydrateClientLimitFeatures(JSONArray jsonArray) {
-        clientLimitFeatures = new ArrayList<ClientLimitFeature>();
+        clientLimitFeatures = new HashMap<String, String>();
 
         for (int i=0; i<jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                clientLimitFeatures.add(new ClientLimitFeature(jsonObject));
+                clientLimitFeatures.put((String) jsonObject.get(ATTR_CLIENT_LIMIT_TYPE),
+                        (String) jsonObject.getString(ATTR_LIMIT_VALUE));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -225,8 +200,8 @@ public class MCMCampaignDTO {
         return promotionIdentifier;
     }
 
-    public ArrayList<ClientLimitFeature> getClientLimitFeatures() {
-        return clientLimitFeatures;
+    public String getClientLimitFeature(String key) {
+        return clientLimitFeatures.get(key);
     }
 
     public Object getCustomParam(String key) {
