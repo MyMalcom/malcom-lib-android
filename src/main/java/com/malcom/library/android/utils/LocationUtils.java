@@ -35,6 +35,8 @@ public class LocationUtils {
             }
         } catch (IOException e) {
             Log.e(MCMDefines.LOG_TAG,"Error getting city location: "+e.getMessage());
+        } catch (NullPointerException npe) {
+            Log.e(MCMDefines.LOG_TAG,"Error getting city location: "+npe.getMessage());
         }
 
         return res;
