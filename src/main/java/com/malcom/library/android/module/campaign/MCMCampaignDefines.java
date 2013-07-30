@@ -29,6 +29,9 @@ public class MCMCampaignDefines {
     protected static final String ATTR_CAMPAIGNS_ARRAY = "campaigns";
     public static final String ATTR_IMPRESSION_HIT = "IMPRESSION";
     public static final String ATTR_CLICK_HIT = "CLICK";
+    public static final String ATTR_RATE_HIT = "RATE";
+    public static final String ATTR_REMIND_HIT = "REMIND_LATER";
+    public static final String ATTR_NEVER_HIT = "NEVER_RATE";
 
     // Banner Id's
     protected static final String RES_ID_LAYOUT = "campaign_banner_layout";

@@ -2,6 +2,9 @@ package com.malcom.library.android.module.campaign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import com.malcom.library.android.MCMDefines;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -92,16 +95,20 @@ public class MCMCampaignsLogics {
             int daysLimit = Integer.parseInt(campaignDTO.getClientLimitFeature(ATTR_DAYS_UNTIL_PROMT));
 
             //Check the client limits and "notshowagain"
-            int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
-            int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getInt(DATE_LAST_DIALOG_ms,0));
+            int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,1); //By
+            int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis()));
+
+            Log.d(MCMDefines.LOG_TAG, "Sessions since last dialog: "+sessionsSinceLastDialog+" Days since Las dialog: "+daysSinceLastDialog);
 
             boolean notShowAgain = preferences.getBoolean(NOT_SHOW_AGAIN,false);
-            boolean notShouldShowDialog = (sessionsSinceLastDialog < sessionLimit) || (daysSinceLastDialog < daysLimit);
+            boolean notShouldShowDialog = (sessionsSinceLastDialog < sessionLimit) && (daysSinceLastDialog < daysLimit);
 
             if (notShowAgain || notShouldShowDialog) {
                 shouldShowDialog = false;
             }
 
+        } else {
+            clearRateMyAppControlParameters(context);
         }
 
         return shouldShowDialog;
@@ -117,32 +124,42 @@ public class MCMCampaignsLogics {
         }
 
         //Update the sessions number
-        int formerSessions = prefs.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
+        int formerSessions = prefs.getInt(SESSIONS_SINCE_LAST_DIALOG,1);
         editor.putInt(SESSIONS_SINCE_LAST_DIALOG,formerSessions+1);
 
         editor.commit();
     }
 
-    public static void updateRateDialogDate(Context context, MCMCampaignDTO campaignDTO) {
-        updateRateDialog(context,campaignDTO,true);
+    public static void updateRateDialogDate(Context context) {
+        updateRateDialog(context, true);
     }
 
-    public static void updateRateDialogDontShowAgain(Context context, MCMCampaignDTO campaignDTO) {
-        updateRateDialog(context,campaignDTO,false);
+    public static void updateRateDialogDontShowAgain(Context context) {
+        updateRateDialog(context,false);
     }
 
-    private static void updateRateDialog(Context context, MCMCampaignDTO campaignDTO, boolean showAgain) {
+    private static void updateRateDialog(Context context, boolean showAgain) {
         SharedPreferences.Editor editor = getRateMyAppPreferencesEditor(context);
 
         //If it is necessary show the dialog again, update the control parameters
         if (showAgain) {
             editor.putLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis());
-
+            //Reset the session number
+            editor.putInt(SESSIONS_SINCE_LAST_DIALOG,1);
 
         } else { //Otherwise set the NOT_SHOW_AGAIN parameter to true
             editor.putBoolean(NOT_SHOW_AGAIN,true);
         }
 
+        editor.commit();
+    }
+
+    private static void clearRateMyAppControlParameters(Context context) {
+        Log.d(MCMDefines.LOG_TAG,"ClearRateMyAppControlParameters");
+        SharedPreferences.Editor editor = getRateMyAppPreferencesEditor(context);
+
+        //TODO: Pedro: Comprobar si se comporta correctamente al crear una nueva campania
+        editor.clear();
         editor.commit();
     }
 

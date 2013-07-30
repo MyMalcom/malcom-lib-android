@@ -36,7 +36,6 @@ public class MCMCampaignHelper {
         String remindMeLaterButtonText = "Remind me later";
         String disableButtonText = "No, thanks";
 
-        //TODO: Pedro: Probar con el context para mostrar el alert
         final Dialog dialog = new Dialog(activity);
         dialog.setTitle(title);
 
@@ -63,7 +62,7 @@ public class MCMCampaignHelper {
         b2.setText(remindMeLaterButtonText);
         b2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                delegate.dialogRatePressed(campaignDTO);
+                delegate.dialogRemindMeLaterPressed(campaignDTO);
                 dialog.dismiss();
             }
         });
