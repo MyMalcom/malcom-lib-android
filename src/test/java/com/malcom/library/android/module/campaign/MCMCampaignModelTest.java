@@ -41,8 +41,7 @@ class MCMCampaignModelTest {// extends TestCase {
             Assert.assertEquals(campaignDTO.getCampaignPosition(), MCMCampaignDTO.CampaignPosition.TOP);
             Assert.assertEquals(campaignDTO.getPromotionType(), "APPLICATION");
             Assert.assertEquals(campaignDTO.getPromotionIdentifier(), "296739784");
-//            Assert.assertEquals(campaignDTO.getClientLimitType(), "1370445584000");
-            Assert.assertEquals(campaignDTO.getLimitValue(), "1370390400000");
+//            Assert.assertEquals(campaignDTO.getClientLimitFeature(), "1370390400000");
             Assert.assertEquals(campaignDTO.getWeight(), "5");
             Assert.assertEquals(campaignDTO.getCustomParam("provincia"), "28");
             Assert.assertEquals(campaignDTO.getCustomParam("codigo"), "12345");

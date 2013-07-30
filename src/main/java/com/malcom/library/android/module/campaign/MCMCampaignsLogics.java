@@ -74,14 +74,14 @@ public class MCMCampaignsLogics {
     private static final String RATE_MY_APP_PREFERENCES = "RateMyAppPreferences";
     private static final String NOT_SHOW_AGAIN = "DontShowAgain";
     private static final String SESSIONS_SINCE_LAST_DIALOG = "SessionsSinceLastDialog";
-    private static final String DAYS_SINCE_LAST_DIALOG = "DaysSinceLastDialog";
+    private static final String DATE_LAST_DIALOG_ms = "DateLastDialog";                    //In miliseconds
 
     public static boolean shouldShowDialog(Context context, MCMCampaignDTO campaignDTO) {
         //By default should show the dialog
         boolean shouldShowDialog = true;
 
         //Check if the campaign was stored on SharedPreferences
-        SharedPreferences preferences = context.getSharedPreferences(RATE_MY_APP_PREFERENCES, 0);
+        SharedPreferences preferences = getRateMyAppSharedPreferences(context);
 
         //If the campaign was already there, check the parameters
         //Otherwise should show the dialog
@@ -93,7 +93,7 @@ public class MCMCampaignsLogics {
 
             //Check the client limits and "notshowagain"
             int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
-            int daysSinceLastDialog = preferences.getInt(DAYS_SINCE_LAST_DIALOG,0);
+            int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getInt(DATE_LAST_DIALOG_ms,0));
 
             boolean notShowAgain = preferences.getBoolean(NOT_SHOW_AGAIN,false);
             boolean notShouldShowDialog = (sessionsSinceLastDialog < sessionLimit) || (daysSinceLastDialog < daysLimit);
@@ -105,5 +105,61 @@ public class MCMCampaignsLogics {
         }
 
         return shouldShowDialog;
+    }
+
+    public static void updateRateDialogSession(Context context, MCMCampaignDTO campaignDTO) {
+        SharedPreferences prefs = getRateMyAppSharedPreferences(context);
+        SharedPreferences.Editor editor = getRateMyAppPreferencesEditor(context);
+
+        //Update the campaignId on preferences
+        if (!prefs.getBoolean(campaignDTO.getCampaignId(),false)) {
+            editor.putBoolean(campaignDTO.getCampaignId(),true);
+        }
+
+        //Update the sessions number
+        int formerSessions = prefs.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
+        editor.putInt(SESSIONS_SINCE_LAST_DIALOG,formerSessions+1);
+
+        editor.commit();
+    }
+
+    public static void updateRateDialogDate(Context context, MCMCampaignDTO campaignDTO) {
+        updateRateDialog(context,campaignDTO,true);
+    }
+
+    public static void updateRateDialogDontShowAgain(Context context, MCMCampaignDTO campaignDTO) {
+        updateRateDialog(context,campaignDTO,false);
+    }
+
+    private static void updateRateDialog(Context context, MCMCampaignDTO campaignDTO, boolean showAgain) {
+        SharedPreferences.Editor editor = getRateMyAppPreferencesEditor(context);
+
+        //If it is necessary show the dialog again, update the control parameters
+        if (showAgain) {
+            editor.putLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis());
+
+
+        } else { //Otherwise set the NOT_SHOW_AGAIN parameter to true
+            editor.putBoolean(NOT_SHOW_AGAIN,true);
+        }
+
+        editor.commit();
+    }
+
+    private static SharedPreferences getRateMyAppSharedPreferences(Context context) {
+        return context.getSharedPreferences(RATE_MY_APP_PREFERENCES, 0);
+    }
+
+    private static SharedPreferences.Editor getRateMyAppPreferencesEditor(Context context) {
+        return getRateMyAppSharedPreferences(context).edit();
+    }
+
+    private static int getDaysFromDateInMilliseconds(long millisecondsDate) {
+
+        long currentDate = System.currentTimeMillis();
+
+        int days = (int) ((millisecondsDate - currentDate) / (24 * 60 * 60 * 1000));
+
+        return days;
     }
 }
