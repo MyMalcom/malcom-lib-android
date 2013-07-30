@@ -98,8 +98,6 @@ public class MCMCampaignsLogics {
             int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,1); //By
             int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis()));
 
-            Log.d(MCMDefines.LOG_TAG, "Sessions since last dialog: "+sessionsSinceLastDialog+" Days since Las dialog: "+daysSinceLastDialog);
-
             boolean notShowAgain = preferences.getBoolean(NOT_SHOW_AGAIN,false);
             boolean notShouldShowDialog = (sessionsSinceLastDialog < sessionLimit) && (daysSinceLastDialog < daysLimit);
 

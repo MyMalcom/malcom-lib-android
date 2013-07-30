@@ -296,28 +296,30 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     private void createRateDialog(MCMCampaignDTO campaignDTO) {
 
-        //TODO: Pedro: Notificar al servidor IMPRESSION
+        //TODO: Pedro: Notify the callback
+        new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT,campaignDTO.getCampaignId());
         MCMCampaignHelper.showRateMyAppDialog(activity, campaignDTO, new MCMCampaignHelper.RateMyAppDialogDelegate() {
             @Override
             public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
                 Log.d(MCMDefines.LOG_TAG,"Rate pressed");
-//                mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + APP_PNAME)));
-                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext(),campaignDTO);
-                //TODO: Pedro: Notificar al servidor RATE
+                //TODO: Pedro: Open the market
+//                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=")));
+                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_RATE_HIT,campaignDTO.getCampaignId());
             }
 
             @Override
             public void dialogDisablePressed(MCMCampaignDTO campaignDTO) {
                 Log.d(MCMDefines.LOG_TAG,"Disable rate pressed");
-                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext(),campaignDTO);
-                //TODO: Pedro: Notificar al servidor NEVER_RATE
+                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_NEVER_HIT,campaignDTO.getCampaignId());
             }
 
             @Override
             public void dialogRemindMeLaterPressed(MCMCampaignDTO campaignDTO) {
                 Log.d(MCMDefines.LOG_TAG,"Remind me later pressed");
-                MCMCampaignsLogics.updateRateDialogDate(activity.getApplicationContext(),campaignDTO);
-                //TODO: Pedro: Notificar al servidor REMIND_LATER
+                MCMCampaignsLogics.updateRateDialogDate(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_REMIND_HIT,campaignDTO.getCampaignId());
             }
         });
     }
