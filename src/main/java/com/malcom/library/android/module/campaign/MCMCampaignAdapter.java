@@ -1,8 +1,10 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -303,9 +305,12 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         MCMCampaignHelper.showRateMyAppDialog(activity, campaignDTO, new MCMCampaignHelper.RateMyAppDialogDelegate() {
             @Override
             public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
-                Log.d(MCMDefines.LOG_TAG,"Rate pressed");
-                //TODO: Pedro: Open the market
-//                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=")));
+
+                //Open the market
+                Uri uri = Uri.parse("market://details?id=" + activity.getPackageName());
+                activity.startActivity(new Intent(Intent.ACTION_VIEW,uri));
+
+                //Update the control parameters
                 MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_RATE_HIT,campaignDTO.getCampaignId());
 
@@ -314,7 +319,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
             @Override
             public void dialogDisablePressed(MCMCampaignDTO campaignDTO) {
-                Log.d(MCMDefines.LOG_TAG,"Disable rate pressed");
+
+                //Update the control parameters
                 MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_NEVER_HIT,campaignDTO.getCampaignId());
 
@@ -323,7 +329,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
             @Override
             public void dialogRemindMeLaterPressed(MCMCampaignDTO campaignDTO) {
-                Log.d(MCMDefines.LOG_TAG,"Remind me later pressed");
+
+                //Update the control parameters
                 MCMCampaignsLogics.updateRateDialogDate(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_REMIND_HIT,campaignDTO.getCampaignId());
 
