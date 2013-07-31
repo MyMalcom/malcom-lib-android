@@ -75,7 +75,7 @@ public class MCMCampaignHelper {
         TextView tv = new TextView(activity);
         tv.setText(message);
         tv.setTextColor(Color.GRAY);
-        tv.setWidth(MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_LEFT));
+        tv.setWidth(MCMUtils.getDPI(ctx,MCMCampaignDefines.DIALOG_WIDTH));
         tv.setPadding(MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_LEFT),
                 MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_TOP),
                 MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_RIGHT),

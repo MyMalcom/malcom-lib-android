@@ -296,8 +296,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     private void createRateDialog(MCMCampaignDTO campaignDTO) {
 
-        //TODO: Pedro: Notify the callback
+        //Only notify when the dialog will be shown
         new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT,campaignDTO.getCampaignId());
+        notifyCampaignDidLoad();
+
         MCMCampaignHelper.showRateMyAppDialog(activity, campaignDTO, new MCMCampaignHelper.RateMyAppDialogDelegate() {
             @Override
             public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
@@ -306,6 +308,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 //                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=")));
                 MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_RATE_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
             }
 
             @Override
@@ -313,6 +317,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
                 Log.d(MCMDefines.LOG_TAG,"Disable rate pressed");
                 MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_NEVER_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
             }
 
             @Override
@@ -320,6 +326,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
                 Log.d(MCMDefines.LOG_TAG,"Remind me later pressed");
                 MCMCampaignsLogics.updateRateDialogDate(activity.getApplicationContext());
                 new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_REMIND_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
             }
         });
     }
