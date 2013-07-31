@@ -95,7 +95,7 @@ public class MCMCampaignsLogics {
             int daysLimit = Integer.parseInt(campaignDTO.getClientLimitFeature(ATTR_DAYS_UNTIL_PROMT));
 
             //Check the client limits and "notshowagain"
-            int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,1); //By
+            int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
             int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis()));
 
             boolean notShowAgain = preferences.getBoolean(NOT_SHOW_AGAIN,false);
@@ -122,7 +122,7 @@ public class MCMCampaignsLogics {
         }
 
         //Update the sessions number
-        int formerSessions = prefs.getInt(SESSIONS_SINCE_LAST_DIALOG,1);
+        int formerSessions = prefs.getInt(SESSIONS_SINCE_LAST_DIALOG,-1); //To get 0 sessions the first time
         editor.putInt(SESSIONS_SINCE_LAST_DIALOG,formerSessions+1);
 
         editor.commit();
@@ -153,10 +153,8 @@ public class MCMCampaignsLogics {
     }
 
     private static void clearRateMyAppControlParameters(Context context) {
-        Log.d(MCMDefines.LOG_TAG,"ClearRateMyAppControlParameters");
         SharedPreferences.Editor editor = getRateMyAppPreferencesEditor(context);
 
-        //TODO: Pedro: Comprobar si se comporta correctamente al crear una nueva campania
         editor.clear();
         editor.commit();
     }
