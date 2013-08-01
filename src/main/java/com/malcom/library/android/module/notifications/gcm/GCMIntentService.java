@@ -146,7 +146,10 @@ public class GCMIntentService extends GCMBaseIntentService {
             // Sound
             String soundName = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
                     + MCMNotificationModule.ANDROID_NOTIFICATION_SOUND_KEY);
-            int notificationSoundId = context.getResources().getIdentifier(soundName , "raw", context.getPackageName());
+            int notificationSoundId = 0;
+            if (soundName != null) {
+                notificationSoundId = context.getResources().getIdentifier(soundName , "raw", context.getPackageName());
+            }
             if (notificationSoundId != 0) {
                 notification.sound = Uri.parse("android.resource://" + context.getPackageName() + "/"+notificationSoundId);
             } else {
