@@ -82,13 +82,14 @@ public class MCMCampaignAsyncTasks {
                         Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+objectJSON.getString("description"));
                         errorMessage = objectJSON.getString("description");
                     }
-                } else {
-                    errorMessage = "Wrong response format";
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+e.getMessage());
                 errorMessage = "Wrong response format";
+            } catch (Exception e) {
+                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+e.getMessage());
+                errorMessage = "Error in campaign request: "+e.getMessage();
             }
 
             return receivedCampaignsArray;
@@ -99,7 +100,7 @@ public class MCMCampaignAsyncTasks {
             // After receiving campaign data, prepare banner
             if (campaignsArray.size() > 0) {
                 campaignAdapter.proccessResponse(campaignsArray);
-            } else if (errorMessage.length() > 0){
+            } else {
                 campaignAdapter.notifyCampaignDidFail(errorMessage);
             }
         }
@@ -118,7 +119,7 @@ public class MCMCampaignAsyncTasks {
             JSONObject jObject = null;
             try {
                 // Send request to Malcom and log it
-                Log.d(MCMDefines.LOG_TAG, ">>> getJSONfromURL: " + url);
+                Log.d(MCMDefines.LOG_TAG, "Campaign request url: " + url);
 
                 // TODO: Refactor this by extracting the headers build to a static helper class. This class should be used by all the methods connecting with Malcom Server
 
@@ -240,8 +241,7 @@ public class MCMCampaignAsyncTasks {
                 e1.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-            ;
+            };
 
             return 0;
         }
