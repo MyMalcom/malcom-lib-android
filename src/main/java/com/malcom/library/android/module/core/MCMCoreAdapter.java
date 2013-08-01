@@ -47,7 +47,7 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  */
 public class MCMCoreAdapter {
 	
-	public static final String SDK_VERSION = "1.0.3";
+	public static final String SDK_VERSION = "1.0.4";
 	public static final String MALCOM_LIBRARY_PREFERENCES_FILE_NAME = "com.malcom.library.android";
 	
 	public static final String PROPERTIES_MALCOM_BASEURL = "MalcomBaseURL";
@@ -703,6 +703,15 @@ public class MCMCoreAdapter {
 
     public void moduleCampaignRequestPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
+    }
+
+    /**
+     * Method that add an RateMyApp alert based on the server params
+     * @param activity where the alert will be shown
+     * @param delegate for handle the campaign behaviour
+     */
+    public void moduleCampaignAddRateMyApp(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+        MCMCampaignAdapter.getInstance().addRateAlert(activity, delegate);
     }
 
 }
