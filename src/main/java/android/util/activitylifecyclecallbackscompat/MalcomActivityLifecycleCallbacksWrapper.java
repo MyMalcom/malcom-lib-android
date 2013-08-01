@@ -33,7 +33,7 @@ import android.os.Bundle;
  * Wraps an {@link MalcomActivityLifecycleCallbacksCompat} into an {@link ActivityLifecycleCallbacks}.
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-/* package */class MalcomActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
+class MalcomActivityLifecycleCallbacksWrapper implements ActivityLifecycleCallbacks {
     private MalcomActivityLifecycleCallbacksCompat mCallback;
 
     public MalcomActivityLifecycleCallbacksWrapper(MalcomActivityLifecycleCallbacksCompat callback) {

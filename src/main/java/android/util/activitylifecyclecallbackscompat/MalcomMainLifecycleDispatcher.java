@@ -48,13 +48,13 @@ public class MalcomMainLifecycleDispatcher implements MalcomActivityLifecycleCal
 
     private ArrayList<MalcomActivityLifecycleCallbacksCompat> mActivityLifecycleCallbacks = new ArrayList<MalcomActivityLifecycleCallbacksCompat>();
 
-    /* package */void registerActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
+    void registerActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {
             mActivityLifecycleCallbacks.add(callback);
         }
     }
 
-    /* package */void unregisterActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
+    void unregisterActivityLifecycleCallbacks(MalcomActivityLifecycleCallbacksCompat callback) {
         synchronized (mActivityLifecycleCallbacks) {
             mActivityLifecycleCallbacks.remove(callback);
         }

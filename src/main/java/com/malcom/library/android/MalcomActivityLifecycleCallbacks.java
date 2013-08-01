@@ -7,22 +7,25 @@ import android.util.activitylifecyclecallbackscompat.MalcomActivityLifecycleCall
 
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by PedroDuran on 23/07/13.
  */
 public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycleCallbacksCompat {
 
-    private static int openActivities;
-    private static int resumed;
-    private static int stopped;
+//    private static int openActivities;
+    private static AtomicInteger openActivities;
+    private static AtomicInteger resumed;
+    private static AtomicInteger stopped;
 
     // And add this public static function
     public static boolean isApplicationInForeground() {
-        return resumed > stopped;
+        return resumed.get() > stopped.get();
     }
 
     public static boolean isApplicationClosing() {
-        return (openActivities == 0) && (resumed == stopped);
+        return (openActivities.get() == 0) && (resumed.get() == stopped.get());
     }
 
     @Override
@@ -40,18 +43,18 @@ public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycle
 
     @Override
     public void onActivityResumed(Activity activity) {
-        openActivities++;
-        resumed++;
+        openActivities.getAndIncrement();
+        resumed.getAndIncrement();
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        openActivities--;
+        openActivities.getAndDecrement();
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
-        stopped++;
+        stopped.getAndIncrement();
         if (isApplicationClosing()) {
             Log.d(MCMDefines.LOG_TAG, "Malcom session stops");
             MCMCoreAdapter.getInstance().moduleStatsEndBeacon();
