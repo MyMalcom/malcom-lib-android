@@ -2,9 +2,6 @@ package com.malcom.library.android.module.campaign;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
-
-import com.malcom.library.android.MCMDefines;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,6 +15,14 @@ import java.util.Random;
  * To change this template use File | Settings | File Templates.
  */
 public class MCMCampaignsLogics {
+
+    private static final String ATTR_TIMES_BEFORE_REMINDING = "TIMES_BEFORE_REMINDING";
+    private static final String ATTR_DAYS_UNTIL_PROMT = "DAYS_UNTIL_PROMT";
+
+    private static final String RATE_MY_APP_PREFERENCES = "RateMyAppPreferences";
+    private static final String NOT_SHOW_AGAIN = "DontShowAgain";
+    private static final String SESSIONS_SINCE_LAST_DIALOG = "SessionsSinceLastDialog";
+    private static final String DATE_LAST_DIALOG_MS = "DateLastDialog";
 
     /**
      * Method that filter the promotion campaign items from arrayList
@@ -69,15 +74,7 @@ public class MCMCampaignsLogics {
 
         return selectedCampaignModel;
 
-    }
-
-    private static final String ATTR_TIMES_BEFORE_REMINDING = "TIMES_BEFORE_REMINDING";
-    private static final String ATTR_DAYS_UNTIL_PROMT = "DAYS_UNTIL_PROMT";
-
-    private static final String RATE_MY_APP_PREFERENCES = "RateMyAppPreferences";
-    private static final String NOT_SHOW_AGAIN = "DontShowAgain";
-    private static final String SESSIONS_SINCE_LAST_DIALOG = "SessionsSinceLastDialog";
-    private static final String DATE_LAST_DIALOG_ms = "DateLastDialog";                    //In miliseconds
+    }                   //In miliseconds
 
     public static boolean shouldShowDialog(Context context, MCMCampaignDTO campaignDTO) {
         //By default should show the dialog
@@ -96,7 +93,7 @@ public class MCMCampaignsLogics {
 
             //Check the client limits and "notshowagain"
             int sessionsSinceLastDialog = preferences.getInt(SESSIONS_SINCE_LAST_DIALOG,0);
-            int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis()));
+            int daysSinceLastDialog = getDaysFromDateInMilliseconds(preferences.getLong(DATE_LAST_DIALOG_MS, System.currentTimeMillis()));
 
             boolean notShowAgain = preferences.getBoolean(NOT_SHOW_AGAIN,false);
             boolean notShouldShowDialog = (sessionsSinceLastDialog < sessionLimit) && (daysSinceLastDialog < daysLimit);
@@ -141,7 +138,7 @@ public class MCMCampaignsLogics {
 
         //If it is necessary show the dialog again, update the control parameters
         if (showAgain) {
-            editor.putLong(DATE_LAST_DIALOG_ms, System.currentTimeMillis());
+            editor.putLong(DATE_LAST_DIALOG_MS, System.currentTimeMillis());
             //Reset the session number
             editor.putInt(SESSIONS_SINCE_LAST_DIALOG,1);
 

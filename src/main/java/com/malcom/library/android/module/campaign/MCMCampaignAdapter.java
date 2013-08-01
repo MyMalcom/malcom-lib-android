@@ -185,7 +185,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      *
      * @param campaignsArray the campaigns collected from the server's response
      */
-    protected void proccessResponse(ArrayList<MCMCampaignDTO> campaignsArray) {
+    protected void processResponse(ArrayList<MCMCampaignDTO> campaignsArray) {
 
         //Gets the campaigns for the current type
         MCMCampaignDTO selectedCampaign = null;
@@ -307,7 +307,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
             public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
 
                 //Open the market
-                Uri uri = Uri.parse("market://details?id=" + activity.getPackageName());
+                Uri uri = Uri.parse("market://details?id=" + activity.getApplication().getPackageName());
                 activity.startActivity(new Intent(Intent.ACTION_VIEW,uri));
 
                 //Update the control parameters

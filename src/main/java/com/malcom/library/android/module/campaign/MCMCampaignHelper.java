@@ -1,8 +1,10 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -18,7 +20,7 @@ import com.malcom.library.android.utils.MCMUtils;
  */
 public class MCMCampaignHelper {
 
-    protected interface RateMyAppDialogDelegate {
+    public interface RateMyAppDialogDelegate {
 
         public void dialogRatePressed(MCMCampaignDTO campaignDTO);
         public void dialogDisablePressed(MCMCampaignDTO campaignDTO);
@@ -26,7 +28,7 @@ public class MCMCampaignHelper {
     }
 
     /**
-     * Mtehod that creates an alert for rate my app campaign
+     * Method that creates an alert for rate my app campaign
      * @param activity
      * @param campaignDTO
      * @param delegate
@@ -63,60 +65,41 @@ public class MCMCampaignHelper {
             disableButtonText = activity.getString(idDisable);
         }
 
-        Context ctx = activity.getApplicationContext();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
 
-        final Dialog dialog = new Dialog(activity);
-        dialog.setTitle(title);
+        //Configure alert dialog
+        alertDialogBuilder
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(true)
+                .setPositiveButton(rateButtonText, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        delegate.dialogRatePressed(campaignDTO);
+                        dialog.dismiss();
+                    }
+                })
+                .setNeutralButton(remindMeLaterButtonText, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        delegate.dialogRemindMeLaterPressed(campaignDTO);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton(disableButtonText, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        delegate.dialogDisablePressed(campaignDTO);
+                        dialog.dismiss();
+                    }
+                });
 
-        LinearLayout ll = new LinearLayout(activity);
-        ll.setOrientation(LinearLayout.VERTICAL);
 
-        //Message TextView
-        TextView tv = new TextView(activity);
-        tv.setText(message);
-        tv.setTextColor(Color.GRAY);
-        tv.setWidth(MCMUtils.getDPI(ctx,MCMCampaignDefines.DIALOG_WIDTH));
-        tv.setPadding(MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_LEFT),
-                MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_TOP),
-                MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_RIGHT),
-                MCMUtils.getDPI(ctx,MCMCampaignDefines.TEXT_VIEW_MARGIN_BOTTOM));
-        ll.addView(tv);
 
-        //Rate Button
-        Button b1 = new Button(activity);
-        b1.setText(rateButtonText);
-        b1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                delegate.dialogRatePressed(campaignDTO);
-                dialog.dismiss();
-            }
-        });
-        ll.addView(b1);
+        //Create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
 
-        //Remind Button
-        Button b2 = new Button(activity);
-        b2.setText(remindMeLaterButtonText);
-        b2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                delegate.dialogRemindMeLaterPressed(campaignDTO);
-                dialog.dismiss();
-            }
-        });
-        ll.addView(b2);
+        //Show it
+        alertDialog.show();
 
-        //Disable Button
-        Button b3 = new Button(activity);
-        b3.setText(disableButtonText);
-        b3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                delegate.dialogDisablePressed(campaignDTO);
-                dialog.dismiss();
-            }
-        });
-        ll.addView(b3);
 
-        dialog.setContentView(ll);
-        dialog.show();
     }
 
 }

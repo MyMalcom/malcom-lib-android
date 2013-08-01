@@ -88,7 +88,7 @@ public class MCMCampaignAsyncTasks {
                 Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+e.getMessage());
                 errorMessage = "Wrong response format";
             } catch (Exception e) {
-                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+e.getMessage());
+                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: " + e.getMessage());
                 errorMessage = "Error in campaign request: "+e.getMessage();
             }
 
@@ -99,7 +99,7 @@ public class MCMCampaignAsyncTasks {
 
             // After receiving campaign data, prepare banner
             if (campaignsArray.size() > 0) {
-                campaignAdapter.proccessResponse(campaignsArray);
+                campaignAdapter.processResponse(campaignsArray);
             } else {
                 campaignAdapter.notifyCampaignDidFail(errorMessage);
             }
