@@ -144,8 +144,8 @@ public class MCMCampaignDTO {
         for (int i=0; i<jsonArray.length(); i++) {
             try {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                clientLimitFeatures.put((String) jsonObject.get(ATTR_CLIENT_LIMIT_TYPE),
-                        (String) jsonObject.getString(ATTR_LIMIT_VALUE));
+                clientLimitFeatures.put(jsonObject.getString(ATTR_CLIENT_LIMIT_TYPE),
+                        jsonObject.getString(ATTR_LIMIT_VALUE));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

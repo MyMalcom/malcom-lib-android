@@ -240,7 +240,7 @@ public class MCMConfigManager {
         if(isConfigurationLoaded()){
             listener.onReceivedParameter(key, (String) configuration.getProperty(key));
         }else{
-            //TODO: Pedro - Cargamos el fichero de configuración y cuando termina llamamos al callback con el
+            //TODO: Pedro - Cargamos el fichero de configuración y cuando termina llamamos al callback con el(acentuado)
             executeAfterLoad = false;
             loadConfiguration();
             if(isLoading)

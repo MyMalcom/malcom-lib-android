@@ -22,7 +22,7 @@ public class MCMCampaignsLogics {
     private static final String RATE_MY_APP_PREFERENCES = "RateMyAppPreferences";
     private static final String NOT_SHOW_AGAIN = "DontShowAgain";
     private static final String SESSIONS_SINCE_LAST_DIALOG = "SessionsSinceLastDialog";
-    private static final String DATE_LAST_DIALOG_MS = "DateLastDialog";
+    private static final String DATE_LAST_DIALOG_MS = "DateLastDialog";                     //In miliseconds
 
     /**
      * Method that filter the promotion campaign items from arrayList
@@ -74,7 +74,7 @@ public class MCMCampaignsLogics {
 
         return selectedCampaignModel;
 
-    }                   //In miliseconds
+    }
 
     public static boolean shouldShowDialog(Context context, MCMCampaignDTO campaignDTO) {
         //By default should show the dialog
@@ -168,7 +168,7 @@ public class MCMCampaignsLogics {
 
         long currentDate = System.currentTimeMillis();
 
-        int days = (int) ((millisecondsDate - currentDate) / (24 * 60 * 60 * 1000));
+        int days = (int) ((currentDate - millisecondsDate) / (24 * 60 * 60 * 1000));
 
         return days;
     }

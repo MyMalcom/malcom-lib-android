@@ -177,7 +177,7 @@ public class MCMStats {
 	}	
 	
 	/* 
-	 * Whena crash occurs, we set the "crash" flag before beacons is sent.
+	 * When a crash occurs, we set the "crash" flag before beacons is sent.
 	 *
 	 */
 	private static void onCrash(){

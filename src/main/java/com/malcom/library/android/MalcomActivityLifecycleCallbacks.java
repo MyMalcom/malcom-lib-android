@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycleCallbacksCompat {
 
 //    private static int openActivities;
-    private static AtomicInteger openActivities;
-    private static AtomicInteger resumed;
-    private static AtomicInteger stopped;
+    private static AtomicInteger openActivities = new AtomicInteger();
+    private static AtomicInteger resumed = new AtomicInteger();
+    private static AtomicInteger stopped = new AtomicInteger();
 
     // And add this public static function
     public static boolean isApplicationInForeground() {
