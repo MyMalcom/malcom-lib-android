@@ -1,5 +1,6 @@
 package com.malcom.library.android.module.campaign;
 
+import android.R;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.loopj.android.image.SmartImageTask;
+import com.loopj.android.image.SmartImageView;
 import com.malcom.library.android.MCMDefines;
 
 /**
@@ -19,11 +22,13 @@ import com.malcom.library.android.MCMDefines;
  * Time: 10:09
  * To change this template use File | Settings | File Templates.
  */
-public class MCMCampaignBannerView extends ImageView {
+public class MCMCampaignBannerView extends SmartImageView {
 
     private Activity activity;
     private MCMCampaignDTO campaign;
     private MCMCampaignBannerDelegate delegate;
+
+    private Integer loadingImageResId;
 
     private boolean imageLoaded = false;
 
@@ -39,8 +44,14 @@ public class MCMCampaignBannerView extends ImageView {
 
         setLayoutParams(layoutParams);
 
-        setScaleType(ScaleType.FIT_XY);
+        setScaleType(ImageView.ScaleType.FIT_XY);
 
+    }
+
+    public MCMCampaignBannerView(Activity activity, MCMCampaignDTO campaign, Integer loadingImageResId) {
+        this(activity,campaign);
+
+        this.loadingImageResId = loadingImageResId;
     }
 
     @Override
@@ -49,8 +60,20 @@ public class MCMCampaignBannerView extends ImageView {
 
         if (!imageLoaded){
             Log.d(MCMCampaignDefines.LOG_TAG, "Downloading CampaignImage for: " + campaign.getName());
-            //Request for remote image
-            new MCMCampaignAsyncTasks.DownloadCampaignImage(this).execute(campaign.getMedia());
+            //Set the remote image
+            this.setImageUrl(campaign.getMedia(), null, loadingImageResId, new SmartImageTask.OnCompleteListener() {
+                @Override
+                public void onComplete() {
+
+                    notifyBannerDidLoad();
+
+                    imageLoaded = true;
+
+                    // Config banner click actions
+                    setOnClickListener(new MCMCampaignBannerListener(activity, campaign, delegate));
+
+                }
+            });
         }
 
     }
@@ -86,8 +109,7 @@ public class MCMCampaignBannerView extends ImageView {
 
         imageLoaded = true;
 
-        // Config banner image and click actions
-        setImageBitmap(bitmap);
+        // Config banner click actions
         setOnClickListener(new MCMCampaignBannerListener(activity, campaign, delegate));
 
     }
