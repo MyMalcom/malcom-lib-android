@@ -627,7 +627,7 @@ public class MCMCoreAdapter {
 	 */
 	public void moduleCampaignAddBanner(Activity activity,MCMCampaignNotifiedDelegate delegate) {
 
-        moduleCampaignAddCrossSelling(activity, delegate);
+        moduleCampaignAddCrossSelling(activity, delegate, null);
 		
 	}
 	/**
@@ -657,7 +657,7 @@ public class MCMCoreAdapter {
      */
     public void moduleCampaignAddCrossSelling(Activity activity) {
 
-        moduleCampaignAddCrossSelling(activity, null);
+        moduleCampaignAddCrossSelling(activity, null, null);
     }
 
     /**
@@ -666,7 +666,10 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate);
+        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate, null);
+    }
+    public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate, loadingImgResId);
     }
 
     /**
@@ -676,9 +679,18 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate);
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate, null);
+    }
+    public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate, loadingImgResId);
     }
 
+    /**
+     * Method that requests all the available cross selling campaigns for the app and calls the receiver
+     * with the banner views to let the developer places them
+     * @param activity the context where the request is made
+     * @param receiver the interface that will be called with the retrieved data
+     */
     public void moduleCampaignRequestCrossSelling(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, receiver);
     }
@@ -689,7 +701,7 @@ public class MCMCoreAdapter {
      */
     public void moduleCampaignAddPromotion(Activity activity) {
 
-        moduleCampaignAddPromotion(activity, null);
+        moduleCampaignAddPromotion(activity, null, null);
     }
 
     /**
@@ -698,9 +710,18 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate);
+        moduleCampaignAddPromotion(activity, delegate, null);
+    }
+    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate, loadingImgResId);
     }
 
+    /**
+     * Method that requests all the available cross selling campaigns for the app and calls the receiver
+     * with the banner views to let the developer places them
+     * @param activity the context where the request is made
+     * @param receiver the interface that will be called with the retrieved data
+     */
     public void moduleCampaignRequestPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
     }
