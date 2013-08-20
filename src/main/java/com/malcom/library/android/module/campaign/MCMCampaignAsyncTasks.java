@@ -43,6 +43,8 @@ public class MCMCampaignAsyncTasks {
      */
     protected static class DownloadCampaignFile extends AsyncTask<String, Void, ArrayList<MCMCampaignDTO>> {
 
+        private final static String kErrorCampaignRequestPrefix = "Error in campaign request: ";
+
         private MCMCampaignDTO.CampaignType campaignType;
         private MCMCampaignAdapter campaignAdapter;
         private String errorMessage = "";
@@ -71,7 +73,7 @@ public class MCMCampaignAsyncTasks {
                     // Parse JSON to obtain campaign data
                     JSONArray campaignArray = (JSONArray) objectJSON.get(MCMCampaignDefines.ATTR_CAMPAIGNS_ARRAY);
 
-                    if (campaignArray != null && campaignArray.length() > 0) {
+                    if (campaignArray != null) {
 
                         for (int i = 0; i < campaignArray.length(); i++) {
                             JSONObject campaignJSON = campaignArray.getJSONObject(i);
@@ -79,17 +81,17 @@ public class MCMCampaignAsyncTasks {
                         }
 
                     } else {
-                        Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+objectJSON.getString("description"));
+                        Log.e(MCMDefines.LOG_TAG, kErrorCampaignRequestPrefix + objectJSON.getString("description"));
                         errorMessage = objectJSON.getString("description");
                     }
                 }
 
             } catch (JSONException e) {
-                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: "+e.getMessage());
-                errorMessage = "Wrong response format";
+                Log.e(MCMDefines.LOG_TAG, kErrorCampaignRequestPrefix + e.getMessage());
+                errorMessage = kErrorCampaignRequestPrefix + e.getMessage();
             } catch (Exception e) {
-                Log.e(MCMDefines.LOG_TAG, "Error in campaign request: " + e.getMessage());
-                errorMessage = "Error in campaign request: "+e.getMessage();
+                Log.e(MCMDefines.LOG_TAG, kErrorCampaignRequestPrefix + e.getMessage());
+                errorMessage = kErrorCampaignRequestPrefix + e.getMessage();
             }
 
             return receivedCampaignsArray;
