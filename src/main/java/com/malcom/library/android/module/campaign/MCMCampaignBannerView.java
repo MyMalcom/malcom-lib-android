@@ -99,21 +99,6 @@ public class MCMCampaignBannerView extends SmartImageView {
         this.delegate = delegate;
     }
 
-    /**
-     * Shows banner image after download finish.
-     * @param bitmap   - the downloaded image.
-     */
-    public void setImageBanner(Bitmap bitmap) {
-
-        notifyBannerDidLoad();
-
-        imageLoaded = true;
-
-        // Config banner click actions
-        setOnClickListener(new MCMCampaignBannerListener(activity, campaign, delegate));
-
-    }
-
     public MCMCampaignDTO getCampaign(){
         return campaign;
     }
