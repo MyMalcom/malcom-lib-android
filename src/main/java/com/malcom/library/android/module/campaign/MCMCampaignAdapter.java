@@ -53,6 +53,8 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     private MCMCampaignNotifiedDelegate delegate;
 
+    private Integer loadingImageResId;
+
     public interface RequestCampaignReceiver {
         /**
          * @param banners
@@ -90,12 +92,13 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      * @param duration     - the duration to show the campaign banner in seconds
      * @param delegate     - This is the delegate.
      */
-    public void addBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, int duration, MCMCampaignNotifiedDelegate delegate) {
+    public void addBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
 
         this.activity = activity;
         this.type = campaignType;
         setDuration(duration);
         this.delegate = delegate;
+        this.loadingImageResId = loadingImgResId;
 
         mHandler.removeCallbacks(mRemoveCampaignBanner);
 
@@ -241,7 +244,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
             configureCampaignLayout(campaign, bannerLayout);
 
             //Creates the bannerView with the campaign data
-            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign);
+            MCMCampaignBannerView bannerView = new MCMCampaignBannerView(activity, campaign, loadingImageResId);
 
             //Calculates the banner height
             float density = activity.getResources().getDisplayMetrics().density;

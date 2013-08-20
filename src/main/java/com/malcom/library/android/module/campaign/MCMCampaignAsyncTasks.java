@@ -161,45 +161,6 @@ public class MCMCampaignAsyncTasks {
         }
     }
 
-    /**
-     * DownloadCampaignImage.
-     * Async request banner image.
-     */
-    protected static class DownloadCampaignImage extends AsyncTask<String, Void, Bitmap> {
-
-        private MCMCampaignBannerView campaignBannerView;
-
-        public DownloadCampaignImage(MCMCampaignBannerView campaignBannerView) {
-            this.campaignBannerView = campaignBannerView;
-
-        }
-
-        protected Bitmap doInBackground(String... campaignMedia) {
-            String mediaURL = campaignMedia[0];
-            Bitmap bitmap = null;
-
-            try {
-                URL imageUrl = new URL(mediaURL);
-                InputStream imageImputStream = (InputStream) imageUrl.getContent();
-                bitmap = BitmapFactory.decodeStream(imageImputStream);
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                campaignBannerView.notifyBannerFailLoading("There was a problem loading the banner for campaign: "+campaignBannerView.getCampaign().getName());
-            } catch (IOException e) {
-                e.printStackTrace();
-                campaignBannerView.notifyBannerFailLoading(e.getMessage());
-            }
-            return bitmap;
-        }
-
-        protected void onPostExecute(Bitmap bitmap) {
-
-            // After downloading image, show the banner
-            campaignBannerView.setImageBanner(bitmap);
-        }
-    }
-
 
     /**
      * NotifyServer
