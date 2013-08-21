@@ -39,13 +39,6 @@
             <artifactId>jackson-core-asl</artifactId>
             <version>1.9.8</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>1.7.1</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>android</artifactId>
@@ -59,21 +52,9 @@
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
-            <artifactId>support-v4</artifactId>
-            <version>r7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.android</groupId>
             <artifactId>annotations</artifactId>
             <version>4.1.1.4</version>
         </dependency>
-        <!--
-<dependency>
-  <groupId>com.google.android.gcm</groupId>
-  <artifactId>gcm-client</artifactId>
-  <version>3</version>
-</dependency>
-     -->
     </dependencies>
     <reporting>
         <plugins>
