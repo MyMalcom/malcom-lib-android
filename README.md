@@ -34,16 +34,16 @@ Integration
  	<dependency>
 		<groupId>com.malcom.library.android</groupId>
 		<artifactId>malcom-android-library</artifactId>
-		<version>1.0.3</version>
+		<version>1.0.4</version>
 	</dependency>
  </dependencies>
 ```
 
 * Also you can add the library manually to your project. The Malcom Library for Android is composed by 3 .jar files.
- - ["malcom-android-library-&lt;version&gt;.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.3/malcom-android-library-1.0.3.jar)
- - The source code ["malcom-android-library-&lt;version&gt;-sources.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.3/malcom-android-library-1.0.3-sources.jar
+ - The source code ["malcom-android-library-1.0.4-sources.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.4/malcom-android-library-1.0.4-sources.jar
+ - ["malcom-android-library-1.0.4.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.4/malcom-android-library-1.0.4.jar)
 ) (allows debbuging)
- - The javadoc ["malcom-android-library-&lt;version&gt;-javadoc.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.3/malcom-android-library-1.0.3-javadoc.jar)
+ - The javadoc ["malcom-android-library-1.0.4-javadoc.jar"](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/1.0.4/malcom-android-library-1.0.4-javadoc.jar)
 
  In order to integrate the library you have two options:
 
