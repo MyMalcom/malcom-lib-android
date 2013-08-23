@@ -3,8 +3,10 @@ package com.malcom.library.android.module.notifications;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -76,6 +78,9 @@ public class MCMNotificationModule {
     public static EnvironmentType environmentType = null;
     public static Boolean showAlert = true;
 
+    private MalcomNotificationReceiver notReceiver = null;
+    private boolean broadcastReceiverRegistered = false;
+
 	protected MCMNotificationModule() {
 		// Exists only to defeat instantiation.
 	}	
@@ -102,7 +107,7 @@ public class MCMNotificationModule {
 	 * The environment is set by looking for the application debug mode,
 	 * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
 	 * 
-	 * @param 	context		Context.  
+	 * @param 	context		Context.
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
 	 */
@@ -126,7 +131,7 @@ public class MCMNotificationModule {
 	 */
 	public void gcmRegisterDevice(Context context, final EnvironmentType environment,
 								  String title, Boolean showAlert, Class<?> clazz){
-		
+
 		//Initializes the required variables
         senderId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_GCM_SENDERID);
 
@@ -223,6 +228,9 @@ public class MCMNotificationModule {
 	 * @param intent
 	 */
 	public void gcmCheckForNewNotification(Context context, Intent intent){
+
+        registerBroadcastReceiver(context);
+
 		if(intent.getExtras()!=null && intent.getExtras().getBoolean(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY,new Boolean(false))){
 			Log.d(MCMNotificationModule.TAG,"Notification received. Sending show order to broadcast.");
 			
@@ -249,5 +257,23 @@ public class MCMNotificationModule {
 	        context.sendBroadcast(intentOpenAlert);
 		}
 	}
+
+    public void registerBroadcastReceiver(Context context) {
+        notReceiver = new MalcomNotificationReceiver();
+        context.registerReceiver(notReceiver, new IntentFilter(MCMNotificationModule.SHOW_NOTIFICATION_ACTION));
+
+        broadcastReceiverRegistered = true;
+    }
+
+    public void unregisterBroadcastReceiver(Context context) {
+        context.unregisterReceiver(notReceiver);
+        GCMRegistrar.onDestroy(context.getApplicationContext());
+
+        broadcastReceiverRegistered = false;
+    }
+
+    public boolean isBroadcastReceiverRegistered() {
+        return broadcastReceiverRegistered;
+    }
 
 }
