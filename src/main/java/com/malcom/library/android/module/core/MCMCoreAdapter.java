@@ -298,6 +298,24 @@ public class MCMCoreAdapter {
 			throw new CoreNotInitializedException("Stats has not been initialized, use moduleStatsStartBeacon().");
 		}
 	}
+
+    /**
+     * Starts a sub-beacon(event) processing with the given name and params.
+     *
+     * @param beaconName	Name of the sub-beacon (event)
+     * @param params		SubBeacon parameters
+     */
+    public void moduleStatsStartBeaconWithName(String beaconName, Hashtable<String, Object> params){
+        if(coreInitialized){
+            try{
+                MCMStats.getSharedInstance().startSubBeaconWithName(beaconName, SubbeaconType.CUSTOM, params, false);
+            }catch(MCMStats.BeaconException e){
+                Log.e("CORE-STATS", "Error initializing sub-beacon(event) with name '"+beaconName+"' ("+e.getMessage()+")");
+            }
+        }else{
+            throw new CoreNotInitializedException("Stats has not been initialized, use moduleStatsStartBeacon().");
+        }
+    }
 	
 	/**
 	 * Starts a sub-beacon(event) processing with the given name and params.
@@ -535,7 +553,7 @@ public class MCMCoreAdapter {
      */
     public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
 
-        MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, true, clazz);
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context, environment, title, true, clazz);
 
     }
 
