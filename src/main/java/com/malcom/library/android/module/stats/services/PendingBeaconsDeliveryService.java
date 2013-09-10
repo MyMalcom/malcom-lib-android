@@ -1,17 +1,14 @@
 package com.malcom.library.android.module.stats.services;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
-
-import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.stats.MCMStats;
-import com.malcom.library.android.utils.MalcomHttpOperations;
+import com.malcom.library.android.module.stats.StatsUtils;
 import com.malcom.library.android.utils.ToolBox;
-import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
+
+import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  * Service that delivers the pending beacons to malcom server.
@@ -28,8 +25,7 @@ import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
  *
  */
 public class PendingBeaconsDeliveryService extends IntentService {
-	
-	
+
 	public PendingBeaconsDeliveryService() {
 		super("PendingBeaconsDeliveryService");
 	}
@@ -72,7 +68,7 @@ public class PendingBeaconsDeliveryService extends IntentService {
 			try {
 				byte[] beaconBytes = ToolBox.storage_readDataFromInternalStorage(getApplicationContext(), b);
 				if(beaconBytes!=null && beaconBytes.length>0){
-					sendToMalcom(new String(beaconBytes));
+					StatsUtils.sendBeaconToMalcom(new String(beaconBytes));
 				}
 				ToolBox.storage_deleteDataFromInternalStorage(getApplicationContext(), b);
 			} catch (Exception e) {
@@ -80,16 +76,4 @@ public class PendingBeaconsDeliveryService extends IntentService {
 			}
 		}
 	}
-	
-	private void sendToMalcom(String beaconData) throws Exception{
-		
-		MalcomHttpOperations.sendRequestToMalcom(MCMCoreAdapter.getInstance().coreGetProperty(
-				MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + "v1/beacon",
-				"/v1/beacon", 
-				beaconData,
-				MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID),
-				MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY), 
-				HTTP_METHOD.POST);
-	}
-	
 }
