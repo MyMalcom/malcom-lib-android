@@ -1,34 +1,22 @@
 package com.malcom.library.android.module.stats;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.util.Log;
-
 import com.malcom.library.android.module.core.MCMCoreAdapter;
-import com.malcom.library.android.module.stats.BeaconUtils;
-import com.malcom.library.android.module.stats.Subbeacon;
 import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
 import com.malcom.library.android.module.stats.services.PendingBeaconsDeliveryService;
 import com.malcom.library.android.utils.LocationUtils;
-import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.encoding.DigestUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.*;
 
 /**
  * Stats module.
@@ -47,8 +35,7 @@ public class MCMStats {
 	
 	public static final String TAG = "MCMStats";
 	public static final String CACHED_BEACON_FILE_PREFIX = "beacon_";	
-	public final static String beaconURL = "/v1/beacon";
-	
+
 	private static Context mContext;
 	
 	private static Properties properties;	
@@ -91,7 +78,6 @@ public class MCMStats {
 	 * 
 	 * @param context
 	 * @param properties
-	 * @param appCode
 	 * @param uselocation
 	 */
 	public synchronized static void initAndStartBeacon(final Context context, Properties properties, 
@@ -200,17 +186,7 @@ public class MCMStats {
 			Log.e(TAG,"Error saving the beacon for later delivery ("+e.getMessage()+")",e);
 		}
 	}
-			
-	private static void sendToMalcom(String beaconData) throws Exception{
-		
-		String url = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + beaconURL;
-		String appCode = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
-		String appSecretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
-		
-		MalcomHttpOperations.sendPostToMalcom(url, beaconURL, beaconData, appCode, appSecretKey);
-		
-	}
-	
+
 	private static String getJSON() {
 		String res = null;
 		
@@ -459,7 +435,7 @@ public class MCMStats {
 		public void run() {
 			
 			try {
-				sendToMalcom(this.beaconToSend);
+				StatsUtils.sendBeaconToMalcom(this.beaconToSend);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
