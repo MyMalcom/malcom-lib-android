@@ -719,7 +719,7 @@ public class MCMCoreAdapter {
      */
     public void moduleCampaignAddPromotion(Activity activity) {
 
-        moduleCampaignAddPromotion(activity, null, null);
+        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, null, null);
     }
 
     /**
@@ -728,10 +728,10 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddPromotion(activity, delegate, null);
+        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, delegate, null);
     }
-    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate, loadingImgResId);
+    public void moduleCampaignAddPromotion(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, duration, delegate, loadingImgResId);
     }
 
     /**
