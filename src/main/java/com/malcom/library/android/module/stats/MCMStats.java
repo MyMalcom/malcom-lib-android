@@ -142,7 +142,7 @@ public class MCMStats {
 	 */
 	public static synchronized MCMStats getSharedInstance() throws MCMStats.BeaconException {
 		
-		System.out.println("mBeacon: "+mBeacon);
+		System.out.println("mBeacon: " + mBeacon);
 		
 		if (mBeacon != null) {
 			return mBeacon;
@@ -231,7 +231,7 @@ public class MCMStats {
 	}
 
 	private static JSONArray getTagsAsJsonArray() {
-		List<String> listTags = new ArrayList<String>((Collection<? extends String>) getTags().values());
+		List<String> listTags = getTags();
 		Log.d(TAG, "Tags: "+ listTags.toString());
 		return new JSONArray(listTags);
 	}
@@ -352,16 +352,16 @@ public class MCMStats {
 	}
 	
 	//	TAGS
+
+    public static List<String> getTags() {
+
+        SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
+        List<String> tags = new ArrayList<String>((Collection<? extends String>) preferences.getAll().values());
+
+        return tags;
+    }
 	
-	public static Map<String, ?> getTags() {
-		
-		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
-        Map<String, ?> tags = preferences.getAll();
-		return preferences.getAll();
-		
-	}
-	
-	public void addTag(String tag) {
+	public static void addTag(String tag) {
 		
 		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
@@ -371,7 +371,7 @@ public class MCMStats {
 		
 	}
 	
-	public void removeTag(String tag) {
+	public static void removeTag(String tag) {
 		
 		SharedPreferences preferences = mContext.getSharedPreferences("tags", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = preferences.edit();
