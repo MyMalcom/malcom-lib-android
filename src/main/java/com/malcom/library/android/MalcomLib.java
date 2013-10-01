@@ -171,6 +171,14 @@ public class MalcomLib {
     }
 
     /**
+     * Sets the sender identifier from GCM
+     * @param senderId
+     */
+    public static void setSenderId(String senderId) {
+        MCMCoreAdapter.getInstance().setSenderId(senderId);
+    }
+
+    /**
      * Registers the device with GCM and Malcom push notification system
      * @param	context
      * @param	title		Title for the notification
