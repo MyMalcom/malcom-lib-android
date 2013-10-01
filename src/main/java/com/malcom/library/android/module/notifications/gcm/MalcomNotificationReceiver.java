@@ -7,6 +7,7 @@ import static com.malcom.library.android.module.notifications.MCMNotificationMod
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -102,10 +103,12 @@ public class MalcomNotificationReceiver extends BroadcastReceiver {
 		          public void onClick(DialogInterface dialog, int id) {
 		        	  dialog.cancel();	
 		        	  if(richMediaUrl!=null){
-			               //Open a browser.
+			               //Open a browser
 			        	   Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(richMediaUrl));
 			        	   context.startActivity(browserIntent);
-			        	  
+
+                          //Dismiss the dialog
+                          dialog.dismiss();
 		        	  }
 		        	  
 		           }
