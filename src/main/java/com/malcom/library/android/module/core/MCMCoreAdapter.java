@@ -47,7 +47,7 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  */
 public class MCMCoreAdapter {
 	
-	public static final String SDK_VERSION = "1.0.4";
+	public static final String SDK_VERSION = "1.0.5";
 	public static final String MALCOM_LIBRARY_PREFERENCES_FILE_NAME = "com.malcom.library.android";
 	
 	public static final String PROPERTIES_MALCOM_BASEURL = "MalcomBaseURL";

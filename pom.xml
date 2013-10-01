@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.malcom.library.android</groupId>
     <artifactId>malcom-android-library</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <name>Malcom - Android Library</name>
     <description>Malcom Android library.</description>
     <url>http://malcom.mymalcom.com</url>
