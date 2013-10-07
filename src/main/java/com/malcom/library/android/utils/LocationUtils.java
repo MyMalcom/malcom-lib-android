@@ -1,12 +1,11 @@
 package com.malcom.library.android.utils;
 
-import android.app.Service;
 import android.content.Context;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.malcom.library.android.MCMDefines;
@@ -18,14 +17,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 /**
  * Created by PedroDuran on 02/07/13.
  */
 public class LocationUtils {
 
+    private static final Boolean ENABLED = true;
+
     public static String getDeviceCityLocation(Context context) {
         String res = "";
         Location lastKnownLocation = getLocation(context);
+
+        //lastKnowLocation could be null, so instead of throw an NPE return an empty String
+        if ( lastKnownLocation == null )
+            return res;
 
         try {
             Geocoder gcd = new Geocoder(context, Locale.getDefault());
@@ -42,18 +49,15 @@ public class LocationUtils {
         return res;
     }
 
+    /**
+     * Gets cached location from most accurate provider
+     * @param context
+     * @return
+     */
     public static Location getLocation(Context context) {
-        Location lastKnownLocation = null;
-
-        try{
-            LocationManager locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
-            lastKnownLocation = locationManager.getLastKnownLocation(mostAccurateLocationProvider(context));
-
-        } catch (SecurityException  e) {
-            Log.i(MCMDefines.LOG_TAG, "SecurityException = " + e.getMessage());
-        }
-
-        return lastKnownLocation;
+        LocationManager locationManager = (LocationManager) context.getSystemService( LOCATION_SERVICE );
+        String provider = mostAccurateLocationProvider( locationManager );
+        return locationManager.getLastKnownLocation( provider );
     }
 
     public static JSONObject getLocationJson(Context context) {
@@ -82,63 +86,9 @@ public class LocationUtils {
         return locationJson;
     }
 
-    private static boolean getGPSStatus(Context context){
-
-        String allowedLocationProviders =
-                Settings.System.getString(context.getContentResolver(),
-                        Settings.System.LOCATION_PROVIDERS_ALLOWED);
-
-        if (allowedLocationProviders == null) {
-            allowedLocationProviders = "";
-        }
-
-        return allowedLocationProviders.contains(LocationManager.GPS_PROVIDER);
-    }
-
-    private static String mostAccurateLocationProvider(Context context) {
-        String best_provider = LocationManager.GPS_PROVIDER;
-
-        try{
-
-            LocationManager locationManager = (LocationManager) context.getSystemService(Service.LOCATION_SERVICE);
-            List<String> providers = locationManager.getAllProviders();
-
-            if (providers.size() != 0)
-            {
-                best_provider = providers.get(0);
-                Location best_provider_location = locationManager.getLastKnownLocation(best_provider);
-
-                for (int i = 1; i < providers.size(); i++)
-                {
-                    String current_provider = providers.get(i);
-                    Location current_provider_location = locationManager.getLastKnownLocation(current_provider);
-                    // if the last known location of the current provider is better
-                    // than the one of the best provider, the current provider is
-                    // considered the better now
-                    if (current_provider_location != null && best_provider_location != null)
-                    {
-                        if (current_provider_location.getAccuracy() > best_provider_location.getAccuracy())
-                        {
-                            best_provider = current_provider;
-                            best_provider_location = current_provider_location;
-                        }
-                    }
-                    // if there is no best provider and the current provider has a
-                    // last known location, the current provider is considered the
-                    // better now
-                    else if (current_provider_location != null && best_provider_location == null)
-                    {
-                        best_provider = current_provider;
-                        best_provider_location = current_provider_location;
-                    }
-
-                }
-            }
-
-        }catch (SecurityException e) {
-            Log.i(MCMDefines.LOG_TAG, "SecurityException = " + e.getMessage());
-        }
-
-        return best_provider;
+    private static String mostAccurateLocationProvider(LocationManager locationManager) {
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy( Criteria.ACCURACY_FINE );
+        return locationManager.getBestProvider( criteria, ENABLED );
     }
 }
