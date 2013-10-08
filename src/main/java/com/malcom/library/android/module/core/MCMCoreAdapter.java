@@ -626,7 +626,7 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that adds the campaigns to the specified activity.  By default, campaigns will last 15 seconds.
 	 * @param activity
-     * @deprecated use #moduleCampaignAddCrossSelling(Activity) instead.
+     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
 	 */
 	public void moduleCampaignAddBanner(Activity activity) {
 		
@@ -646,7 +646,7 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that sets the duration of the Banner
 	 * @param duration integer indicating the time that is going to be shown the banner in seconds. If the banner is desired to be always on screen you'll need to set to zero the duration.
-     * @deprecated use #moduleCampaignAddCrossSelling(Activity) instead.
+     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
 	 */
 	public void moduleCampaignSetBannerDuration(int duration) {
 		
