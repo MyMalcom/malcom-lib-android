@@ -86,9 +86,11 @@ public class LocationUtils {
         return locationJson;
     }
 
-    private static String mostAccurateLocationProvider(LocationManager locationManager) {
+    private static String mostAccurateLocationProvider(LocationManager locationManager)
+    {
         Criteria criteria = new Criteria();
         criteria.setAccuracy( Criteria.ACCURACY_FINE );
-        return locationManager.getBestProvider( criteria, ENABLED );
+        String bestProvider = locationManager.getBestProvider( criteria, ENABLED ); // Could be null if there isn't provider matching with criteria
+        return bestProvider != null ? bestProvider : LocationManager.NETWORK_PROVIDER;
     }
 }
