@@ -210,11 +210,9 @@ public class MalcomLib {
 
     /**
      * Check if there are notifications to be shown
-     * @param context
-     * @param intent	Intent that has the extras including notification data.
      */
-    public static void checkForNewNotifications(Context context, Intent intent){
-        MCMCoreAdapter.getInstance().moduleNotificationsCheckForNewNotifications(context, intent);
+    public static void checkForNewNotifications(Activity activity) {
+        MCMCoreAdapter.getInstance().moduleNotificationsCheckForNewNotifications(activity);
     }
 
     /**

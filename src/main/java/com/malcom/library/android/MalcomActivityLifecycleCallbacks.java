@@ -6,7 +6,6 @@ import android.util.Log;
 import android.util.activitylifecyclecallbackscompat.MalcomActivityLifecycleCallbacksCompat;
 
 import com.malcom.library.android.module.core.MCMCoreAdapter;
-import com.malcom.library.android.module.notifications.MCMNotificationModule;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,12 +59,6 @@ public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycle
             Log.d(MCMDefines.LOG_TAG, "Malcom session stops");
             MCMCoreAdapter.getInstance().moduleStatsEndBeacon();
         }
-
-        //Unregister the broadcast receiver only if the notification module has registered it
-        if (MCMNotificationModule.getInstance().isBroadcastReceiverRegistered()) {
-            MCMNotificationModule.getInstance().unregisterBroadcastReceiver(activity.getApplicationContext());
-        }
-
     }
 
     @Override
