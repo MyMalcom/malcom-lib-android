@@ -2,7 +2,7 @@
 
 &nbsp;
 
-Malcom SDK help you discover how and where people are using your app. You can quickly identify your most engaged and valuable users and offer them more value in your app.
+Malcom SDK helps you discover how and where people are using your app. You can quickly identify your most engaged and valuable users and offer them more value in your app.
 
 Basic setup is simple and quick, taking less than 5 minutes. More malcom features can be added just as easily.
 
@@ -10,8 +10,8 @@ Basic setup is simple and quick, taking less than 5 minutes. More malcom feature
 
 What you will find here:
 
-### [Getting started](https://github.com/MyMalcom/malcom-lib-android/wiki/Basic-setup-1.0.4)
-### [Technical support](https://github.com/MyMalcom/malcom-lib-android/wiki/Technical-support)
+### [Getting started](doc/Basic-setup.md)
+### [Technical support](doc/Technical-support.md)
 &nbsp;
 &nbsp;
 
