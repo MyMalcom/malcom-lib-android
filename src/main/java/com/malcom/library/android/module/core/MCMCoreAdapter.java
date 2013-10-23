@@ -46,8 +46,10 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  * @since	2012
  */
 public class MCMCoreAdapter {
-	
-	public static final String SDK_VERSION = "1.0.4";
+
+	// This constant should be changed when upgrading the project version in POM (TODO: Take it from there)
+	public static final String SDK_VERSION = "2.0.0";
+
 	public static final String MALCOM_LIBRARY_PREFERENCES_FILE_NAME = "com.malcom.library.android";
 	
 	public static final String PROPERTIES_MALCOM_BASEURL = "MalcomBaseURL";
@@ -603,14 +605,10 @@ public class MCMCoreAdapter {
 	
 	/**
 	 * Check if there are notifications to be shown.
-	 * 
-	 * @param context
-	 * @param intent	Intent that has the extras including notification data.
 	 */
-	public void moduleNotificationsCheckForNewNotifications(Context context, Intent intent){
-		
-		MCMNotificationModule.getInstance().gcmCheckForNewNotification(context.getApplicationContext(), intent);
-		
+	public void moduleNotificationsCheckForNewNotifications(Activity activity) {
+
+		MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity);
 	}
 	
 	/**
@@ -630,7 +628,7 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that adds the campaigns to the specified activity.  By default, campaigns will last 15 seconds.
 	 * @param activity
-     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
+     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
 	 */
 	public void moduleCampaignAddBanner(Activity activity) {
 		
@@ -639,9 +637,8 @@ public class MCMCoreAdapter {
 	
 	/**
 	 * Method that adds the campaigns to the specified activity. With this method you can use the delegates for handling the performing of the banners.  By default, campaigns will last 15 seconds.
-	 * @param activity
-	 * @param delegate
-     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
+	 *
+     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
 	 */
 	public void moduleCampaignAddBanner(Activity activity,MCMCampaignNotifiedDelegate delegate) {
 
@@ -651,7 +648,7 @@ public class MCMCoreAdapter {
 	/**
 	 * Method that sets the duration of the Banner
 	 * @param duration integer indicating the time that is going to be shown the banner in seconds. If the banner is desired to be always on screen you'll need to set to zero the duration.
-     * @deprecated use {@link moduleCampaignAddCrossSelling()} instead.
+     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
 	 */
 	public void moduleCampaignSetBannerDuration(int duration) {
 		
@@ -719,7 +716,7 @@ public class MCMCoreAdapter {
      */
     public void moduleCampaignAddPromotion(Activity activity) {
 
-        moduleCampaignAddPromotion(activity, null, null);
+        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, null, null);
     }
 
     /**
@@ -728,10 +725,10 @@ public class MCMCoreAdapter {
      * @param delegate delegate for handling the performing of the banners
      */
     public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddPromotion(activity, delegate, null);
+        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, delegate, null);
     }
-    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, 0, delegate, loadingImgResId);
+    public void moduleCampaignAddPromotion(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, duration, delegate, loadingImgResId);
     }
 
     /**

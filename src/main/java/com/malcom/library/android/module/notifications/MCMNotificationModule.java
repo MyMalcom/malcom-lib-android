@@ -79,7 +79,6 @@ public class MCMNotificationModule {
     public static Boolean showAlert = true;
 
     private MalcomNotificationReceiver notReceiver = null;
-    private boolean broadcastReceiverRegistered = false;
 
 	protected MCMNotificationModule() {
 		// Exists only to defeat instantiation.
@@ -220,12 +219,32 @@ public class MCMNotificationModule {
 			mRegisterTask.cancel(true);
 	    }
 	}
-	
+
+	/**
+	 * If the activity intent comes from a notification a dialog is shown with the notification message.
+	 */
+	public void gcmCheckForNewNotification(Activity activity)
+	{
+		Intent intent = activity.getIntent();
+
+		if (intent.getExtras() != null && intent.getExtras().getBoolean(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY, false))
+		{
+			Log.d(MCMNotificationModule.TAG,"Notification received. Displaying dialog.");
+
+			// So the message is not displayed again
+			intent.putExtra(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY, false);
+
+			// Trick to reuse receiver code until we properly refactor
+			final MalcomNotificationReceiver dummyNotificationReceiver = new MalcomNotificationReceiver();
+			intent.setAction(MCMNotificationModule.SHOW_NOTIFICATION_ACTION);
+			dummyNotificationReceiver.onReceive(activity, intent);
+		}
+	}
+
 	/**
 	 * Makes the UI to show the alert for any received notification.
-	 * 
-	 * @param context
-	 * @param intent
+	 *
+	 * @deprecated use {@link #gcmCheckForNewNotification(android.app.Activity)}
 	 */
 	public void gcmCheckForNewNotification(Context context, Intent intent){
 
@@ -258,22 +277,23 @@ public class MCMNotificationModule {
 		}
 	}
 
+	/** @deprecated remove */
     public void registerBroadcastReceiver(Context context) {
+
+		if (notReceiver != null)
+			unregisterBroadcastReceiver(context);
+
         notReceiver = new MalcomNotificationReceiver();
         context.registerReceiver(notReceiver, new IntentFilter(MCMNotificationModule.SHOW_NOTIFICATION_ACTION));
-
-        broadcastReceiverRegistered = true;
     }
 
+	/** @deprecated remove */
     public void unregisterBroadcastReceiver(Context context) {
-        context.unregisterReceiver(notReceiver);
-        GCMRegistrar.onDestroy(context.getApplicationContext());
 
-        broadcastReceiverRegistered = false;
-    }
-
-    public boolean isBroadcastReceiverRegistered() {
-        return broadcastReceiverRegistered;
-    }
-
+		if (notReceiver != null) {
+			context.unregisterReceiver(notReceiver);
+			GCMRegistrar.onDestroy(context.getApplicationContext());
+			notReceiver = null;
+		}
+	}
 }

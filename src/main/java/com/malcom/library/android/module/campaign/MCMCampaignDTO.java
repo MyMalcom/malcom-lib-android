@@ -63,7 +63,8 @@ public class MCMCampaignDTO {
             campaignId = json.getString(ATTR_CAMPAIGN_ID);
             name = json.getString(ATTR_NAME);
             start = json.getString(ATTR_START);
-            end = json.getString(ATTR_END);
+            if (json.has(ATTR_END))             //Optional
+                end = json.getString(ATTR_END);
             createdOn = json.getString(ATTR_CREATED_ON);
             if (json.has(ATTR_DESCRIPTION_FEATURE))
                 campaignDescription = json.getJSONObject(ATTR_DESCRIPTION_FEATURE).getString(ATTR_PROMOTION_DESCRIPTION);

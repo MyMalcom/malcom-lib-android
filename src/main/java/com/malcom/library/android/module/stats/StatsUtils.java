@@ -5,7 +5,7 @@ import com.malcom.library.android.utils.MalcomHttpOperations;
 
 public class StatsUtils
 {
-	public final static String beaconURL = "/v1/beacon";
+	public final static String beaconURL = "v1/beacon";
 
 	public static void sendBeaconToMalcom(String beaconData) throws Exception
 	{
