@@ -61,7 +61,7 @@ public class MalcomLib {
      * @param defaultValue value by default
      * @return
      */
-    public static String getAdvancedConfigutarion(String key, String defaultValue){
+    public static String getConfiguredProperty(String key, String defaultValue){
         String value;
         try {
             value = MCMCoreAdapter.getInstance().moduleConfigurationGetProperty(key);
