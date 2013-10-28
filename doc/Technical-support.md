@@ -1,1 +1,0 @@
-Technical support will go here
