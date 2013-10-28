@@ -10,8 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +24,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -81,7 +79,6 @@ public class MCMConfigManager {
 	
 	private LinearLayout splash_layout;
 	private ImageView splashImageView;
-	private Bitmap splashBitmapData;
 	private LinearLayout splash_progress_zone;
 	
 	private LinearLayout interstitialLayout;
@@ -97,8 +94,6 @@ public class MCMConfigManager {
 	private String originalTitle;
 	
 	private boolean executeAfterLoad;
-	
-	Handler handler = new Handler();
 	
 	private static boolean configShown;
 	
@@ -387,7 +382,7 @@ public class MCMConfigManager {
 		//((RelativeLayout)activity.findViewById(configLayoutResId)).setVisibility(View.VISIBLE);
 		Log.d(MCMDefines.LOG_TAG, "Execute config with configuration: "+configuration);
 		if(configuration!=null){
-			if(configuration.isSplash()){				
+			if(configuration.isSplash()){
 				showSplash(isNetworkAccess);
 			}
 			if(configuration.isInterstitial()) {				
@@ -511,7 +506,7 @@ public class MCMConfigManager {
 	    	this.splash_progress_zone.setVisibility(View.VISIBLE);
 	    	
 	    	PrepareAndShowSplashImage prepareSplashImage = new PrepareAndShowSplashImage(isNetworkAccess);
-	    	prepareSplashImage.start();
+	    	prepareSplashImage.execute();
 	    	
     	}
     }
@@ -752,80 +747,71 @@ public class MCMConfigManager {
          }
     }
     
-    /*
-     * This class is used to get and show the splash
-     * image.
-     * 
-     * We run this process in a separate thread to be able 
-     * to show a loading info while the splash is not yet
-     * prepared to be shown.
-     *  
-     * @author Malcom Ventures S.L
-     * @since  2012
-     *
+    /**
+     * This task gets and displays the splash image.
+	 *
+	 * First, it downloads the splash image if possible. Then, it tries to retrieve the downloaded image
+	 * or, if it is not found, it tries to get the image from the 'assets' folder.
+	 *
+	 * When the image Bitmap is loaded, it publishes progress with that Bitmap so the splash is displayed.
+	 * After that, it sleeps for a while (that depends on the configuration) and then it publishes progress
+	 * again but this time with no Bitmap, which means the splash must be removed from the display.
      */
-    private class PrepareAndShowSplashImage extends Thread implements Runnable{
-    	
+    private class PrepareAndShowSplashImage extends AsyncTask<Boolean, Bitmap, Void> {
+
     	private boolean isNetworkAccess;
-    	
-    	
+
     	public PrepareAndShowSplashImage(boolean isNetworkAccess) {
     		this.isNetworkAccess = isNetworkAccess;
     	}
-    	
+
 		@Override
-		public void run() {
-			
-			//Obtain the splash image			
-			if(isNetworkAccess){
+		protected Void doInBackground(Boolean... params) {
+
+			// Obtain the splash image
+			if (isNetworkAccess) {
 				//We try to get the image and update the stored one.
 	    		downloadSplashFile(configuration.getSplashImageUrl());	    		
 	    	}
-	    	
-			if(ToolBox.storage_checkIfFileExistsInInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME)){
-	    		try{
-	    			//Load the image from disk.
-	    			splashBitmapData = ToolBox.media_loadBitmapFromInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME);
-	    		}catch(Exception e){
-	    			splashBitmapData = null;
-	    			Log.e(MCMDefines.LOG_TAG,"showSplash(). Error loading stored splash image from internal storage. ("+e.getMessage()+")",e);
-	    		}
-	    	}else{
-	    		//No previously downloaded splash image so we use the provided one in the
-	    		//assets folder.
-	    		splashBitmapData = loadSplashFromAssetsFolder();	    		
-	    	}
-	    				
-			//Show the splash image
-			handler.post(new Runnable(){
-				public void run() {					
-					splash_progress_zone.setVisibility(View.GONE);					
-					
-			    	if(splashBitmapData!=null){			    		
-			    		//Set the image in the view.
-			    		splashImageView.setImageBitmap(splashBitmapData);
-			    		updateFullscreenStatus(true, true);
-			    		
-				    	final Handler handler = new Handler();
-						final Runnable doRemoveSplash = new Runnable() {		
-							public void run() {
-								removeSplash(isNetworkAccess);
-							}
-						};
-						 
-						new Timer().schedule(new TimerTask() {
-													public void run() {
-														handler.post(doRemoveSplash);
-													}
-												}, configuration.getSplashAnimationDelay() * 1000);
-						splashImageView.setVisibility(View.VISIBLE);
-			    	}else{
-			    		removeSplash(isNetworkAccess);
-			    	}
-				}				
-			});
+
+			try {
+
+				final Bitmap splashBitmap = loadSplashBitmap();
+
+				// Show splash for a while
+				publishProgress(splashBitmap);
+				sleepSeconds(configuration.getSplashAnimationDelay());
+
+			} catch (Exception e) {
+				Log.e(MCMDefines.LOG_TAG, "Error loading splash image BitMap", e);
+			}
+
+			// Hide splash
+			publishProgress();
+
+			return null;
 		}
-		
+
+		@Override
+		protected void onProgressUpdate(Bitmap... splashBitmap) {
+
+			// The progress zone is hidden in both cases because it might happen
+			// that the splash image is never loaded
+			splash_progress_zone.setVisibility(View.GONE);
+
+			if (splashBitmap.length == 1) // Show splash
+			{
+				//Set the image in the view.
+				splashImageView.setImageBitmap(splashBitmap[0]);
+				updateFullscreenStatus(true, true);
+				splashImageView.setVisibility(View.VISIBLE);
+			}
+			else if (splashBitmap.length == 0) // Hide splash
+			{
+				removeSplash(isNetworkAccess);
+			}
+		}
+
 		/*
 		 * Downloads the image of the http address saving 
 		 * it to the application internal private storage.
@@ -854,24 +840,38 @@ public class MCMConfigManager {
 				Log.e(MCMDefines.LOG_TAG, "DOWNLOAD_SPLASH_IMAGE_ERROR: ("+ imageUrl.toString()+") : " + e.getMessage());
 			}
 		}
-		
+
+		private Bitmap loadSplashBitmap() throws Exception
+		{
+			final Bitmap splashBitmap;
+
+			if (ToolBox.storage_checkIfFileExistsInInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME)) {
+				// Load splash image from disk
+				splashBitmap = ToolBox.media_loadBitmapFromInternalStorage(activity, CONFIG_SPLASH_IMAGE_NAME);
+			} else {
+				// No previously downloaded splash image so we use the provided one in the assets folder.
+				splashBitmap = loadSplashFromAssetsFolder();
+			}
+			return splashBitmap;
+		}
+
+		private void sleepSeconds(int seconds) {
+			try {
+				Thread.sleep(TimeUnit.SECONDS.toMillis(seconds));
+			} catch (InterruptedException e) {
+				Log.e(MCMDefines.LOG_TAG, "Unexpected interruption", e);
+			}
+		}
+
 		/*
 		 * Loads the splash image provided in the assets folder.
 		 *  
 		 * @return
 		 */
-		private Bitmap loadSplashFromAssetsFolder(){
-			
-			try{	    			
-    			InputStream is= activity.getAssets().open(CONFIG_SPLASH_ASSETS_IMAGE_NAME);
-    			return BitmapFactory.decodeStream(is);
-    		}catch(IOException e){    			
-    			Log.i(MCMDefines.LOG_TAG,"showSplash(). There is no splash image ('splash.img') in the assets folder to load.");
-    		}catch(Exception e){
-    			Log.e(MCMDefines.LOG_TAG,"showSplash(). Error loading assets default splash image. ("+e.getMessage()+")",e);
-    		}
-    		
-    		return null;
+		private Bitmap loadSplashFromAssetsFolder() throws IOException
+		{
+    		InputStream is= activity.getAssets().open(CONFIG_SPLASH_ASSETS_IMAGE_NAME);
+    		return BitmapFactory.decodeStream(is);
 		}
     	
     }
