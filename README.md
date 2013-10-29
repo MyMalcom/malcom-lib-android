@@ -108,14 +108,21 @@ public class YourApplication extends Application
 
 ##Extend "Malcom activities" (if you target pre-ICS)
 
-If your application is targeted for Android version before ICS (API Level < 14) your activities must extend [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java), [MalcomListActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomListActivity.java) or [MalcomPreferenceActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomPreferenceActivity.java) instead of `Activity`, `ListActivity` or `PreferenceActivity`.
+If your application is targeted for Android version before ICS (API Level < 14) your activities must extend [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java), [MalcomListActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomListActivity.java) or [MalcomPreferenceActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomPreferenceActivity.java) instead of `Activity`, `ListActivity` or `PreferenceActivity`. For example:
+
+```java
+public class SomeListActivity extends MalcomListActivity
+{
+  ...
+}
+```
 
 If some of your activities should extend other classes like `FragmentActivity` or `SherlockFragmentActivity` you can easily define Malcom activities for those by copying [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java) with another name (e.g. `MalcomFragmentActivity`) and extend the class you need (e.g. `FragmentActivity`):
 
 ```java
 public class MalcomFragmentActivity extends FragmentActivity
 {
-  // Same code as MalcomActivity
+  // Copy code from MalcomActivity
 }
 ```
 
@@ -142,8 +149,8 @@ To check that everything is OK do the following:
 To make the most of Malcom check out the following links. They explain more interesting features:
 
 * [Configuration](doc/Configuration.md)
-* [Notifications](doc/Notifications.md) (documentation being revised)
-* [Stats](https://github.com/MyMalcom/malcom-lib-android/wiki/Stats) (documentation being revised)
+* [Notifications](doc/Notifications.md)
+* [Stats](doc/Stats.md) (documentation being revised)
 * [Campaigns](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaigns) (documentation being revised)
 
 ##Contact

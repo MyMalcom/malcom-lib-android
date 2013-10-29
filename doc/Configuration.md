@@ -1,15 +1,16 @@
 #Configuration Module
 
 This module lets you configure dynamic values for your app so you can change
-them wihtout having to re-publish to Google Play. You can define alert messages,
+them without having to re-publish to Google Play. You can define alert messages,
 a splash screen image and custom properties.
 
 We'll explain what you need to do in [Malcom web](http://malcom.mymalcom.com)
 and in your app to use this module.
 
-##Configure your settings in [Malcom web](http://malcom.mymalcom.com)
+##Configure your settings in Malcom web
 
-In the "Marketing" tab, go to "Configuration" section on the left menu.
+Login to [Malcom web](http://malcom.mymalcom.com), click on the "Marketing" tab
+and then go to the "Configuration" section on the left menu.
 There you will be able to configure your alerts, splash screen image
 and custom properties (in "advanced").
 
@@ -24,9 +25,14 @@ are going to use the Malcom configuration:
 MalcomLib.loadConfiguration(this);
 ```
 
+###Alerts
+
+You don't need to do anything in your app in order to show alerts. They will be displayed automatically
+the way you configured them in the "Alerts" section of [Malcom web](http://malcom.mymalcom.com).
+
 ###Accessing properties
 
-You can access the properties you defined (in the "Advanced" section) using
+You can access the properties you defined in the "Advanced" section using
 the following method:
 
 ```java
@@ -35,7 +41,7 @@ MalcomLib.getConfiguredProperty(<PROPERTY NAME>, DEFAULT_VALUE);
 
 ###Secondary splash screen
 
-Copy and paste the following layout to the layout file of your activity. You might have to tweak it a little depending on your needs:
+In order to display the splash image in an activity copy and paste the following layout to the layout file of your activity. You might have to tweak it a little depending on your needs:
 
 ```xml
 <LinearLayout
