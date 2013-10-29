@@ -77,7 +77,7 @@ public class MalcomLib {
      * @param eventName the name of the event
      */
     public static void startEvent(String eventName){
-        MalcomLib.startEvent(eventName, null, true);
+        MalcomLib.startEvent(eventName, new Hashtable<String, Object>(), true);
     }
 
     /**
