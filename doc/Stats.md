@@ -14,7 +14,7 @@ An event represents an action that the user has performed in your app. For examp
 MalcomLib.startEvent("enter-deals");
 ```
 
-You can use whichever name you want. We recommend you to choose short names. They will be easier to manage later.
+You can use any name for your events but we recommend you to choose short ones; they will be easier to manage later.
 
 ###Tags
 
@@ -30,7 +30,7 @@ When the user disables the option, you should call:
 MalcomLib.removeTag("email-deals");
 ```
 
-As with events, you can choose any names for your tags but we recommend you to use short names.
+As with events, we recommend you to choose short names for your tags.
 
 ##Using events and tags
 

@@ -150,7 +150,7 @@ To make the most of Malcom check out the following links. They explain more inte
 
 * [Configuration](doc/Configuration.md)
 * [Notifications](doc/Notifications.md)
-* [Stats](doc/Stats.md) (documentation being revised)
+* [Stats](doc/Stats.md)
 * [Campaigns](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaigns) (documentation being revised)
 
 ##Contact
