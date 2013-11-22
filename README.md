@@ -142,9 +142,9 @@ To check that everything is OK do the following:
 To make the most of Malcom check out the following links. They explain more interesting features:
 
 * [Configuration](doc/Configuration.md)
-* [Notifications](doc/Notifications.md) (documentation being revised)
-* [Stats](https://github.com/MyMalcom/malcom-lib-android/wiki/Stats) (documentation being revised)
-* [Campaigns](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaigns) (documentation being revised)
+* [Notifications](doc/Notifications.md)
+* [Stats](https://github.com/MyMalcom/malcom-lib-android/wiki/Stats)
+* [Campaigns](doc/Campaigns.md)
 
 ##Contact
 
