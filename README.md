@@ -33,7 +33,7 @@ In dependencies section:
  	<dependency>
 		<groupId>com.malcom.library.android</groupId>
 		<artifactId>malcom-android-library</artifactId>
-		<version>2.0.3</version>
+		<version>2.0.4</version>
 	</dependency>
 </dependencies>
 ```
@@ -42,13 +42,13 @@ In dependencies section:
 
 Manually download the library and add it to your project:
 
-- [malcom-android-library-2.0.3.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.3/malcom-android-library-2.0.3.jar)
+- [malcom-android-library-2.0.4.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4.jar)
 
 You can also download the sources and javadoc:
 
-- [malcom-android-library-2.0.3-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.3/malcom-android-library-2.0.3-sources.jar)
+- [malcom-android-library-2.0.4-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4-sources.jar)
 
-- [malcom-android-library-2.0.3-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.3/malcom-android-library-2.0.3-javadoc.jar)
+- [malcom-android-library-2.0.4-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4-javadoc.jar)
 
 
 ##Android Manifest
