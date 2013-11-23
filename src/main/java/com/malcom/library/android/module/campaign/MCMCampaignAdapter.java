@@ -243,9 +243,9 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         try {
             int resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
             if (resBannerLayoutID==0) {
-                throw new Exception("The layout with id = \"campaign_banner_layout\" was not found ");
+                throw new Exception("The layout with id = \"" + MCMCampaignDefines.RES_ID_LAYOUT + "\" was not found ");
             }
-            bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
+            bannerLayout = (ViewGroup) activity.findViewById(resBannerLayoutID);
 
             //Configures the layout
             configureCampaignLayout(campaign, bannerLayout);
@@ -270,8 +270,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
             // Config close button (if banner shows on full screen)
             if (campaign.isFullScreen()) {
-                if (RelativeLayout.class.isInstance(bannerLayout))
+                if (bannerLayout instanceof RelativeLayout)
                     addCloseButton((RelativeLayout) bannerLayout);
+				else
+					Log.w(MCMCampaignDefines.LOG_TAG, MCMCampaignDefines.RES_ID_LAYOUT + " is not a RelativeLayout so close button won't be added");
             }
 
             //if duration is not zero the banner will be removed automatically
@@ -406,6 +408,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
 
     private static void configureCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
+
+		if ( !(layout.getLayoutParams() instanceof RelativeLayout.LayoutParams) ) {
+			throw new IllegalArgumentException(MCMCampaignDefines.RES_ID_LAYOUT + " is not inside a RelativeLayout so it can't be placed");
+		}
 
         // Config layout params depending on position
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();

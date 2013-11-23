@@ -4,15 +4,30 @@ Malcom campaigns let you display different kinds of messages and banners in your
 
 ##Banners
 
-Some campaigns display a banner in your app. You can let Malcom draw the banner or you can draw it yourself. If you let Malcom draw it, you need to add the following layout inside the layout of the activity where you want to display the banner.
+Some campaigns display a banner in your app. You can let Malcom draw the banner for you, or you can draw it yourself.
+
+If you let Malcom draw it, the layout of your activity must include a `@+id/campaign_banner_layout`, which should be a `RelativeLayout` inside another parent `RelativeLayout`, like in the following example:
 
 ```xml
-<RelativeLayout
-    android:id="@+id/campaign_banner_layout"
-    android:layout_width="match_parent"
-    android:layout_height="300dp">
+<RelativeLayout ...>
+
+    ...
+
+    <RelativeLayout
+        android:id="@+id/campaign_banner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="300dp">
+    </RelativeLayout>
+
 </RelativeLayout>
 ```
+
+Malcom will place the campaign banner in the `@+id/campaign_banner_layout` and this layout will be positioned relatively inside the parent `RelativeLayout`,
+depending on whether the banner is configured as bottom, top, full screen, etc.
+
+Your layout may contain other elements, but those two nested `RelativeLayout` must exist if you want Malcom to draw the banner.
+
+Later we'll explain how to draw the banners in a custom way so you can build your layout the way you want. 
 
 ##Promotion campaigns
 
