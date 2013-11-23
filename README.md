@@ -88,16 +88,14 @@ After creating your application, click on it and go to "Administration" on the l
 Add these two lines in the `onCreate` method of your Application class:
 
 ```java
-import com.malcom.library.android.MalcomActivityLifecycleCallbacks;
-import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.MalcomLib;
 
 public class YourApplication extends Application
 {
   @Override
   public void onCreate()
   {
-    MalcomLib.initMalcom(this, <UUID>, <SECRET_KEY>);
-    MalcomApplicationHelper.registerActivityLifecycleCallbacks(this, new MalcomActivityLifecycleCallbacks());
+    MalcomLib.init(this, <UUID>, <SECRET_KEY>);
 
     ...
   }
@@ -108,7 +106,15 @@ public class YourApplication extends Application
 
 ##Extend "Malcom activities" (if you target pre-ICS)
 
-If your application is targeted for Android version before ICS (API Level < 14) your activities must extend [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java), [MalcomListActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomListActivity.java) or [MalcomPreferenceActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomPreferenceActivity.java) instead of `Activity`, `ListActivity` or `PreferenceActivity`.
+If your application is targeted for Android version before ICS (API Level < 14) your activities must extend [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java), [MalcomListActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomListActivity.java) or [MalcomPreferenceActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomPreferenceActivity.java) instead of `Activity`, `ListActivity` or `PreferenceActivity`. For example:
+
+```java
+import android.util.activitylifecyclecallbackscompat.app.MalcomActivity;
+
+public class MyActivity extends MalcomActivity {
+    ...
+}
+```
 
 If some of your activities should extend other classes like `FragmentActivity` or `SherlockFragmentActivity` you can easily define Malcom activities for those by copying [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java) with another name (e.g. `MalcomFragmentActivity`) and extend the class you need (e.g. `FragmentActivity`):
 

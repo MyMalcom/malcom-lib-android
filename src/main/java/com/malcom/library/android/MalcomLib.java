@@ -2,8 +2,9 @@ package com.malcom.library.android;
 
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
+import android.util.activitylifecyclecallbackscompat.MalcomApplicationHelper;
 
 import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
@@ -37,15 +38,17 @@ import java.util.List;
  */
 public class MalcomLib {
 
-    /**
-     * Initializes Malcom with the app values
-     * @param context
-     * @param uuid      the app identifier (you can get it from your Malcom App configuration page)
-     * @param secretKey the app secret key (you can get it from your Malcom App configuration page)
-     */
-    public static void initMalcom(Context context, String uuid, String secretKey){
-        MCMCoreAdapter.getInstance().initMalcom(context,uuid,secretKey);
-    }
+	/**
+	 * Initializes Malcom lib
+	 *
+	 * @param app       your application class
+	 * @param uuid      the app identifier (you can get it from your Malcom App configuration page)
+	 * @param secretKey the app secret key (you can get it from your Malcom App configuration page)
+	 */
+	public static void init(Application app, String uuid, String secretKey) {
+		MCMCoreAdapter.getInstance().initMalcom(app, uuid, secretKey);
+		MalcomApplicationHelper.registerActivityLifecycleCallbacks(app, new MalcomActivityLifecycleCallbacks());
+	}
 
     /**
      * Loads the Malcom configuration
