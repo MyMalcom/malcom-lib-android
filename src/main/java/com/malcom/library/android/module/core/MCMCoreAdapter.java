@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.LinearLayout;
@@ -624,80 +623,17 @@ public class MCMCoreAdapter {
 	}
 	
 	//	Campaings
-	
-	/**
-	 * Method that adds the campaigns to the specified activity.  By default, campaigns will last 15 seconds.
-	 * @param activity
-     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
-	 */
-	public void moduleCampaignAddBanner(Activity activity) {
-		
-		moduleCampaignAddBanner(activity, null);
-	}
-	
-	/**
-	 * Method that adds the campaigns to the specified activity. With this method you can use the delegates for handling the performing of the banners.  By default, campaigns will last 15 seconds.
-	 *
-     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
-	 */
-	public void moduleCampaignAddBanner(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-
-        moduleCampaignAddCrossSelling(activity, delegate, null);
-		
-	}
-	/**
-	 * Method that sets the duration of the Banner
-	 * @param duration integer indicating the time that is going to be shown the banner in seconds. If the banner is desired to be always on screen you'll need to set to zero the duration.
-     * @deprecated use {@link #moduleCampaignAddCrossSelling(Activity)} instead.
-	 */
-	public void moduleCampaignSetBannerDuration(int duration) {
-		
-		MCMCampaignAdapter.getInstance().setDuration(duration);
-	}
-	
-	/**
-	 * Method that removes the current banner shown in activity.
-	 * @param activity
-	 */
-	public void moduleCampaignRemoveCurrentBanner(Activity activity) {
-		
-		MCMCampaignAdapter.getInstance().removeCurrentBanner(activity);
-	}
-
-    //	Multitype Campaings
-
-    /**
-     * Method that adds the cross selling campaign to the specified activity.  By default, campaigns will last 15 seconds.
-     * @param activity where the banner will be placed
-     */
-    public void moduleCampaignAddCrossSelling(Activity activity) {
-
-        moduleCampaignAddCrossSelling(activity, null, null);
-    }
-
-    /**
-     * Method that adds the cross selling campaign to the specified activity.  By default, campaigns will last 15 seconds.
-     * @param activity where the banner will be placed
-     * @param delegate delegate for handling the performing of the banners
-     */
-    public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate, null);
-    }
-    public void moduleCampaignAddCrossSelling(Activity activity,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
-        moduleCampaignAddCrossSelling(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION,delegate, loadingImgResId);
-    }
 
     /**
      * Method that adds the cross selling campaign to the specified activity.
      * @param activity where the banner will be placed
      * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
      * @param delegate delegate for handling the performing of the banners
+	 * @param loadingImgResId image that will be displayed while the campaign image is being downloaded
      */
-    public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate, null);
-    }
-    public void moduleCampaignAddCrossSelling(Activity activity,int duration,MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate, loadingImgResId);
+    public void moduleCampaignAddCrossSelling(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+        MCMCampaignAdapter.getInstance(MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING)
+				.addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, duration, delegate, loadingImgResId);
     }
 
     /**
@@ -706,29 +642,21 @@ public class MCMCoreAdapter {
      * @param activity the context where the request is made
      * @param receiver the interface that will be called with the retrieved data
      */
-    public void moduleCampaignRequestCrossSelling(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
-        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, receiver);
+    public void moduleCampaignRequestCrossSelling(Activity activity, MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance(MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING)
+				.requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING, receiver);
     }
 
     /**
      * Method that adds the promotions campaign to the specified activity.  By default, campaigns will last 15 seconds.
      * @param activity where the banner will be placed
-     */
-    public void moduleCampaignAddPromotion(Activity activity) {
-
-        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, null, null);
-    }
-
-    /**
-     * Method that adds the promotions campaign to the specified activity.  By default, campaigns will last 15 seconds.
-     * @param activity where the banner will be placed
+	 * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
      * @param delegate delegate for handling the performing of the banners
+	 * @param loadingImgResId image that will be displayed while the campaign image is being downloaded
      */
-    public void moduleCampaignAddPromotion(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        moduleCampaignAddPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, delegate, null);
-    }
     public void moduleCampaignAddPromotion(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
-        MCMCampaignAdapter.getInstance().addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, duration, delegate, loadingImgResId);
+        MCMCampaignAdapter.getInstance(MCMCampaignDTO.CampaignType.IN_APP_PROMOTION)
+				.addBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, duration, delegate, loadingImgResId);
     }
 
     /**
@@ -737,8 +665,9 @@ public class MCMCoreAdapter {
      * @param activity the context where the request is made
      * @param receiver the interface that will be called with the retrieved data
      */
-    public void moduleCampaignRequestPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver) {
-        MCMCampaignAdapter.getInstance().requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
+    public void moduleCampaignRequestPromotion(Activity activity, MCMCampaignAdapter.RequestCampaignReceiver receiver) {
+        MCMCampaignAdapter.getInstance(MCMCampaignDTO.CampaignType.IN_APP_PROMOTION)
+				.requestBanner(activity, MCMCampaignDTO.CampaignType.IN_APP_PROMOTION, receiver);
     }
 
     /**
@@ -746,8 +675,9 @@ public class MCMCoreAdapter {
      * @param activity where the alert will be shown
      * @param delegate for handle the campaign behaviour
      */
-    public void moduleCampaignAddRateMyApp(Activity activity,MCMCampaignNotifiedDelegate delegate) {
-        MCMCampaignAdapter.getInstance().addRateAlert(activity, delegate);
+    public void moduleCampaignAddRateMyApp(Activity activity, MCMCampaignNotifiedDelegate delegate) {
+        MCMCampaignAdapter.getInstance(MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP)
+				.addRateAlert(activity, delegate);
     }
 
 }

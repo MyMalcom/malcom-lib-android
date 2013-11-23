@@ -29,10 +29,10 @@ That method will look for a promotion campaign and display a banner for it (in t
 There is another version of that method that lets you control more parameters:
 
 ```java
-MalcomLib.addCampaignPromotion(this, 20, delegate, placeholderImageId);
+MalcomLib.addCampaignPromotion(this, 20, placeholderImageId, delegate);
 ```
 
-The second parameter are the seconds that the campaign banner will stay on screen (use 0 if you want it to stay forever). The third parameter (optional) is the `MCMCampaignNotifiedDelegate` that will be notified with the campaign actions. The last parameter (optional) is the placeholder image that will be displayed while the remote banner image is being downloaded.
+The second parameter are the seconds that the campaign banner will stay on screen (use 0 if you want it to stay forever). The third parameter (optional) is the placeholder image that will be displayed while the remote banner image is being downloaded. The last parameter (optional) is the `MCMCampaignNotifiedDelegate` that will be notified with the campaign actions.
 
 In case you want to handle campaigns other way, you can request the campaigns and display them the way you want. In that case you don't need to include the `campaign_banner_layout` in your activity. In order to do that, call the following method and perform the desired actions in the receiver:
 
@@ -53,7 +53,7 @@ MalcomLib.addCampaignCrossSelling(this);
 That method will look for a cross selling campaign and display a banner for it (in the the `campaign_banner_layout`). Like with promotion campaigns, there's a version of that method with more paremeters (the behaviour is analogous):
 
 ```java   
-MalcomLib.addCampaignCrossSelling(this, 20, delegate, placeholderImageId);
+MalcomLib.addCampaignCrossSelling(this, 20, placeholderImageId, delegate);
 ```
 
 You can also call the following method in case you want to handle campaigns other way:
@@ -77,11 +77,11 @@ The second parameter (optional) is the `MCMCampaignNotifiedDelegate` that will b
 In order to customize the dialog messages, add these entries to your `strings.xml`:
 
 ```xml
-<string name="malcom_rate_title">Your title</string>
-<string name="malcom_rate_message">Your message</string>
-<string name="malcom_rate_button">Your rate-now button title</string>
-<string name="malcom_remind_button">Your remind-later button title</string>
-<string name="malcom_disable_button">Your never-rate button title</string>
+<string name="malcom_rate_title">Rate this app</string>
+<string name="malcom_rate_message">Please support us and rate our app!</string>
+<string name="malcom_rate_button">OK</string>
+<string name="malcom_remind_button">Maybe later</string>
+<string name="malcom_disable_button">Never</string>
 ```
 
 From Malcom web you can configure other settings like the number of sessions/days before displaying the rate-my-app dialog again.
