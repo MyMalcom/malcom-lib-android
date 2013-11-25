@@ -74,7 +74,13 @@ In `onResume` of your "TargetActivity" class (usually just after the previous re
 MalcomLib.checkForNewNotifications(this);
 ```
 
-That method will check whether the activity was opened because the user clicked on a notification. If so, the message of the notification will be displayed.
+That method will check whether the activity was opened because the user clicked on a notification. If so, the message of the notification will be displayed in an alert dialog.
+
+If you want to handle the notification message in a custom way, use the following method:
+
+```java
+MalcomLib.checkForNewNotifications(this, handler);
+```
 
 ###Other necessary calls
 

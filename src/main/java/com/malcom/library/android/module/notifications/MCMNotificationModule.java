@@ -1,14 +1,9 @@
 package com.malcom.library.android.module.notifications;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -35,13 +30,12 @@ import com.malcom.library.android.utils.ToolBox;
 public class MCMNotificationModule {
 
 	public static final String TAG = "MCMNotification";
-	
+
 	private static MCMNotificationModule instance = null;
 	
 	public static final String CACHED_ACK_FILE_PREFIX = "ack_";
 	
 	public static final String notification = "v3/notification";
-	public static final String notification_push = notification + "/push/";
 	public static final String notification_ack = notification+ "/ack/";
 	public static final String notification_registry = notification + "/registry/application";
 	public static final String notification_deregister = notification + "/registry/application/appCode/device/udid";
@@ -63,22 +57,18 @@ public class MCMNotificationModule {
     public static final String GCM_SENDER_ID ="GCM_SENDER_ID";
     public static final String GCM_CLASS ="GCM_CLASS";
     public static final String GCM_TITLE_NOTIFICATION ="GCM_TITLE_NOTIFICATION";
-	
-	private AsyncTask<Void, Void, Void> mRegisterTask;
 
-	//This will hold the C2DM device registration token.
-	public String deviceToken =null;
-	
-	/**
+    /** Intent extra that indicates if the intent carries a notification to be handled  */
+    public static final String HAS_NOTIFICATION_TO_HANDLE = "hasNotificationToHandle";
+
+
+    /**
      * Google API project id registered to use GCM.
      */
     public static String senderId = "";
     public static String applicationCode = null;
     public static String applicationSecretkey = null;
     public static EnvironmentType environmentType = null;
-    public static Boolean showAlert = true;
-
-    private MalcomNotificationReceiver notReceiver = null;
 
 	protected MCMNotificationModule() {
 		// Exists only to defeat instantiation.
@@ -110,14 +100,14 @@ public class MCMNotificationModule {
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
 	 */
-	public void gcmRegisterDevice(Context context, String title, Boolean showAlert, Class<?> clazz){
+	public void gcmRegisterDevice(Context context, String title, Class<?> clazz) {
 		
 		EnvironmentType environment = EnvironmentType.PRODUCTION;
 		if(ToolBox.application_isAppInDebugMode(context)){
 			environment = EnvironmentType.SANDBOX;
 		}
 		
-		gcmRegisterDevice(context, environment, title, showAlert, clazz);
+		gcmRegisterDevice(context, environment, title, clazz);
 	}
 	
 	/**
@@ -128,8 +118,7 @@ public class MCMNotificationModule {
 	 * @param	title		Title for the notification
 	 * @param 	clazz		Class to call when clicking in the notification
 	 */
-	public void gcmRegisterDevice(Context context, final EnvironmentType environment,
-								  String title, Boolean showAlert, Class<?> clazz){
+	public void gcmRegisterDevice(Context context, final EnvironmentType environment, String title, Class<?> clazz) {
 
 		//Initializes the required variables
         senderId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_GCM_SENDERID);
@@ -151,7 +140,6 @@ public class MCMNotificationModule {
 
         prefsEditor.commit();
 
-        this.showAlert = showAlert;
         environmentType = environment;
 
 		applicationCode = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
@@ -213,87 +201,37 @@ public class MCMNotificationModule {
 			//Un-register the device from GCM.
 			GCMRegistrar.unregister(context);
 		}
-			
-			
-		if (mRegisterTask != null) {
-			mRegisterTask.cancel(true);
-	    }
 	}
+
+    /**
+     * If the activity intent comes from a notification a dialog is shown with the notification message.
+     */
+    public void gcmCheckForNewNotification(Activity activity)
+    {
+        gcmCheckForNewNotification(activity, new DefaultDialogNotificationHandler(activity));
+    }
 
 	/**
 	 * If the activity intent comes from a notification a dialog is shown with the notification message.
 	 */
-	public void gcmCheckForNewNotification(Activity activity)
+	public void gcmCheckForNewNotification(Activity activity, NotificationHandler handler)
 	{
 		Intent intent = activity.getIntent();
 
-		if (intent.getExtras() != null && intent.getExtras().getBoolean(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY, false))
+		if ( hasNotificationToHandle(intent) )
 		{
 			Log.d(MCMNotificationModule.TAG,"Notification received. Displaying dialog.");
 
-			// So the message is not displayed again
-			intent.putExtra(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY, false);
+			// So the notification is not handled again
+			intent.putExtra(HAS_NOTIFICATION_TO_HANDLE, false);
 
 			// Trick to reuse receiver code until we properly refactor
-			final MalcomNotificationReceiver dummyNotificationReceiver = new MalcomNotificationReceiver();
-			intent.setAction(MCMNotificationModule.SHOW_NOTIFICATION_ACTION);
-			dummyNotificationReceiver.onReceive(activity, intent);
+			new MalcomNotificationReceiver(activity, intent, handler).handleNotification();
 		}
 	}
 
-	/**
-	 * Makes the UI to show the alert for any received notification.
-	 *
-	 * @deprecated use {@link #gcmCheckForNewNotification(android.app.Activity)}
-	 */
-	public void gcmCheckForNewNotification(Context context, Intent intent){
-
-        registerBroadcastReceiver(context);
-
-		if(intent.getExtras()!=null && intent.getExtras().getBoolean(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY,new Boolean(false))){
-			Log.d(MCMNotificationModule.TAG,"Notification received. Sending show order to broadcast.");
-			
-			String efficacyKey = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY);
-			String segmentId = null;
-			if(intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY)!=null)
-				segmentId = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY);
-			String message = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY);
-			try {
-				message = URLDecoder.decode(message, "UTF8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-	    	String richMediaUrl = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
-	    	
-	    	//Tells to the UI to show the alert for the notification (using the BroadcastReceiver "MalcomNotificationReceiver".
-	        Intent intentOpenAlert = new Intent(MCMNotificationModule.SHOW_NOTIFICATION_ACTION);
-	        intentOpenAlert.putExtra(MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY, efficacyKey);
-	        if(segmentId!=null)
-	        	intentOpenAlert.putExtra(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY, segmentId);
-	        intentOpenAlert.putExtra(MCMNotificationModule.ANDROID_MESSAGE_KEY, message);
-	        intentOpenAlert.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, richMediaUrl);
-	        
-	        context.sendBroadcast(intentOpenAlert);
-		}
-	}
-
-	/** @deprecated remove */
-    public void registerBroadcastReceiver(Context context) {
-
-		if (notReceiver != null)
-			unregisterBroadcastReceiver(context);
-
-        notReceiver = new MalcomNotificationReceiver();
-        context.registerReceiver(notReceiver, new IntentFilter(MCMNotificationModule.SHOW_NOTIFICATION_ACTION));
+    private boolean hasNotificationToHandle(Intent intent) {
+        return intent.getExtras() != null && intent.getExtras().getBoolean(HAS_NOTIFICATION_TO_HANDLE, false);
     }
 
-	/** @deprecated remove */
-    public void unregisterBroadcastReceiver(Context context) {
-
-		if (notReceiver != null) {
-			context.unregisterReceiver(notReceiver);
-			GCMRegistrar.onDestroy(context.getApplicationContext());
-			notReceiver = null;
-		}
-	}
 }

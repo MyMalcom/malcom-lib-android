@@ -10,6 +10,8 @@ import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.EnvironmentType;
+import com.malcom.library.android.module.notifications.MCMNotificationModule;
+import com.malcom.library.android.module.notifications.NotificationHandler;
 import com.malcom.library.android.module.stats.MCMStats;
 
 import java.util.Hashtable;
@@ -182,13 +184,14 @@ public class MalcomLib {
     }
 
     /**
-     * Registers the device with GCM and Malcom push notification system
+     * Registers the device with GCM and Malcom push notification system on {@link EnvironmentType#PRODUCTION}.
+     *
      * @param	context
      * @param	title		Title for the notification
      * @param 	clazz		Class to call when clicking in the notification
      */
     public static void notificationsRegister(Context context, String title, Class<?> clazz){
-        MalcomLib.notificationsRegister(context, EnvironmentType.PRODUCTION, title, true, clazz);
+        MalcomLib.notificationsRegister(context, EnvironmentType.PRODUCTION, title, clazz);
     }
 
     /**
@@ -196,11 +199,10 @@ public class MalcomLib {
      * @param	context
      * @param	environment Destination environment. See @EnvironmentType
      * @param	title		Title for the notification
-     * @param   showAlert   Set false for no show alert whe the notification is opened
      * @param 	clazz		Class to call when clicking in the notification
      */
-    public static void notificationsRegister(Context context, EnvironmentType environment, String title, Boolean showAlert, Class<?> clazz){
-        MCMCoreAdapter.getInstance().moduleNotificationsRegister(context, environment, title, showAlert, clazz);
+    public static void notificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
+        MCMCoreAdapter.getInstance().moduleNotificationsRegister(context, environment, title, clazz);
     }
 
     /**
@@ -215,7 +217,14 @@ public class MalcomLib {
      * Check if there are notifications to be shown
      */
     public static void checkForNewNotifications(Activity activity) {
-        MCMCoreAdapter.getInstance().moduleNotificationsCheckForNewNotifications(activity);
+        MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity);
+    }
+
+    /**
+     * Check if there are notifications to be shown
+     */
+    public static void checkForNewNotifications(Activity activity, NotificationHandler handler) {
+        MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity, handler);
     }
 
     /**
