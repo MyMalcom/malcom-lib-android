@@ -21,29 +21,37 @@ import com.malcom.library.android.utils.ToolBox;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static com.malcom.library.android.module.campaign.MCMCampaignDTO.CampaignType;
 
 /**
- * MCMCampaignAdapter.
- * Campaigns module. Shows a banner in 4 posible positions: bottom, top, full screen, and middle.
- * Redirects to other app in Play Store.
- *
- * @author Malcom
- * @author Pepe - code refactor, added middle banners, new logs.
+ * Handles most of campaigns logic.
  */
 public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBannerDelegate {
 
-    public static int CAMPAIGN_DEFAULT_DURATION = -1;
+	// TODO: This class is messy and problematic. We must refactor or rebuild it from scratch.
 
-    private static MCMCampaignAdapter instance = null;
+	// For example, it's a singleton with (a lot of) state, so it's not thread-safe.
+	// In the meanwhile, to mitigate that, I've added the type argument in {@link #getInstance(CampaignType)} to return a
+	// different instance for each campaign type. That way, apps can use different campaign types at the same time with less risk.
+
+	// Also, it uses Handlers instead of AsyncTasks tasks. That makes the class very difficult to use from background threads.
+
+	public static int CAMPAIGN_DEFAULT_DURATION = -1;
+
+    private static Map<CampaignType, MCMCampaignAdapter> instances = new HashMap<CampaignType, MCMCampaignAdapter>();
+
     private ViewGroup bannerLayout;
 
     private String campaignResource = "";
 
     private String malcomAppId;
 
-    private MCMCampaignDTO.CampaignType type;
+    private CampaignType type;
 
     private Activity activity;
 
@@ -71,17 +79,17 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
     }
 
     /**
-     * Gets the singleton instance of this class.
+     * Gets the singleton instance of this class for the given campaign type.
      *
      * @return instance of MCMCampaignAdapter.
      */
-    public static MCMCampaignAdapter getInstance() {
+    public static synchronized MCMCampaignAdapter getInstance(CampaignType type) {
 
-        if (instance == null) {
-            instance = new MCMCampaignAdapter();
+        if (!instances.containsKey(type)) {
+            instances.put(type, new MCMCampaignAdapter());
         }
 
-        return instance;
+        return instances.get(type);
     }
 
     /**
@@ -92,7 +100,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      * @param duration     - the duration to show the campaign banner in seconds
      * @param delegate     - This is the delegate.
      */
-    public void addBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
+    public void addBanner(Activity activity, CampaignType campaignType, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId) {
 
         this.activity = activity;
         this.type = campaignType;
@@ -106,7 +114,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     }
 
-    public void requestBanner(Activity activity, MCMCampaignDTO.CampaignType campaignType, RequestCampaignReceiver receiver) {
+    public void requestBanner(Activity activity, CampaignType campaignType, RequestCampaignReceiver receiver) {
 
         this.activity = activity;
         this.type = campaignType;
@@ -117,7 +125,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     public void addRateAlert(Activity activity, MCMCampaignNotifiedDelegate delegate) {
         this.activity = activity;
-        this.type = MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP;
+        this.type = CampaignType.IN_APP_RATE_MY_APP;
         this.delegate = delegate;
 
         makeRequest();
@@ -201,14 +209,13 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
         if (selectedCampaign != null) {
 
-            if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
-                    type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
+            if (type == CampaignType.IN_APP_CROSS_SELLING || type == CampaignType.IN_APP_PROMOTION) {
                 if (receiver == null) {
                     createBanner(selectedCampaign);
                 } else {
                     receiver.onReceivedPromotions(createBannersList(activity, filteredArray));
                 }
-            } else if (type == MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP) {
+            } else if (type == CampaignType.IN_APP_RATE_MY_APP) {
 
                 //Show the dialog if it's necessary
                 if (MCMCampaignsLogics.shouldShowDialog(activity.getApplicationContext(),selectedCampaign)) {
@@ -236,9 +243,9 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         try {
             int resBannerLayoutID = activity.getResources().getIdentifier(MCMCampaignDefines.RES_ID_LAYOUT, "id", activity.getPackageName());
             if (resBannerLayoutID==0) {
-                throw new Exception("The layout with id = \"campaign_banner_layout\" was not found ");
+                throw new Exception("The layout with id = \"" + MCMCampaignDefines.RES_ID_LAYOUT + "\" was not found ");
             }
-            bannerLayout = (RelativeLayout) activity.findViewById(resBannerLayoutID);
+            bannerLayout = (ViewGroup) activity.findViewById(resBannerLayoutID);
 
             //Configures the layout
             configureCampaignLayout(campaign, bannerLayout);
@@ -263,8 +270,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
             // Config close button (if banner shows on full screen)
             if (campaign.isFullScreen()) {
-                if (RelativeLayout.class.isInstance(bannerLayout))
+                if (bannerLayout instanceof RelativeLayout)
                     addCloseButton((RelativeLayout) bannerLayout);
+				else
+					Log.w(MCMCampaignDefines.LOG_TAG, MCMCampaignDefines.RES_ID_LAYOUT + " is not a RelativeLayout so close button won't be added");
             }
 
             //if duration is not zero the banner will be removed automatically
@@ -400,6 +409,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     private static void configureCampaignLayout(MCMCampaignDTO campaign, ViewGroup layout) {
 
+		if ( !(layout.getLayoutParams() instanceof RelativeLayout.LayoutParams) ) {
+			throw new IllegalArgumentException(MCMCampaignDefines.RES_ID_LAYOUT + " is not inside a RelativeLayout so it can't be placed");
+		}
+
         // Config layout params depending on position
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) layout.getLayoutParams();
 
@@ -483,7 +496,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         }
     }
 
-    public MCMCampaignDTO.CampaignType getType() {
+    public CampaignType getType() {
         return type;
     }
 

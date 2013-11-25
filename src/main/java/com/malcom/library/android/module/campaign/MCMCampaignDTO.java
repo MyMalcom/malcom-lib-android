@@ -202,12 +202,20 @@ public class MCMCampaignDTO {
     }
 
     public String getClientLimitFeature(String key) {
-        return clientLimitFeatures.get(key);
-    }
+		if (clientLimitFeatures != null) {
+			return clientLimitFeatures.get(key);
+		} else {
+			return null;
+		}
+	}
 
     public Object getCustomParam(String key) {
-        return customParams.get(key);
-    }
+		if (customParams != null) {
+			return customParams.get(key);
+		} else {
+			return null;
+		}
+	}
 
     public int getWeight() {
         return weight;
