@@ -5,7 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.malcom.library.android</groupId>
     <artifactId>malcom-android-library</artifactId>
-    <version>2.0.1</version>
+
+	<!-- IMPORTANT: when updating this value, also update README.md and MCMCoreAdapter.SDK_VERSION -->
+    <version>2.0.4</version>
+
     <name>Malcom - Android Library</name>
     <description>Malcom Android library.</description>
     <url>http://malcom.mymalcom.com</url>

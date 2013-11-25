@@ -1,8 +1,8 @@
 package com.malcom.library.android.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
@@ -14,19 +14,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-/**
- * Created by PedroDuran on 02/07/13.
- */
 public class LocationUtils {
 
-    private static final Boolean ENABLED = true;
+	public static final String RECONSTRUCTION_PROVIDER = "reconstruction";
 
-    public static String getDeviceCityLocation(Context context) {
+	private static final String PREFERENCES_NAME = "com.malcom.location";
+	private static final String LATITUDE_KEY = "location.latitude";
+	private static final String LONGITUDE_KEY = "location.longitude";
+
+	public static String getDeviceCityLocation(Context context) {
         String res = "";
         Location lastKnownLocation = getLocation(context);
 
@@ -50,17 +52,20 @@ public class LocationUtils {
     }
 
     /**
-     * Gets cached location from most accurate provider
-     * @param context
-     * @return
+     * Gets the most accurate {@link Location} from the enabled providers
+	 * or tries to reconstruct it from latitude and longitude coordinates stored in shared preferences.
+	 *
+	 * In case the {@link Location} is reconstructed its provider will be {@link #RECONSTRUCTION_PROVIDER} and
+	 * it will only have values for latitude and longitude. The other values will be defaults.
+	 *
+	 * Returns null if location is not available anywhere.
      */
-    public static Location getLocation(Context context) {
-        LocationManager locationManager = (LocationManager) context.getSystemService( LOCATION_SERVICE );
-        String provider = mostAccurateLocationProvider( locationManager );
-        return locationManager.getLastKnownLocation( provider );
+    public static Location getLocation(Context context)
+	{
+		return findMostAccurateLastKnownLocation(context);
     }
 
-    public static JSONObject getLocationJson(Context context) {
+	public static JSONObject getLocationJson(Context context) {
 
         JSONObject locationJson = new JSONObject();
 
@@ -86,11 +91,69 @@ public class LocationUtils {
         return locationJson;
     }
 
-    private static String mostAccurateLocationProvider(LocationManager locationManager)
+	/**
+	 * Tries to find the most accurate 'lastKnownLocation', or returns null if none is found.
+	 *
+	 * Searches all providers for the most accurate 'lastKnownLocation' and, if not found,
+	 * retrieves the last location retrieved (which is stored in the shared preferences).
+	 */
+    public static Location findMostAccurateLastKnownLocation(Context context)
     {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy( Criteria.ACCURACY_FINE );
-        String bestProvider = locationManager.getBestProvider( criteria, ENABLED ); // Could be null if there isn't provider matching with criteria
-        return bestProvider != null ? bestProvider : LocationManager.NETWORK_PROVIDER;
+		LocationManager locationManager = (LocationManager) context.getSystemService( LOCATION_SERVICE );
+
+		List<String> providers = locationManager.getProviders(true);
+
+		Location best = null;
+
+		for (String provider : providers)
+		{
+			Location current = locationManager.getLastKnownLocation(provider);
+			if (current != null && (best == null || current.getAccuracy() > best.getAccuracy()))
+				best = current;
+		}
+
+		if (best == null)
+			best = getLocationFromSharedPreferences(context);
+		else
+			storeLocationInSharedPreferences(best, context);
+
+		return best;
     }
+
+	/**
+	 * Tries to reconstruct the latest location from coordinates stored in the shared preferences.
+	 * Returns null if the location coordinates are not found in the shared preferences.
+	 */
+	private static Location getLocationFromSharedPreferences(Context context)
+	{
+		final SharedPreferences prefs =
+				context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+		if (prefs.contains(LATITUDE_KEY) && prefs.contains(LONGITUDE_KEY))
+		{
+			double latitude = PreferencesUtils.getDouble(prefs, LATITUDE_KEY, 0L);
+			double longitude = PreferencesUtils.getDouble(prefs, LONGITUDE_KEY, 0L);
+
+			Location reconstructedLocation = new Location(RECONSTRUCTION_PROVIDER);
+			reconstructedLocation.setLatitude(latitude);
+			reconstructedLocation.setLongitude(longitude);
+
+			return reconstructedLocation;
+
+		} else {
+
+			return null;
+		}
+	}
+
+	private static void storeLocationInSharedPreferences(Location location, Context context) {
+
+		final SharedPreferences prefs =
+				context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = prefs.edit();
+		PreferencesUtils.putDouble(editor, LATITUDE_KEY, location.getLatitude());
+		PreferencesUtils.putDouble(editor, LONGITUDE_KEY, location.getLongitude());
+		editor.commit();
+	}
 }

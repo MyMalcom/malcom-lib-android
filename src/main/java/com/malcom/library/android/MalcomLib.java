@@ -2,8 +2,9 @@ package com.malcom.library.android;
 
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
+import android.util.activitylifecyclecallbackscompat.MalcomApplicationHelper;
 
 import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
@@ -37,15 +38,17 @@ import java.util.List;
  */
 public class MalcomLib {
 
-    /**
-     * Initializes Malcom with the app values
-     * @param context
-     * @param uuid      the app identifier (you can get it from your Malcom App configuration page)
-     * @param secretKey the app secret key (you can get it from your Malcom App configuration page)
-     */
-    public static void initMalcom(Context context, String uuid, String secretKey){
-        MCMCoreAdapter.getInstance().initMalcom(context,uuid,secretKey);
-    }
+	/**
+	 * Initializes Malcom lib
+	 *
+	 * @param app       your application class
+	 * @param uuid      the app identifier (you can get it from your Malcom App configuration page)
+	 * @param secretKey the app secret key (you can get it from your Malcom App configuration page)
+	 */
+	public static void init(Application app, String uuid, String secretKey) {
+		MCMCoreAdapter.getInstance().initMalcom(app, uuid, secretKey);
+		MalcomApplicationHelper.registerActivityLifecycleCallbacks(app, new MalcomActivityLifecycleCallbacks());
+	}
 
     /**
      * Loads the Malcom configuration
@@ -77,7 +80,7 @@ public class MalcomLib {
      * @param eventName the name of the event
      */
     public static void startEvent(String eventName){
-        MalcomLib.startEvent(eventName, null, true);
+        MalcomLib.startEvent(eventName, new Hashtable<String, Object>(), true);
     }
 
     /**
@@ -227,10 +230,10 @@ public class MalcomLib {
      * Adds a cross-selling campaign to the specified activity
      * @param activity where the banner will be placed
      * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
-     * @param delegate delegate for handling the performing of the banners
-     * @param loadingImgResId the local image id that will be placed while the remote image is loading
+	 * @param loadingImgResId the local image id that will be placed while the remote image is loading
+	 * @param delegate delegate for handling the performing of the banners
      */
-    public static void addCampaignCrossSelling(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId){
+    public static void addCampaignCrossSelling(Activity activity, int duration, Integer loadingImgResId, MCMCampaignNotifiedDelegate delegate) {
         MCMCoreAdapter.getInstance().moduleCampaignAddCrossSelling(activity, duration, delegate, loadingImgResId);
     }
 
@@ -240,7 +243,7 @@ public class MalcomLib {
      * @param activity the context where the request is made
      * @param receiver the interface that will be called with the retrieved data
      */
-    public static void requestCampaignsCrossSelling(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver){
+    public static void requestCampaignsCrossSelling(Activity activity, MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCoreAdapter.getInstance().moduleCampaignRequestCrossSelling(activity, receiver);
     }
 
@@ -248,7 +251,7 @@ public class MalcomLib {
      * Adds a promotion campaign to the specified activity.
      * @param activity where the banner will be placed
      */
-    public static void addCampaignPromotion(Activity activity){
+    public static void addCampaignPromotion(Activity activity) {
         MalcomLib.addCampaignPromotion(activity, MCMCampaignAdapter.CAMPAIGN_DEFAULT_DURATION, null, null);
     }
 
@@ -256,10 +259,10 @@ public class MalcomLib {
      * Adds a promotion campaign to the specified activity.
      * @param activity where the banner will be placed
      * @param duration indicating the time that is going to be shown the banner in seconds (0 for always visible).
-     * @param delegate delegate for handling the performing of the banners
-     * @param loadingImgResId the local image id that will be placed while the remote image is loading
+	 * @param loadingImgResId the local image id that will be placed while the remote image is loading
+	 * @param delegate delegate for handling the performing of the banners
      */
-    public static void addCampaignPromotion(Activity activity, int duration, MCMCampaignNotifiedDelegate delegate, Integer loadingImgResId){
+    public static void addCampaignPromotion(Activity activity, int duration, Integer loadingImgResId, MCMCampaignNotifiedDelegate delegate) {
         MCMCoreAdapter.getInstance().moduleCampaignAddPromotion(activity, duration, delegate, loadingImgResId);
     }
 
@@ -269,7 +272,7 @@ public class MalcomLib {
      * @param activity the context where the request is made
      * @param receiver the interface that will be called with the retrieved data
      */
-    public static void requestCampaignsPromotion(Activity activity,MCMCampaignAdapter.RequestCampaignReceiver receiver){
+    public static void requestCampaignsPromotion(Activity activity, MCMCampaignAdapter.RequestCampaignReceiver receiver) {
         MCMCoreAdapter.getInstance().moduleCampaignRequestPromotion(activity, receiver);
     }
 
@@ -278,7 +281,7 @@ public class MalcomLib {
      * @param activity where the alert will be shown
      * @param delegate for handle the campaign behaviour
      */
-    public static void addCampaignRateMyApp(Activity activity,MCMCampaignNotifiedDelegate delegate) {
+    public static void addCampaignRateMyApp(Activity activity, MCMCampaignNotifiedDelegate delegate) {
         MCMCoreAdapter.getInstance().moduleCampaignAddRateMyApp(activity, delegate);
     }
 }

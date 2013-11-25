@@ -48,6 +48,8 @@ public class MalcomApplicationHelper {
      * 
      * @param application The application with which to register the callback.
      * @param callback The callback to register.
+	 *
+	 * @deprecated Do not use this method unless you know what you're doing. It's already called in MalcomLib.init().
      */
     public static void registerActivityLifecycleCallbacks(Application application, MalcomActivityLifecycleCallbacksCompat callback) {
         if (PRE_ICS) {

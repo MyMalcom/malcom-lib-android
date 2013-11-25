@@ -33,7 +33,7 @@ In dependencies section:
  	<dependency>
 		<groupId>com.malcom.library.android</groupId>
 		<artifactId>malcom-android-library</artifactId>
-		<version>2.0.1</version>
+		<version>2.0.4</version>
 	</dependency>
 </dependencies>
 ```
@@ -42,13 +42,13 @@ In dependencies section:
 
 Manually download the library and add it to your project:
 
-- [malcom-android-library-2.0.1.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.1/malcom-android-library-2.0.1.jar)
+- [malcom-android-library-2.0.4.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4.jar)
 
 You can also download the sources and javadoc:
 
-- [malcom-android-library-2.0.1-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.1/malcom-android-library-2.0.1-sources.jar)
+- [malcom-android-library-2.0.4-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4-sources.jar)
 
-- [malcom-android-library-2.0.1-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.1/malcom-android-library-2.0.1-javadoc.jar)
+- [malcom-android-library-2.0.4-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.4/malcom-android-library-2.0.4-javadoc.jar)
 
 
 ##Android Manifest
@@ -88,16 +88,14 @@ After creating your application, click on it and go to "Administration" on the l
 Add these two lines in the `onCreate` method of your Application class:
 
 ```java
-import com.malcom.library.android.MalcomActivityLifecycleCallbacks;
-import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.MalcomLib;
 
 public class YourApplication extends Application
 {
   @Override
   public void onCreate()
   {
-    MalcomLib.initMalcom(this, <UUID>, <SECRET_KEY>);
-    MalcomApplicationHelper.registerActivityLifecycleCallbacks(this, new MalcomActivityLifecycleCallbacks());
+    MalcomLib.init(this, <UUID>, <SECRET_KEY>);
 
     ...
   }
@@ -111,9 +109,10 @@ public class YourApplication extends Application
 If your application is targeted for Android version before ICS (API Level < 14) your activities must extend [MalcomActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomActivity.java), [MalcomListActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomListActivity.java) or [MalcomPreferenceActivity](src/main/java/android/util/activitylifecyclecallbackscompat/app/MalcomPreferenceActivity.java) instead of `Activity`, `ListActivity` or `PreferenceActivity`. For example:
 
 ```java
-public class SomeListActivity extends MalcomListActivity
-{
-  ...
+import android.util.activitylifecyclecallbackscompat.app.MalcomActivity;
+
+public class MyActivity extends MalcomActivity {
+    ...
 }
 ```
 
@@ -122,7 +121,7 @@ If some of your activities should extend other classes like `FragmentActivity` o
 ```java
 public class MalcomFragmentActivity extends FragmentActivity
 {
-  // Copy code from MalcomActivity
+  // Same code as MalcomActivity
 }
 ```
 
@@ -151,7 +150,7 @@ To make the most of Malcom check out the following links. They explain more inte
 * [Configuration](doc/Configuration.md)
 * [Notifications](doc/Notifications.md)
 * [Stats](doc/Stats.md)
-* [Campaigns](https://github.com/MyMalcom/malcom-lib-android/wiki/Campaigns) (documentation being revised)
+* [Campaigns](doc/Campaigns.md)
 
 ##Contact
 
