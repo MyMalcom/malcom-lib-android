@@ -2,7 +2,24 @@
 
 This module allows your app to receive notifications sent from Malcom via GCM (Google Cloud Messaging).
 
-##How to use the module
+First, we will explain how to configure the module. Once it is configured, you can send notifications to the users of your app from the Malcom web.
+
+##How to configure the module
+
+###Create an application in the Google apis console
+
+Go to of the [Google apis console](https://code.google.com/apis/console) and
+create an application. In the "Services" section, activate the
+"Google Cloud Messaging for Android". Then, in the "API Access" section,
+create a new server key (leave the server IPs box empty).
+
+Now you should have a key for server apps.
+Check that it says "IPs: Any IP allowed". Copy the API key because you will
+need to configure it in [Malcom web](http://malcom.mymalcom.com).
+
+Login to [Malcom web](http://malcom.mymalcom.com), go to the "Administration"
+section of your app and then go to "Push config". There you have to copy the
+API key you generated before. Copy it in both text inputs (production and sandbox).
 
 ###Add the required permisions in the manifest
 
@@ -28,12 +45,12 @@ In AndroidManifest.xml, add the following (replace `<PACKAGE>` with your applica
 <service android:name="com.malcom.library.android.module.notifications.services.PendingAcksDeliveryService" />
 ```
 
-###Set the sender ID
+###Set the project number
 
-In `onCreate` of your `Application` class, specify the ID that GCM has assigned to your app:
+In `onCreate` of your `Application` class, specify the project number that GCM has assigned to your app. You can find it in the "Overview" section of the [Google apis console](https://code.google.com/apis/console).
 
 ```java
-MalcomLib.setSenderId(<SENDER_ID>);
+MalcomLib.setSenderId(<PROJECT_NUMBER>);
 ```
 
 ###Register for notifications
@@ -41,27 +58,27 @@ MalcomLib.setSenderId(<SENDER_ID>);
 In `onResume` of your main activity, call this method:
 
 ```java
-MalcomLib.notificationsRegister(this, <Title>, <MainActivity>.class);
+MalcomLib.notificationsRegister(this, <Title>, <TargetActivity>.class);
 ```
 
 That call will register the device in Malcom so it can receive notifications.
 
-- The `<Title>` tag will be the title text that is going to appear in the Android tabbar once the notification is received.
-- `<MainActivity>` is the main activity of your application (usually the same class where you put that call), which is going to be launched once the notification is opened.
+- `<Title>` is the title that will appear in all the notifications. You can set the name of your app or a generic message like "New message".
+- `<TargetActivity>` is the activity that is going to be opened when the user clicks a notification. This will usually be the same main activity.
 
 ###Check for notifications
 
-Just after the previous register call, also in the `onResume` of your activity, add this call to check for new notifications:
+In `onResume` of your "TargetActivity" class (usually just after the previous register call), add this call to check for new notifications:
 
 ```java
 MalcomLib.checkForNewNotifications(this);
 ```
 
-That method will check whether the app was opened because the user clicked on a notification. If so, the message of the notification will be displayed.
+That method will check whether the activity was opened because the user clicked on a notification. If so, the message of the notification will be displayed.
 
 ###Other necessary calls
 
-Override the `onNewIntent` method:
+Override the `onNewIntent` method. This method is called when a notification is clicked and the user was already on the "TargetActivity". We set the intent so we don't lose the notification message that comes with it.
 
 ```java
 @Override
@@ -71,7 +88,7 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-Override the `onDestroy` method:
+Override the `onDestroy` method to free resources:
 
 ```java
 @Override
@@ -88,3 +105,9 @@ In case you want to unregister the device so it doesn't receive notifications yo
 ```java
 MCMCoreAdapter.getInstance().moduleNotificationsUnregister(getApplicationContext());
 ```
+
+##How to send notifications
+
+Login to [Malcom web](http://malcom.mymalcom.com), click on "Marketing" tab and then go to Campaigns - Push. There you can send notifications to your apps. Either to all users or to some of them using filters or segments.
+
+You can also send notifications via API. Refer to the API documentation: https://github.com/MyMalcom/MalcomAPI
