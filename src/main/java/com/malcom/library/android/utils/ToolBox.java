@@ -384,11 +384,13 @@ public class ToolBox {
         } else {
         	 final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
 
-             // Usamos el Android ID a no ser que sea uno conocido por fallar o no se pueda, en cuyo caso generamos un UUID
+             // http://stackoverflow.com/questions/6106681/android-how-are-you-dealing-with-9774d56d682e549c-android-id
              try {
                  if (!"9774d56d682e549c".equals(androidId)) {
                      uuid = UUID.nameUUIDFromBytes(androidId.getBytes("utf8"));
                  } else {
+                     // This access to TelephonyManager needs READ_PHONE_STATE. If we get rid of it
+                     // probably we won't need that permission anymore (update README.md if so).
                      final String deviceId = ((TelephonyManager) context.getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
                      uuid = deviceId!=null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")) : UUID.randomUUID();
                  }

@@ -434,14 +434,11 @@ public class MCMConfigManager {
 	
 	private URL obtainConfigurationURLPath() throws ConfigurationException{
 		try{
-			TelephonyManager tm = (TelephonyManager) activity.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-			//String path = properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL).toString() + GLOBAL_CONF
-			//		+ properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_APPID).toString() + "/"
-			//		+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
-			
+            String deviceId = ToolBox.device_getId(activity);
+
 			String path = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + GLOBAL_CONF
 					+ MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID) + "/"
-					+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
+					+ deviceId + "/" + CONFIG_FILE_NAME;
 			
 			URL url = new URL(path);
 			Log.d(MCMDefines.LOG_TAG, "CONFIG. " + path);
