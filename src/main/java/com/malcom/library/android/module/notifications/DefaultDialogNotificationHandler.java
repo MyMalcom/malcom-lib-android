@@ -9,9 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * Creates a dialog with the notification message and only an "Ok" button.
+ * Creates a dialog with the notification message and an "Ok" button.
  * When the "Ok" button is pressed, the notification url will be opened in a browser
- * (if it's applicable).
+ * (if the notification has an url).
  */
 public class DefaultDialogNotificationHandler implements NotificationHandler {
 

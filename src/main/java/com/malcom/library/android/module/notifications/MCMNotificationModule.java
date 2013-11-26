@@ -203,14 +203,6 @@ public class MCMNotificationModule {
 		}
 	}
 
-    /**
-     * If the activity intent comes from a notification a dialog is shown with the notification message.
-     */
-    public void gcmCheckForNewNotification(Activity activity)
-    {
-        gcmCheckForNewNotification(activity, new DefaultDialogNotificationHandler(activity));
-    }
-
 	/**
 	 * If the activity intent comes from a notification a dialog is shown with the notification message.
 	 */

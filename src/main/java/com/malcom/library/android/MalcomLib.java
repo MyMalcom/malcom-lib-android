@@ -9,6 +9,7 @@ import android.util.activitylifecyclecallbackscompat.MalcomApplicationHelper;
 import com.malcom.library.android.module.campaign.MCMCampaignAdapter;
 import com.malcom.library.android.module.campaign.MCMCampaignNotifiedDelegate;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.module.notifications.DefaultDialogNotificationHandler;
 import com.malcom.library.android.module.notifications.EnvironmentType;
 import com.malcom.library.android.module.notifications.MCMNotificationModule;
 import com.malcom.library.android.module.notifications.NotificationHandler;
@@ -214,16 +215,18 @@ public class MalcomLib {
     }
 
     /**
-     * Check if there are notifications to be shown
+     * Checks if the activity was opened from a notification and, if so,
+     * handles the notification using {@link DefaultDialogNotificationHandler}.
      */
-    public static void checkForNewNotifications(Activity activity) {
-        MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity);
+    public static void checkNotification(Activity activity) {
+        checkNotification(activity, new DefaultDialogNotificationHandler(activity));
     }
 
     /**
-     * Check if there are notifications to be shown
+     * Checks if the activity was opened from a notification and, if so,
+     * handles the notification using the given handler.
      */
-    public static void checkForNewNotifications(Activity activity, NotificationHandler handler) {
+    public static void checkNotification(Activity activity, NotificationHandler handler) {
         MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity, handler);
     }
 
