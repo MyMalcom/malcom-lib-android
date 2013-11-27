@@ -540,7 +540,7 @@ public class MCMCoreAdapter {
 	 */
 	public void moduleNotificationsRegister(Context context, String title, Class<?> clazz){
 		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, true, clazz);
+		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, clazz);
 		
 	}
 
@@ -554,42 +554,9 @@ public class MCMCoreAdapter {
      */
     public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Class<?> clazz){
 
-        MCMNotificationModule.getInstance().gcmRegisterDevice(context, environment, title, true, clazz);
+        MCMNotificationModule.getInstance().gcmRegisterDevice(context, environment, title, clazz);
 
     }
-
-	
-	/**
-	 * Registers the device with GCM and Malcom push notification system.
-	 * 
-	 * NOTE: 
-	 * The environment is set by looking for the application debug mode,
-	 * if is set to TRUE, the environment will be SANDBOX, otherwise PRODUCTION.
-	 * 
-	 * @param	context
-	 * @param	title		Title for the notification
-	 * @param 	clazz		Class to call when clicking in the notification
-	 */
-	public void moduleNotificationsRegister(Context context, String title, Boolean showAlert, Class<?> clazz){
-		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), title, showAlert, clazz);
-		
-	}
-	
-	/**
-	 * Registers the device with GCM and Malcom push notification system.
-	 * 
-	 * @param	context
-	 * @param	environment Destination environment. See @ENvironmentType. 
-	 * @param	title		Title for the notification
-	 * @param 	clazz		Class to call when clicking in the notification
-	 */
-	public void moduleNotificationsRegister(Context context, EnvironmentType environment, String title, Boolean showAlert, Class<?> clazz){
-		
-		MCMNotificationModule.getInstance().gcmRegisterDevice(context.getApplicationContext(), environment, title, showAlert, clazz);
-		
-	}
-
 	
 	/**
 	 * Un-registers the device from GCM and from Malcom.
@@ -601,15 +568,7 @@ public class MCMCoreAdapter {
 		MCMNotificationModule.getInstance().gcmUnregisterDevice(context.getApplicationContext());
 				
 	}
-	
-	/**
-	 * Check if there are notifications to be shown.
-	 */
-	public void moduleNotificationsCheckForNewNotifications(Activity activity) {
 
-		MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity);
-	}
-	
 	/**
 	 * Gets the notification registration token or null if the device is not registered.
 	 * 

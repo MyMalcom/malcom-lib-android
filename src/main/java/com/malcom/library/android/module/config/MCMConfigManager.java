@@ -24,7 +24,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -434,14 +433,11 @@ public class MCMConfigManager {
 	
 	private URL obtainConfigurationURLPath() throws ConfigurationException{
 		try{
-			TelephonyManager tm = (TelephonyManager) activity.getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-			//String path = properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL).toString() + GLOBAL_CONF
-			//		+ properties.get(MCMCoreAdapter.PROPERTIES_MALCOM_APPID).toString() + "/"
-			//		+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
-			
+            String deviceId = ToolBox.device_getId(activity);
+
 			String path = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + GLOBAL_CONF
 					+ MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID) + "/"
-					+ tm.getDeviceId() + "/" + CONFIG_FILE_NAME;
+					+ deviceId + "/" + CONFIG_FILE_NAME;
 			
 			URL url = new URL(path);
 			Log.d(MCMDefines.LOG_TAG, "CONFIG. " + path);
@@ -620,33 +616,43 @@ public class MCMConfigManager {
     private void showAlert() {
 
     	Log.d(MCMDefines.LOG_TAG, "Show alert");
-		try {			
-			boolean showAlert = true;
-			
-			String alertAppVersion = configuration.getAlertAppStoreVersion();						
-			String appVersionName = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0).versionName;
-						
-			Log.d(MCMDefines.LOG_TAG, "App Version: "+alertAppVersion);
-			Log.d(MCMDefines.LOG_TAG, "Version Name: "+appVersionName);
-			
-			if (alertAppVersion != null) {
-				alertAppVersion= normalisedVersion(alertAppVersion);
-				appVersionName = normalisedVersion(appVersionName);
-				showAlert = showAlertIfVersion(configuration.getAlertVersionCondition(), appVersionName, alertAppVersion);
-			}
-			
-			if (showAlert) {
-				AlertDialog alertDialog = ConfigurationUtils.createAlertDialog(activity, configuration);
-				if(alertDialog != null)
-						alertDialog.show();
-			}
-			
-		} catch (Exception e) {
-			Log.e("SHOW_ALERT_ERROR",e.getMessage());
-			
-		}
+
+        boolean showAlert = true;
+
+        String alertAppVersion = configuration.getAlertAppStoreVersion();
+        String appVersionName = getVersionName();
+
+        Log.d(MCMDefines.LOG_TAG, "App Version: "+alertAppVersion);
+        Log.d(MCMDefines.LOG_TAG, "Version Name: "+appVersionName);
+
+        if (alertAppVersion != null) {
+            alertAppVersion= normalisedVersion(alertAppVersion);
+            appVersionName = normalisedVersion(appVersionName);
+            showAlert = showAlertIfVersion(configuration.getAlertVersionCondition(), appVersionName, alertAppVersion);
+        }
+
+        if (showAlert) {
+            AlertDialog alertDialog = ConfigurationUtils.createAlertDialog(activity, configuration);
+            if(alertDialog != null)
+                    alertDialog.show();
+        }
 	}
-    
+
+    private String getVersionName() {
+        try {
+            // http://stackoverflow.com/questions/4616095/how-to-get-the-build-version-number-of-your-android-application
+            final String versionName = activity.getPackageManager()
+                    .getPackageInfo(activity.getPackageName(), 0).versionName;
+            if (versionName == null) {
+                throw new RuntimeException("Your manifest must include android:versionName to check the app version");
+            }
+            return versionName;
+
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException("The android:versionName could not be retrieved", e);
+        }
+    }
+
     // -- End Show/Remove Splash, interstitial and alert functions
 
     
@@ -674,7 +680,7 @@ public class MCMConfigManager {
     }
     
     
-    private boolean showAlertIfVersion(String compareString, String appVersion, String alertAppVersion) throws NameNotFoundException {
+    private boolean showAlertIfVersion(String compareString, String appVersion, String alertAppVersion) {
 		
     	if (!compareString.equals("NONE")) {
 			

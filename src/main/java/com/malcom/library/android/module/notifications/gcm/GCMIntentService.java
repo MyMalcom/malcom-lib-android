@@ -101,7 +101,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     /*
      * Issues a notification to inform the user about the received notification.
      */    
-    private static void generateNotification(Context context, Intent i) {
+    private static void generateNotification(Context context, Intent intent) {
         
 		try {
 			int iconResId = getApplicationIcon(context);
@@ -111,9 +111,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			
 			String title = prefs.getString(MCMNotificationModule.GCM_TITLE_NOTIFICATION, "");
 
-            Bundle extras = i.getExtras();
-	        
-	        String message = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY);
+	        String message = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY);
 	        
 	        try {
 				message = URLDecoder.decode(message, "UTF8");
@@ -124,14 +122,14 @@ public class GCMIntentService extends GCMBaseIntentService {
                 npe.printStackTrace();
             }
 	        
-	        String webUrl = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
+	        String webUrl = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 	        										 + MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
-	        String efficacyKey = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
+	        String efficacyKey = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 	        											 + MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY);
 	        String segmentId = null;
-	        if(i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
+	        if(intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 								+ MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY)!=null){
-	        	segmentId = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "." 
+	        	segmentId = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
 	        										+ MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY);
 	        }
 	        Notification notification = new Notification(iconResId, message, when);
@@ -144,7 +142,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        notification.defaults |= Notification.DEFAULT_LIGHTS;
 
             // Sound
-            String soundName = (String)i.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
+            String soundName = (String)intent.getExtras().get(MCMNotificationModule.ANDROID_MESSAGE_KEY + "."
                     + MCMNotificationModule.ANDROID_NOTIFICATION_SOUND_KEY);
             int notificationSoundId = 0;
             if (soundName != null) {
@@ -175,27 +173,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        
 	        //Required to avoid getting the same intent in the activity each time. Each message is different so
 	        //the intent should be different (the action) so extras can be different.
-	        notificationIntent.setAction((String.valueOf(rnd.nextLong())+message)); 
-	        
-	        notificationIntent.putExtra(MalcomNotificationReceiver.NOTIFICATION_SHOW_ALERT_KEY, new Boolean(true));
-	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY,efficacyKey);
+	        notificationIntent.setAction((String.valueOf(rnd.nextLong())+message));
+
+            notificationIntent.putExtra(MCMNotificationModule.HAS_NOTIFICATION_TO_HANDLE, true);
+	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_EFFICACY_KEY, efficacyKey);
 	        if(segmentId!=null)
 	        	notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_SEGMENT_KEY,segmentId);
 	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_KEY, message);
 	        notificationIntent.putExtra(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY, webUrl);
 	        
 	        //	Add custom fields
-	        
-	        Set<String> keys = i.getExtras().keySet();
-	        
-	        for (String key:keys) {
-	        	
-	        	Object o = i.getExtras().get(key);
-	        	
-	        	notificationIntent.putExtra(key, (String)o);
-	        	
-	        }
-	       	        
+            notificationIntent.putExtras(intent);
+
 	        //Set intent so it does not start a new activity
 	        //
 	        //Notes:
@@ -210,9 +199,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 	        
 	        
-	        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	                        
-	        notification.setLatestEventInfo(context, title, message, intent);
+	        notification.setLatestEventInfo(context, title, message, pendingIntent);
 	        
 	        //This makes the device to wake-up is is idle with the screen off.
 	        wakeUp(context);

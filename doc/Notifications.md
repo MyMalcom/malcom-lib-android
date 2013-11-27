@@ -66,15 +66,21 @@ That call will register the device in Malcom so it can receive notifications.
 - `<Title>` is the title that will appear in all the notifications. You can set the name of your app or a generic message like "New message".
 - `<TargetActivity>` is the activity that is going to be opened when the user clicks a notification. This will usually be the same main activity.
 
-###Check for notifications
+###Check notification
 
 In `onResume` of your "TargetActivity" class (usually just after the previous register call), add this call to check for new notifications:
 
 ```java
-MalcomLib.checkForNewNotifications(this);
+MalcomLib.checkNotification(this);
 ```
 
-That method will check whether the activity was opened because the user clicked on a notification. If so, the message of the notification will be displayed.
+That method will check whether the activity was opened because the user clicked on a notification. If so, the message of the notification will be displayed in an alert dialog.
+
+If you want to handle the notification message in a custom way, use the following method:
+
+```java
+MalcomLib.checkNotification(this, handler);
+```
 
 ###Other necessary calls
 
