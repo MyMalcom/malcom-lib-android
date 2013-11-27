@@ -77,7 +77,11 @@ public class MCMCampaignDTO {
                 hydrateClientLimitFeatures(json.getJSONArray(ATTR_CLIENT_LIMIT_FEATURE));
             if (json.has(ATTR_CUSTOM_PARAMS) && json.getJSONObject(ATTR_CUSTOM_PARAMS).has(ATTR_CUSTOM_PARAMS_PROPERTIES))
                 customParams = JSONHelper.toMap(json.getJSONObject(ATTR_CUSTOM_PARAMS).getJSONObject(ATTR_CUSTOM_PARAMS_PROPERTIES));
-            weight = json.has(ATTR_WEIGHT_CAMPAIGN) ? json.getInt(ATTR_WEIGHT_CAMPAIGN) : 1;
+            if (json.has(ATTR_SERVER_ORDER_FEATURE) && json.getJSONObject(ATTR_SERVER_ORDER_FEATURE).has(ATTR_WEIGHT_CAMPAIGN)) {
+                weight = json.getJSONObject(ATTR_SERVER_ORDER_FEATURE).getInt(ATTR_WEIGHT_CAMPAIGN);
+            } else {
+                weight = 1;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

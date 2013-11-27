@@ -66,7 +66,7 @@ public class MCMCampaignsLogics {
         //generates random number
         int selection = 0;
         if (weightedArray.size() > 1) {
-            selection = new Random().nextInt(weightedArray.size() - 1);
+            selection = new Random().nextInt(weightedArray.size());
         }
 
         //gets the random position and gets the id written on it. It will be one of the campaigns
