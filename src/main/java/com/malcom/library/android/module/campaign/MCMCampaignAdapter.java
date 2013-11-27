@@ -201,6 +201,10 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         //Gets the campaigns for the current type
         MCMCampaignDTO selectedCampaign = null;
         ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsLogics.getFilteredCampaigns(campaignsArray, type);
+        if(type == CampaignType.IN_APP_CROSS_SELLING) {
+            ArrayList<MCMCampaignDTO> externalCampaignsArray = MCMCampaignsLogics.getFilteredCampaigns(campaignsArray, CampaignType.IN_APP_EXTERNAL_URL);
+            filteredArray.addAll(externalCampaignsArray);
+        }
 
         //If there is at least one campaign
         if (filteredArray.size() > 0) {
@@ -209,7 +213,7 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
         if (selectedCampaign != null) {
 
-            if (type == CampaignType.IN_APP_CROSS_SELLING || type == CampaignType.IN_APP_PROMOTION) {
+            if (type == CampaignType.IN_APP_CROSS_SELLING || type == CampaignType.IN_APP_EXTERNAL_URL || type == CampaignType.IN_APP_PROMOTION) {
                 if (receiver == null) {
                     createBanner(selectedCampaign);
                 } else {
