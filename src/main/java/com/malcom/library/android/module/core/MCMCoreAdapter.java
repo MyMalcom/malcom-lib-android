@@ -567,17 +567,7 @@ public class MCMCoreAdapter {
 		MCMNotificationModule.getInstance().gcmUnregisterDevice(context.getApplicationContext());
 				
 	}
-	
-	/**
-	 * Check if there are notifications to be shown.
-     *
-     * @deprecated Use {@link com.malcom.library.android.MalcomLib#checkForNewNotifications(android.app.Activity)}
-	 */
-	public void moduleNotificationsCheckForNewNotifications(Activity activity) {
 
-		MCMNotificationModule.getInstance().gcmCheckForNewNotification(activity);
-	}
-	
 	/**
 	 * Gets the notification registration token or null if the device is not registered.
 	 * 
