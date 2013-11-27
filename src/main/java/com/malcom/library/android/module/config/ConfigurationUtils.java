@@ -105,7 +105,7 @@ public class ConfigurationUtils {
 					.setPositiveButton("Actualizar", new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				        	   Intent intent = new Intent(Intent.ACTION_VIEW);
-				        	   intent.setData(Uri.parse(extractMarketAppInfo(urlAppStore))); 
+				        	   intent.setData(Uri.parse(urlAppStore));
 				        	   context.startActivity(intent);
 				        	   //context.finish();
 				           }
@@ -123,22 +123,10 @@ public class ConfigurationUtils {
 					.setPositiveButton("Actualizar", new DialogInterface.OnClickListener() {
 				           public void onClick(DialogInterface dialog, int id) {
 				        	   Intent intent = new Intent(Intent.ACTION_VIEW);
-				        	   intent.setData(Uri.parse(extractMarketAppInfo(urlAppStore)));
+				        	   intent.setData(Uri.parse(urlAppStore));
 				        	   context.startActivity(intent);
 				        	   //context.finish();
 				           }
 					}).show();	
     }
-    
-    private static String extractMarketAppInfo(String appUrl){
-    	//Market URL format: 
-    	// TODO En Malcom la verificación de URL debería cambiar.
-    	//	market://details?id=<application.package.id> 
-    	if (appUrl != null) {
-        	return appUrl.substring((appUrl.indexOf("details?id=")+"details?id=".length()),appUrl.length());
-    	} else {
-    		return "";
-    	}
-    }
-	
 }

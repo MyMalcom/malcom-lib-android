@@ -55,9 +55,9 @@ public class Configuration {
     public static final String CONFIG_PROPERTY_ALERT_MESSAGE_PREFIX = "alertMsg_";
     public static final String CONFIG_PROPERTY_ALERT_VERSION_CONDITION = "versionCondition";
     public static final String CONFIG_PROPERTY_ALERT_VERSION = "appStoreVersion";
-    public static final String CONFIG_PROPERTY_ALERT_URL_APPSTORE = "appStoreVersion";
+    public static final String CONFIG_PROPERTY_ALERT_URL_APPSTORE = "urlAppStore";
     
-	
+
     private JSONObject jsonObject;
     private String deviceLanguage;
 	
