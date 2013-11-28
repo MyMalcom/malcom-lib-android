@@ -36,6 +36,10 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
             crossSellingClick();
         }
 
+        if (campaign.getType() == MCMCampaignDTO.CampaignType.IN_APP_EXTERNAL_URL) {
+            externalURLClick();
+        }
+
         // Send Click Hit event to Malcom
         new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_CLICK_HIT, campaign.getCampaignId());
 
@@ -48,5 +52,9 @@ public class MCMCampaignBannerListener implements View.OnClickListener {
         } catch (android.content.ActivityNotFoundException anfe) {
             activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + campaign.getPromotionIdentifier())));
         }
+    }
+
+    private void externalURLClick() {
+        activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(campaign.getExternalPromotionURL())));
     }
 }

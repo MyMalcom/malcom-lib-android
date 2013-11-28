@@ -13,7 +13,7 @@ import java.util.*;
  * Class to store information about a campaign.
  */
 public class MCMCampaignDTO {
-    public static enum CampaignType {IN_APP_PROMOTION, IN_APP_RATE_MY_APP, IN_APP_CROSS_SELLING};
+    public static enum CampaignType {IN_APP_PROMOTION, IN_APP_RATE_MY_APP, IN_APP_CROSS_SELLING, IN_APP_EXTERNAL_URL};
 
     public static enum CampaignPosition {BOTTOM, TOP, FULL_SCREEN, MIDDLE_PORTRAIT, MIDDLE_LANDSCAPE};
 
@@ -32,11 +32,14 @@ public class MCMCampaignDTO {
     private static final String ATTR_PROMOTION_FEATURE = "promotionFeature";
     private static final String ATTR_PROMOTION_TYPE = "promotionType";
     private static final String ATTR_PROMOTION_IDENTIFIER = "promotionIdentifier";
+    private static final String ATTR_EXTERNAL_PROMOTION_FEATURE = "externalPromotionFeature";
+    private static final String ATTR_EXTERNAL_URL = "externalUrl";
     private static final String ATTR_CLIENT_LIMIT_FEATURE = "clientLimitFeatures";
     private static final String ATTR_CLIENT_LIMIT_TYPE = "clientLimitType";
     private static final String ATTR_LIMIT_VALUE = "limitValue";
     private static final String ATTR_CUSTOM_PARAMS = "customParamsFeature";
     private static final String ATTR_CUSTOM_PARAMS_PROPERTIES = "properties";
+    private static final String ATTR_SERVER_ORDER_FEATURE = "serverOrderFeature";
     private static final String ATTR_WEIGHT_CAMPAIGN = "weight";
 
     //Attributes
@@ -51,6 +54,7 @@ public class MCMCampaignDTO {
     private CampaignPosition campaignPosition;
     private String promotionType;
     private String promotionIdentifier;
+    private String externalPromotionURL;
     private Map<String, String> clientLimitFeatures;
     private Map<String, Object> customParams;
     private int weight;
@@ -73,11 +77,17 @@ public class MCMCampaignDTO {
                 hydrateMediaFeature(json.getJSONObject(ATTR_MEDIA_FEATURE));
             if (json.has(ATTR_PROMOTION_FEATURE))
                 hydratePromotionFeature(json.getJSONObject(ATTR_PROMOTION_FEATURE));
+            if (json.has(ATTR_EXTERNAL_PROMOTION_FEATURE))
+                hydrateExternalPromotionFeature(json.getJSONObject(ATTR_EXTERNAL_PROMOTION_FEATURE));
             if (json.has(ATTR_CLIENT_LIMIT_FEATURE))
                 hydrateClientLimitFeatures(json.getJSONArray(ATTR_CLIENT_LIMIT_FEATURE));
             if (json.has(ATTR_CUSTOM_PARAMS) && json.getJSONObject(ATTR_CUSTOM_PARAMS).has(ATTR_CUSTOM_PARAMS_PROPERTIES))
                 customParams = JSONHelper.toMap(json.getJSONObject(ATTR_CUSTOM_PARAMS).getJSONObject(ATTR_CUSTOM_PARAMS_PROPERTIES));
-            weight = json.has(ATTR_WEIGHT_CAMPAIGN) ? json.getInt(ATTR_WEIGHT_CAMPAIGN) : 1;
+            if (json.has(ATTR_SERVER_ORDER_FEATURE) && json.getJSONObject(ATTR_SERVER_ORDER_FEATURE).has(ATTR_WEIGHT_CAMPAIGN)) {
+                weight = json.getJSONObject(ATTR_SERVER_ORDER_FEATURE).getInt(ATTR_WEIGHT_CAMPAIGN);
+            } else {
+                weight = 1;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -90,6 +100,8 @@ public class MCMCampaignDTO {
                 type = CampaignType.IN_APP_RATE_MY_APP;
             } else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_CROSS_SELLING.name())) {
                 type = CampaignType.IN_APP_CROSS_SELLING;
+            } else if (typeJSON.equalsIgnoreCase(CampaignType.IN_APP_EXTERNAL_URL.name())) {
+                type = CampaignType.IN_APP_EXTERNAL_URL;
             } else {
                 type = CampaignType.IN_APP_PROMOTION;
             }
@@ -134,6 +146,14 @@ public class MCMCampaignDTO {
         try {
             promotionType = (String) json.get(ATTR_PROMOTION_TYPE);
             promotionIdentifier = (String) json.getString(ATTR_PROMOTION_IDENTIFIER);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void hydrateExternalPromotionFeature(JSONObject json) {
+        try {
+            externalPromotionURL = (String) json.get(ATTR_EXTERNAL_URL);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -199,6 +219,14 @@ public class MCMCampaignDTO {
 
     public String getPromotionIdentifier() {
         return promotionIdentifier;
+    }
+
+    public String getExternalPromotionURL() {
+        return externalPromotionURL;
+    }
+
+    public void setExternalPromotionURL(String externalPromotionURL) {
+        this.externalPromotionURL = externalPromotionURL;
     }
 
     public String getClientLimitFeature(String key) {
