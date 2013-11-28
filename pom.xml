@@ -49,11 +49,6 @@
         </dependency>
         <!-- External not-mavenized libs -->
         <dependency>
-            <groupId>com.google.android.admob</groupId>
-            <artifactId>admob</artifactId>
-            <version>6.4.1-r11</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.android</groupId>
             <artifactId>annotations</artifactId>
             <version>4.1.1.4</version>
