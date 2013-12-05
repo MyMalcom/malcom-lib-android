@@ -82,6 +82,30 @@ If you want to handle the notification message in a custom way, use the followin
 MalcomLib.checkNotification(this, handler);
 ```
 
+Example:
+
+```java
+MalcomLib.checkNotification(this, new NotificationHandler() {
+    @Override
+    public void handleNotification(String message, String url, Bundle extras) {
+
+        // You can use message and url.
+        // For example, fall back to the default handler:
+        new DefaultDialogNotificationHandler(MainActivity.this)
+                .handleNotification(message, url, extras);
+
+        // To get your custom parameters, follow this example:
+        String myCustomParameterKey =
+                MCMNotificationModule.ANDROID_MESSAGE_KEY + "." + "my_custom_parameter";
+
+        if (extras.containsKey(myCustomParameterKey)) {
+            String myCustomParameterValue = extras.getString(myCustomParameterKey);
+            // ... use your parameter ...
+        }
+    }
+});
+```
+
 ###Other necessary calls
 
 Override the `onNewIntent` method. This method is called when a notification is clicked and the user was already on the "TargetActivity". We set the intent so we don't lose the notification message that comes with it.

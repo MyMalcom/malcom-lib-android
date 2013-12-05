@@ -47,7 +47,9 @@ public class MalcomNotificationReceiver {
 
         String richMediaUrl = intent.getExtras().getString(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 
-        handler.handleNotification(message, richMediaUrl, intent.getExtras());
+        boolean handled = handler.handleNotification(message, richMediaUrl, intent.getExtras());
+
+        intent.putExtra(MCMNotificationModule.HAS_NOTIFICATION_TO_HANDLE, !handled);
     }
 
     /** Sends ACK reponse to Malcom server */
