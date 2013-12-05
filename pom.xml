@@ -6,8 +6,11 @@
     <groupId>com.malcom.library.android</groupId>
     <artifactId>malcom-android-library</artifactId>
 
-	<!-- IMPORTANT: when updating this value, also update README.md and MCMCoreAdapter.SDK_VERSION -->
-    <version>2.0.6</version>
+    <!--
+        IMPORTANT: when updating this value, also update
+        MCMCoreAdapter.SDK_VERSION and all occurrences in README.md
+    -->
+    <version>2.0.7</version>
 
     <name>Malcom - Android Library</name>
     <description>Malcom Android library.</description>
