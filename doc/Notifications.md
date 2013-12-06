@@ -87,21 +87,64 @@ Example:
 ```java
 MalcomLib.checkNotification(this, new NotificationHandler() {
     @Override
-    public void handleNotification(String message, String url, Bundle extras) {
-
+    public boolean handleNotification(String message, String url, Bundle extras) {
         // You can use message and url.
-        // For example, fall back to the default handler:
-        new DefaultDialogNotificationHandler(MainActivity.this)
+        // For example, you can fall back to the default handler:
+        new DefaultDialogNotificationHandler(MyActivity.this)
                 .handleNotification(message, url, extras);
 
-        // To get your custom parameters, follow this example:
-        String myCustomParameterKey =
-                MCMNotificationModule.ANDROID_MESSAGE_KEY + "." + "my_custom_parameter";
+        // To get a custom parameter named "myParameter", do this:
+        String myParameterKey =
+                MCMNotificationModule.ANDROID_MESSAGE_KEY + "." + "myParameter";
 
-        if (extras.containsKey(myCustomParameterKey)) {
-            String myCustomParameterValue = extras.getString(myCustomParameterKey);
+        if (extras.containsKey(myParameterKey)) {
+            String myParameterValue = extras.getString(myParameterKey);
             // ... use your parameter ...
         }
+        
+        // true means the notification is handled, so we don't want to handle it again
+        return true;
+    }
+});
+```
+
+Here's another useful example where we show how to propagate the notification to another activity
+so it is handled there. Don't forget to call `MalcomLib.checkNotification(this)` or
+`MalcomLib.checkNotification(this, handler)` in the other activities too.
+
+```java
+MalcomLib.checkNotification(this, new NotificationHandler() {
+    @Override
+    public boolean handleNotification(String message, String url, Bundle extras) {
+        
+        // Let's suppose a custom parameter tells you the target activity
+        String targetActivity = extras.getString(...);
+
+        Intent intent = null;
+
+        if (targetActivity.equals("news")) {
+            intent = ...
+        } else if (targetActivity.equals("sales")) {
+            intent = ...
+        } else {
+            // Do whatever, display the message, or ignore the notification
+        }
+
+        if (intent != null) {
+            // Use this to propagate the notification info
+            intent.putExtras(extras);
+
+            startActivity(intent);
+        }
+
+        // If we didn't start another activity we return true to signal
+        //   that we don't want the notification to be handled again.
+        // If we started another activity, we will return false to signal
+        //   that the notification wasn't still handled so it is handled
+        //   in the target activity.
+        boolean notificationHandled = (intent == null);
+
+        return notificationHandled;
     }
 });
 ```
