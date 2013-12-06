@@ -35,8 +35,6 @@ public class MalcomNotificationReceiver {
 		
         Log.d(MCMNotificationModule.TAG, "MalcomNotificationReceiver. A notification is going to be handled.");
 
-        sendAck();
-
         String message = intent.getExtras().getString(MCMNotificationModule.ANDROID_MESSAGE_KEY);
 
         try {
@@ -47,7 +45,13 @@ public class MalcomNotificationReceiver {
 
         String richMediaUrl = intent.getExtras().getString(MCMNotificationModule.ANDROID_MESSAGE_RICHMEDIA_KEY);
 
-        handler.handleNotification(message, richMediaUrl, intent.getExtras());
+        boolean handled = handler.handleNotification(message, richMediaUrl, intent.getExtras());
+
+        intent.putExtra(MCMNotificationModule.HAS_NOTIFICATION_TO_HANDLE, !handled);
+
+        if (handled) {
+            sendAck();
+        }
     }
 
     /** Sends ACK reponse to Malcom server */

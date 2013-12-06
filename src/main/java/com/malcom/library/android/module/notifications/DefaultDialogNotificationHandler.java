@@ -22,7 +22,7 @@ public class DefaultDialogNotificationHandler implements NotificationHandler {
     }
 
     @Override
-    public void handleNotification(String message, String url, Bundle extras) {
+    public boolean handleNotification(String message, String url, Bundle extras) {
 
         try {
             createAlertDialog(message, url).show();
@@ -31,6 +31,8 @@ public class DefaultDialogNotificationHandler implements NotificationHandler {
             Log.e(MCMNotificationModule.TAG,
                     "Could not show dialog for message '" + message + "' and url '" + url + "'", e);
         }
+
+        return true;
     }
 
     /**

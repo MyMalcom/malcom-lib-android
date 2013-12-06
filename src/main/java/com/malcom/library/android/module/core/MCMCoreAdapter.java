@@ -46,8 +46,8 @@ import com.malcom.library.android.module.stats.Subbeacon.SubbeaconType;
  */
 public class MCMCoreAdapter {
 
-	// This constant should be changed when upgrading the project version in POM (TODO: Take it from there)
-	public static final String SDK_VERSION = "2.0.6";
+	// This constant must be changed when upgrading the project version in POM
+	public static final String SDK_VERSION = "2.0.7";
 
 	public static final String MALCOM_LIBRARY_PREFERENCES_FILE_NAME = "com.malcom.library.android";
 	

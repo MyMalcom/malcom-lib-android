@@ -212,12 +212,7 @@ public class MCMNotificationModule {
 
 		if ( hasNotificationToHandle(intent) )
 		{
-			Log.d(MCMNotificationModule.TAG,"Notification received. Displaying dialog.");
-
-			// So the notification is not handled again
-			intent.putExtra(HAS_NOTIFICATION_TO_HANDLE, false);
-
-			// Trick to reuse receiver code until we properly refactor
+			Log.d(MCMNotificationModule.TAG, "Handling received notification");
 			new MalcomNotificationReceiver(activity, intent, handler).handleNotification();
 		}
 	}
