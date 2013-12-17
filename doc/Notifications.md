@@ -55,7 +55,7 @@ MalcomLib.setSenderId(<PROJECT_NUMBER>);
 
 ###Register for notifications
 
-In `onResume` of your main activity, call this method:
+In `onCreate` of your application class, call this method:
 
 ```java
 MalcomLib.notificationsRegister(this, <Title>, <TargetActivity>.class);
