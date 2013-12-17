@@ -9,7 +9,7 @@ public class PreferencesUtils {
 	public static double getDouble(SharedPreferences prefs, String key, long defaultValue)
 	{
 		if (prefs.contains(key))
-			return prefs.getLong(key, 0L);
+            return Double.longBitsToDouble(prefs.getLong(key, 0L));
 		else
 			return defaultValue;
 	}
