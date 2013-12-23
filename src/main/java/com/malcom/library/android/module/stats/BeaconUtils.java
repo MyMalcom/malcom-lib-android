@@ -79,7 +79,16 @@ public class BeaconUtils {
 				break;
 			case 16:
 				res = "JellyBean(v4.1)";
-				break;			
+				break;
+            case 17:
+                res = "JellyBean(v4.2)";
+                break;
+            case 18:
+                res = "JellyBean(v4.3)";
+                break;
+            case 19:
+                res = "KitKat(v4.4)";
+                break;
 		}
 		
 		return res; 
