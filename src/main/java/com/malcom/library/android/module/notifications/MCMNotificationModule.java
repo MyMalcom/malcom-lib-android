@@ -11,6 +11,9 @@ import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.gcm.MalcomNotificationReceiver;
 import com.malcom.library.android.utils.ToolBox;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 
 /**
  * Malcom Notification module.
@@ -194,9 +197,18 @@ public class MCMNotificationModule {
                 applicationSecretkey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 			
 			//Set the unregistration URL for later usage.
-			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
+            String deviceId = null;
+            try
+            {
+                deviceId = URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+                deviceId = deviceId == null ? ToolBox.device_getId(context) : deviceId;
+            }
+            String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
 			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, applicationCode);
-            serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, ToolBox.device_getId(context));
+            serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, deviceId);
 
 			//Un-register the device from GCM.
 			GCMRegistrar.unregister(context);
