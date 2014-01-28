@@ -24,6 +24,7 @@ import com.malcom.library.android.module.notifications.NotificationAck;
 import com.malcom.library.android.module.notifications.NotificationRegistration;
 import com.malcom.library.android.module.notifications.services.PendingAcksDeliveryService;
 import com.malcom.library.android.utils.HttpDateUtils;
+import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
@@ -157,7 +158,7 @@ public final class MalcomServerUtilities {
                 params.put(PARAM_DEVICEUDID, ToolBox.device_getId(context));
 
                 //Set the unregistration URL for later usage.
-                String deviceId = URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
+                String deviceId = MCMUtils.getEncodedUDID(ToolBox.device_getId(context));
     			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
     			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, appCode);
                 serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, deviceId);

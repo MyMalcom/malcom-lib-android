@@ -41,6 +41,7 @@ import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundExc
 import com.malcom.library.android.exceptions.ConfigModuleNotInitializedException;
 import com.malcom.library.android.exceptions.ConfigurationException;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
 
@@ -433,7 +434,7 @@ public class MCMConfigManager {
 	
 	private URL obtainConfigurationURLPath() throws ConfigurationException{
 		try{
-            String deviceId = ToolBox.device_getId(activity);
+            String deviceId = MCMUtils.getEncodedUDID(ToolBox.device_getId(activity));
 
 			String path = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + GLOBAL_CONF
 					+ MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID) + "/"

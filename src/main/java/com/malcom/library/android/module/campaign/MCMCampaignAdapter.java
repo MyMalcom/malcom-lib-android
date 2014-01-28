@@ -163,32 +163,27 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
 
     private void makeRequest() {
 
-        try {
-            // Create URL to get campaigns of my app
-            String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
+        // Create URL to get campaigns of my app
+        String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
 
-            malcomAppId = URLEncoder.encode(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID), "UTF-8");
-            String devideId = URLEncoder.encode(ToolBox.device_getId(activity.getApplicationContext()), "UTF-8");
+        malcomAppId = MCMUtils.getEncodedUDID(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID));
+        String devideId = MCMUtils.getEncodedUDID(ToolBox.device_getId(activity.getApplicationContext()));
 
-            campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
-                    .replace(MCMCampaignDefines.UDID_TAG, devideId);
+        campaignResource = MCMCampaignDefines.CAMPAIGN_URL.replace(MCMCampaignDefines.APP_ID_TAG, malcomAppId)
+                .replace(MCMCampaignDefines.UDID_TAG, devideId);
 
-            String urlCampaign = malcomBaseUrl + campaignResource;
+        String urlCampaign = malcomBaseUrl + campaignResource;
 
-            //Add the location to the URL
-            Location lastKnownLocation = LocationUtils.getLocation(activity.getApplicationContext());
-            if (lastKnownLocation!=null) {
-                urlCampaign = urlCampaign+"?lat="+lastKnownLocation.getLatitude()
-                        +"&lng="+lastKnownLocation.getLongitude();
-            }
-
-            // Launch request to get campaigns data
-            new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            notifyCampaignDidFail(e.getMessage());
+        //Add the location to the URL
+        Location lastKnownLocation = LocationUtils.getLocation(activity.getApplicationContext());
+        if (lastKnownLocation!=null) {
+            urlCampaign = urlCampaign+"?lat="+lastKnownLocation.getLatitude()
+                    +"&lng="+lastKnownLocation.getLongitude();
         }
+
+        // Launch request to get campaigns data
+        new MCMCampaignAsyncTasks.DownloadCampaignFile(type, this).execute(urlCampaign);
+
     }
 
     /**
