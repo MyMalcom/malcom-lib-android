@@ -55,7 +55,7 @@ MalcomLib.setSenderId(<PROJECT_NUMBER>);
 
 ###Register for notifications
 
-In `onCreate` of your application class, call this method:
+Also in `onCreate` of your application class, call this method:
 
 ```java
 MalcomLib.notificationsRegister(this, <Title>, <TargetActivity>.class);
@@ -68,7 +68,7 @@ That call will register the device in Malcom so it can receive notifications.
 
 ###Check notification
 
-In `onResume` of your "TargetActivity" class (usually just after the previous register call), add this call to check for new notifications:
+In `onResume` of your "TargetActivity" class, add this call to check for new notifications:
 
 ```java
 MalcomLib.checkNotification(this);

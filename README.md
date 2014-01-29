@@ -5,7 +5,7 @@ Here we will explain how to easily integrate the [Malcom](http://www.mymalcom.co
 
 ##Requirements
 
-- Malcom Android library requires a minimum version 2.2, Froyo (API Level 8).
+- Malcom Android library requires a `minSdkVersion` of 8 or greater (Android 2.2, Froyo).
 - The device needs at least a configured account. In the simulator the AVD needs the Google APIs and a configured account.
 
 
@@ -42,13 +42,13 @@ In dependencies section:
 
 Manually download the library and add it to your project:
 
-- [malcom-android-library-2.0.7.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.7/malcom-android-library-2.0.7.jar)
+- [malcom-android-library-2.0.8.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.8/malcom-android-library-2.0.8.jar)
 
 You can also download the sources and javadoc:
 
-- [malcom-android-library-2.0.7-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.7/malcom-android-library-2.0.7-sources.jar)
+- [malcom-android-library-2.0.8-sources.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.8/malcom-android-library-2.0.8-sources.jar)
 
-- [malcom-android-library-2.0.7-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.7/malcom-android-library-2.0.7-javadoc.jar)
+- [malcom-android-library-2.0.8-javadoc.jar](http://maven-repo.mobivery.com.s3.amazonaws.com/release/com/malcom/library/android/malcom-android-library/2.0.8/malcom-android-library-2.0.8-javadoc.jar)
 
 
 ##Android Manifest
