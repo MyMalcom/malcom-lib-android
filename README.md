@@ -33,7 +33,7 @@ In dependencies section:
  	<dependency>
 		<groupId>com.malcom.library.android</groupId>
 		<artifactId>malcom-android-library</artifactId>
-		<version>2.0.8</version>
+		<version>2.0.9</version>
 	</dependency>
 </dependencies>
 ```

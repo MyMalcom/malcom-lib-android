@@ -9,7 +9,11 @@ import android.util.Log;
 import com.google.android.gcm.GCMRegistrar;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.module.notifications.gcm.MalcomNotificationReceiver;
+import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.ToolBox;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 
 /**
@@ -194,9 +198,10 @@ public class MCMNotificationModule {
                 applicationSecretkey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 			
 			//Set the unregistration URL for later usage.
-			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
+            String deviceId = MCMUtils.getEncodedUDID(ToolBox.device_getId(context));
+            String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
 			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, applicationCode);
-            serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, ToolBox.device_getId(context));
+            serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, deviceId);
 
 			//Un-register the device from GCM.
 			GCMRegistrar.unregister(context);

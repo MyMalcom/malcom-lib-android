@@ -9,6 +9,7 @@ import com.malcom.library.android.MCMDefines;
 import com.malcom.library.android.exceptions.ApplicationConfigurationNotFoundException;
 import com.malcom.library.android.module.core.MCMCoreAdapter;
 import com.malcom.library.android.utils.HttpDateUtils;
+import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.encoding.DigestUtils;
@@ -182,17 +183,16 @@ public class MCMCampaignAsyncTasks {
 
                 // Get the connection params
                 String malcomBaseUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL);
-                String appId = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID);
-                String encodedMalcomAppId = URLEncoder.encode(appId, "UTF-8");
-                String devideId = URLEncoder.encode(ToolBox.device_getId(context), "UTF-8");
+                String appId = MCMUtils.getEncodedUDID(MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPID));
+                String deviceId = MCMUtils.getEncodedUDID(ToolBox.device_getId(context));
                 String secretKey = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_APPSECRETKEY);
 
                 // Get the service url
                 String campaignHitService = MCMCampaignDefines.CAMPAIGN_HIT_URL
                         .replace(MCMCampaignDefines.HIT_TYPE_TAG, valores[0])  // CLICK or IMPRESSION
                         .replace(MCMCampaignDefines.CAMPAIGN_ID_TAG, valores[1])
-                        .replace(MCMCampaignDefines.APP_ID_TAG, encodedMalcomAppId)
-                        .replace(MCMCampaignDefines.UDID_TAG, devideId);
+                        .replace(MCMCampaignDefines.APP_ID_TAG, appId)
+                        .replace(MCMCampaignDefines.UDID_TAG, deviceId);
 
                 url = malcomBaseUrl + campaignHitService;
 

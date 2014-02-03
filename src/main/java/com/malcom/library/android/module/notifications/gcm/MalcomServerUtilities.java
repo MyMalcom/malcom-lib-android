@@ -2,6 +2,7 @@ package com.malcom.library.android.module.notifications.gcm;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import com.malcom.library.android.module.notifications.NotificationAck;
 import com.malcom.library.android.module.notifications.NotificationRegistration;
 import com.malcom.library.android.module.notifications.services.PendingAcksDeliveryService;
 import com.malcom.library.android.utils.HttpDateUtils;
+import com.malcom.library.android.utils.MCMUtils;
 import com.malcom.library.android.utils.MalcomHttpOperations;
 import com.malcom.library.android.utils.ToolBox;
 import com.malcom.library.android.utils.ToolBox.HTTP_METHOD;
@@ -154,11 +156,12 @@ public final class MalcomServerUtilities {
                 params.put(PARAM_APPLICATION_CODE, appCode);
                 params.put(PARAM_APPLICATION_SECRETKEY, appSecretKey);
                 params.put(PARAM_DEVICEUDID, ToolBox.device_getId(context));
-                
+
                 //Set the unregistration URL for later usage.
+                String deviceId = MCMUtils.getEncodedUDID(ToolBox.device_getId(context));
     			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_deregister;
     			serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_appCode, appCode);
-                serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, ToolBox.device_getId(context));
+                serverUrl=serverUrl.replaceAll(MCMNotificationModule.notification_deregister_param_udid, deviceId);
                 
                 System.out.println("Unregister url: "+serverUrl);
     			

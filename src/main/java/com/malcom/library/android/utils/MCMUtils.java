@@ -3,6 +3,9 @@ package com.malcom.library.android.utils;
 import android.content.Context;
 import android.util.TypedValue;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Created with IntelliJ IDEA.
  * User: PedroDuran
@@ -22,5 +25,18 @@ public class MCMUtils {
 
         float result = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels, context.getResources().getDisplayMetrics());
         return Math.round(result);
+    }
+
+    /**
+     * Url encoding for id. If an UnsupportedEncode exception is thrown return id un-encoded
+     * @param id
+     * @return
+     */
+    public static String getEncodedUDID(String id) {
+        try {
+            return URLEncoder.encode(id, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return id;
+        }
     }
 }
