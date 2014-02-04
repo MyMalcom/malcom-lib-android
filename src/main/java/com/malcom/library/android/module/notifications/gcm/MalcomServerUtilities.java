@@ -221,7 +221,7 @@ public final class MalcomServerUtilities {
             params.put(PARAM_APPLICATION_ENVIRONMENT_TYPE,environmentType);
             
             //Set the unregistration URL for later usage.
-			String serverUrl = MCMCoreAdapter.SERVER_URL + MCMNotificationModule.notification_ack;			
+			String serverUrl = MCMCoreAdapter.getInstance().coreGetProperty(MCMCoreAdapter.PROPERTIES_MALCOM_BASEURL) + MCMNotificationModule.notification_ack;
 			
 			serverDoAck(context, serverUrl, params);
         	

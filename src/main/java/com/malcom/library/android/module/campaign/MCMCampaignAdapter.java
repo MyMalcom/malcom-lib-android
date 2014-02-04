@@ -1,10 +1,10 @@
 package com.malcom.library.android.module.campaign;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RoundRectShape;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -112,6 +112,14 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         makeRequest();
     }
 
+    public void addRateAlert(Activity activity, MCMCampaignNotifiedDelegate delegate) {
+        this.activity = activity;
+        this.type = MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP;
+        this.delegate = delegate;
+
+        makeRequest();
+    }
+
     /**
      * Method that removes the banner and notifies it to delegate if delegate is set.
      *
@@ -179,26 +187,35 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
      */
     protected void proccessResponse(ArrayList<MCMCampaignDTO> campaignsArray) {
 
-        if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
-                type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
+        //Gets the campaigns for the current type
+        MCMCampaignDTO selectedCampaign = null;
+        ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsLogics.getFilteredCampaigns(campaignsArray, type);
 
-            MCMCampaignDTO selectedCampaign = null;
-            ArrayList<MCMCampaignDTO> filteredArray = MCMCampaignsUtils.getFilteredCampaigns(campaignsArray, type);
+        //If there is at least one campaign
+        if (filteredArray.size() > 0) {
+            selectedCampaign = MCMCampaignsLogics.getCampaignPerWeight(filteredArray);
+        }
 
-            //If there is at least one campaign
-            if (filteredArray.size()>0) {
-                selectedCampaign = MCMCampaignsUtils.getCampaignPerWeight(filteredArray);
-            }
+        if (selectedCampaign != null) {
 
-            if (selectedCampaign != null) {
+            if (type == MCMCampaignDTO.CampaignType.IN_APP_CROSS_SELLING ||
+                    type == MCMCampaignDTO.CampaignType.IN_APP_PROMOTION) {
                 if (receiver == null) {
-                        createBanner(selectedCampaign);
+                    createBanner(selectedCampaign);
                 } else {
                     receiver.onReceivedPromotions(createBannersList(activity, filteredArray));
                 }
-            } else {
-                notifyCampaignDidFail("There is no campaign to show");
+            } else if (type == MCMCampaignDTO.CampaignType.IN_APP_RATE_MY_APP) {
+
+                //Show the dialog if it's necessary
+                if (MCMCampaignsLogics.shouldShowDialog(activity.getApplicationContext(),selectedCampaign)) {
+                    createRateDialog(selectedCampaign);
+                }
+                //Update the session number
+                MCMCampaignsLogics.updateRateDialogSession(activity.getApplicationContext(),selectedCampaign);
             }
+        } else {
+            notifyCampaignDidFail("There is no campaign to show");
         }
     }
 
@@ -277,6 +294,49 @@ public class MCMCampaignAdapter implements MCMCampaignBannerView.MCMCampaignBann
         }
 
         return bannersList;
+    }
+
+    private void createRateDialog(MCMCampaignDTO campaignDTO) {
+
+        //Only notify when the dialog will be shown
+        new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_IMPRESSION_HIT,campaignDTO.getCampaignId());
+        notifyCampaignDidLoad();
+
+        MCMCampaignHelper.showRateMyAppDialog(activity, campaignDTO, new MCMCampaignHelper.RateMyAppDialogDelegate() {
+            @Override
+            public void dialogRatePressed(MCMCampaignDTO campaignDTO) {
+
+                //Open the market
+                Uri uri = Uri.parse("market://details?id=" + activity.getPackageName());
+                activity.startActivity(new Intent(Intent.ACTION_VIEW,uri));
+
+                //Update the control parameters
+                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_RATE_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
+            }
+
+            @Override
+            public void dialogDisablePressed(MCMCampaignDTO campaignDTO) {
+
+                //Update the control parameters
+                MCMCampaignsLogics.updateRateDialogDontShowAgain(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_NEVER_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
+            }
+
+            @Override
+            public void dialogRemindMeLaterPressed(MCMCampaignDTO campaignDTO) {
+
+                //Update the control parameters
+                MCMCampaignsLogics.updateRateDialogDate(activity.getApplicationContext());
+                new MCMCampaignAsyncTasks.NotifyServer(activity.getApplicationContext()).execute(MCMCampaignDefines.ATTR_REMIND_HIT,campaignDTO.getCampaignId());
+
+                notifyCampaignDidFinish();
+            }
+        });
     }
 
     /**

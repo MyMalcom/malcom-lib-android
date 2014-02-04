@@ -233,6 +233,8 @@ public class MCMCampaignAsyncTasks {
 
                 url = malcomBaseUrl + campaignHitService;
 
+                Log.i(MCMDefines.LOG_TAG,"Campaign notify url: "+url);
+
                 // Send hit to Malcom
                 MalcomHttpOperations.sendRequestToMalcom(url, campaignHitService, "", appId, secretKey, ToolBox.HTTP_METHOD.GET);
 
