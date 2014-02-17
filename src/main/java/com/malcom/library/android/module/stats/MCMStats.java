@@ -62,7 +62,12 @@ public class MCMStats {
 		
 		setUseLocation(useLocation);
 	}
-	
+
+    // Patch to fix a bug: https://github.com/MyMalcom/malcom-lib-android/issues/30
+    // TODO: This class should be refactored anyway
+    public static void initContext(Context context) {
+        mContext = context;
+    }
 	
 	// GETTERS & SETTERS
 	
