@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.activitylifecyclecallbackscompat.MalcomActivityLifecycleCallbacksCompat;
 
 import com.malcom.library.android.module.core.MCMCoreAdapter;
+import com.malcom.library.android.module.stats.MCMStats;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +29,8 @@ public class MalcomActivityLifecycleCallbacks implements MalcomActivityLifecycle
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-		// Nothing to do
+        // Patch to fix a bug: https://github.com/MyMalcom/malcom-lib-android/issues/30
+        MCMStats.initContext(activity.getApplicationContext());
     }
 
     @Override
