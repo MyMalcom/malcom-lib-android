@@ -26,11 +26,10 @@ package android.util.activitylifecyclecallbackscompat;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
 /**
- * Equivalent of {@link ActivityLifecycleCallbacks} to be used with
+ * Equivalent of android.app.Application.ActivityLifecycleCallbacks to be used with
  * {@link MalcomApplicationHelper#registerActivityLifecycleCallbacks(Application, MalcomActivityLifecycleCallbacksCompat)} and
  * {@link MalcomApplicationHelper#unregisterActivityLifecycleCallbacks(Application, MalcomActivityLifecycleCallbacksCompat)}.
  */

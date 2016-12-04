@@ -27,15 +27,13 @@ package android.util.activitylifecyclecallbackscompat;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.Application;
-import android.app.Application.ActivityLifecycleCallbacks;
 import android.os.Bundle;
 
 /**
  * Keeps a list of {@link MalcomActivityLifecycleCallbacksCompat}s that will be called following the life cycle of the application's {@link Activity activities}.
  * This class is used when the app is running on an older platform version that does not support
- * {@link Application#registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks)} and
- * {@link Application#unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks)}.
+ * Application.registerActivityLifecycleCallbacks(ActivityLifecycleCallbacks) and
+ * Application.unregisterActivityLifecycleCallbacks(ActivityLifecycleCallbacks).
  */
 public class MalcomMainLifecycleDispatcher implements MalcomActivityLifecycleCallbacksCompat {
     private static final MalcomMainLifecycleDispatcher INSTANCE = new MalcomMainLifecycleDispatcher();
